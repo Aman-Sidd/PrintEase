@@ -11,10 +11,12 @@ router.post("/signup", async (req, res) => {
     const userInfo = req.body;
     if (userInfo?.email) {
       const user = await User.findOne({ email: userInfo?.email });
-      if (user)
+      if (user) {
+        console.log("user already exists.");
         return res
-          .status(203)
+          .status(422)
           .json({ message: "User already exist with this email address" });
+      }
     }
 
     const user = new User({
@@ -42,15 +44,19 @@ router.post("/signin", async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user)
-      return res
-        .status(203)
-        .json({ message: "User doesn't exist with this email address" });
+      return res.status(422).json({ message: "Invalid email or password!" });
     if (user.password != password)
-      return res.status(203).json({ message: "Invalid email or password" });
+      return res.status(422).json({ message: "Invalid email or password!" });
 
     const token = jwt.sign({ user_id: user._id }, secretKey);
 
-    return res.status(200).send({ token });
+    return res.status(200).send({
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      phone: user.phoneNumber,
+      token,
+    });
   } catch (err) {
     console.log(err);
     return res

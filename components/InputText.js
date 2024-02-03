@@ -28,6 +28,7 @@ const InputText = ({ keyboardType, state, actions }) => {
         secureTextEntry
         style={styles.textInput}
         placeholder="Password"
+        autoCapitalize="none"
         placeholderTextColor={"#6A84A0"}
       />
     );
@@ -38,7 +39,6 @@ const InputText = ({ keyboardType, state, actions }) => {
         onChangeText={(text) => {
           setName(text);
         }}
-        secureTextEntry
         style={styles.textInput}
         placeholder="Name"
         placeholderTextColor={"#6A84A0"}

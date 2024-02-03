@@ -1,4 +1,5 @@
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -20,7 +21,7 @@ import { add_user, registerUser } from "../redux/UserSlice";
 import InputText from "../components/InputText";
 import myApi from "../api/myApi";
 
-const RegisterScreen = () => {
+const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -29,11 +30,25 @@ const RegisterScreen = () => {
 
   const users = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  // console.log(users);
-  console.log(name);
-  console.log(email);
-  console.log(password);
-  console.log(phone);
+
+  const registerUser = async (payload) => {
+    try {
+      const response = await myApi.post("/signup", payload);
+      const token = response.data.token;
+      dispatch(add_user({ ...payload, token }));
+      Alert.alert("Successful", "You are registered successfully!");
+      setName("");
+      setEmail("");
+      setPhone("");
+      setPassword("");
+    } catch (err) {
+      console.log(
+        "Something went wrong while creating user! ",
+        err.response.data
+      );
+      Alert.alert("Error", err.response.data.message);
+    }
+  };
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -72,18 +87,18 @@ const RegisterScreen = () => {
           <View style={styles.thirdPartyContainer}>
             <Divider
               style={{ width: "20%" }}
-              color="#FFFFFF"
+              color="gray"
               width={1}
               orientation="horizontal"
             />
 
-            <Text style={{ color: "white", marginHorizontal: 15 }}>
+            <Text style={{ color: "gray", marginHorizontal: 15 }}>
               or sign up with
             </Text>
 
             <Divider
               style={{ width: "20%" }}
-              color="#FFFFFF"
+              color="gray"
               width={1}
               orientation="horizontal"
             />
@@ -95,25 +110,27 @@ const RegisterScreen = () => {
             <AntDesign name="apple1" size={24} color="#959595" />
           </View>
         </View>
+        <Pressable
+          onPress={() => navigation.replace("Login")}
+          style={{
+            marginLeft: 40,
+            marginTop: 20,
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <Text style={{ color: "gray", fontSize: 15 }}>
+            Already have an Account?
+          </Text>
+          <Text style={{ color: "#BEBEBE", fontWeight: "500", fontSize: 15 }}>
+            &nbsp;Log In Instead!
+          </Text>
+        </Pressable>
 
         <View style={styles.footerContainer}>
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ color: "#8398AF" }}>
-              By proceeding, you agree to these Term and Conditions.
-            </Text>
-          </View>
-
-          {email && password ? (
+          {email && password && phone && name ? (
             <Pressable
-              onPress={async () => {
-                const user = await registerUser({
-                  name,
-                  email,
-                  password,
-                  phone,
-                });
-                dispatch(add_user(user));
-              }}
+              onPress={() => registerUser({ email, password, phone, name })}
             >
               <LinearGradient
                 colors={[
@@ -143,7 +160,6 @@ export default RegisterScreen;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    paddingTop: 20,
     flex: 1,
     backgroundColor: "#080A0C",
   },
@@ -151,7 +167,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 15,
     marginTop: 50,
-    marginBottom: 40,
+    marginBottom: 20,
   },
   textInput: {
     width: "85%",
@@ -183,7 +199,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 35,
-    marginTop: 20,
+    marginTop: 10,
   },
   footerContainer: {
     marginBottom: 50,

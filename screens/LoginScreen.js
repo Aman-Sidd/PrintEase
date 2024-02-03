@@ -1,4 +1,5 @@
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -18,8 +19,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import InputText from "../components/InputText";
 import { useDispatch, useSelector } from "react-redux";
 import { add_user, fetchUser, login_user } from "../redux/UserSlice";
+import myApi from "../api/myApi";
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const user = useSelector((state) => state.user);
@@ -28,6 +30,17 @@ const LoginScreen = () => {
   console.log(user);
   console.log(email);
   console.log(password);
+  const fetchUser = async (payload) => {
+    try {
+      const response = await myApi.post("/signin", payload);
+      const user = response.data;
+      dispatch(add_user(user));
+      Alert.alert("Successful", "You are Logged In successfully!");
+    } catch (err) {
+      console.log("Error while fetching user details: ", err.response.data);
+      Alert.alert("Error", err.response.data.message);
+    }
+  };
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -56,18 +69,18 @@ const LoginScreen = () => {
           <View style={styles.thirdPartyContainer}>
             <Divider
               style={{ width: "20%" }}
-              color="#FFFFFF"
+              color="gray"
               width={1}
               orientation="horizontal"
             />
 
-            <Text style={{ color: "white", marginHorizontal: 15 }}>
+            <Text style={{ color: "gray", marginHorizontal: 15 }}>
               or sign in with
             </Text>
 
             <Divider
               style={{ width: "20%" }}
-              color="#FFFFFF"
+              color="gray"
               width={1}
               orientation="horizontal"
             />
@@ -79,21 +92,25 @@ const LoginScreen = () => {
             <AntDesign name="apple1" size={24} color="#959595" />
           </View>
         </View>
-
+        <Pressable
+          onPress={() => navigation.replace("Register")}
+          style={{
+            marginLeft: 40,
+            marginTop: 30,
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <Text style={{ color: "gray", fontSize: 15 }}>
+            Didn't have an Account?
+          </Text>
+          <Text style={{ color: "#BEBEBE", fontWeight: "500", fontSize: 15 }}>
+            &nbsp;Sign Up Instead!
+          </Text>
+        </Pressable>
         <View style={styles.footerContainer}>
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ color: "#8398AF" }}>
-              By proceeding, you agree to these Term and Conditions.
-            </Text>
-          </View>
-
           {email && password ? (
-            <Pressable
-              onPress={async () => {
-                const user = await fetchUser({ email, password });
-                dispatch(add_user(user));
-              }}
-            >
+            <Pressable onPress={() => fetchUser({ email, password })}>
               <LinearGradient
                 colors={[
                   "rgba(138, 212, 236, 0.8)",
