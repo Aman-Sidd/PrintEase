@@ -18,7 +18,8 @@ mongoose
   .catch((err) => console.log("Error connecting to DB! ", err));
 
 app.get("/", requireAuth, (req, res) => {
-  return res.status(200).send({ message: "Backend working fine" });
+  const user = req.user;
+  return res.status(200).send(user);
 });
 
 app.listen(port, () => {

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import StackNavigator from "./navigation/StackNavigator";
 import { Provider } from "react-redux";
 import MyStore from "./redux/MyStore";
+import { TabNavigator } from "./navigation/StackNavigator";
 
 export default function App() {
   return (

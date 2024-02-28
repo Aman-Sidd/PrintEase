@@ -1,10 +1,30 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GradientText from "../components/GradientText";
 import { LinearGradient } from "expo-linear-gradient";
+import AsyncStorage from "@react-native-community/async-storage";
+import myApi from "../api/myApi";
+import { useDispatch, useSelector } from "react-redux";
+import { add_user } from "../redux/UserSlice";
 
 const WelcomeScreen = ({ navigation }) => {
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const validate = async () => {
+      try {
+        const response = await myApi.get("/");
+        const user = response.data;
+        dispatch(add_user(user));
+        navigation.replace("Main");
+      } catch (err) {
+        console.log(err.response.data);
+      }
+    };
+    validate();
+  }, []);
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View>

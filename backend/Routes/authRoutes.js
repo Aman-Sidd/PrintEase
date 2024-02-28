@@ -4,7 +4,8 @@ const { default: mongoose } = require("mongoose");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 const crypto = require("crypto");
-const secretKey = require("../utilities/generateSecretKey");
+const secretKey = require("../constants/secretKey");
+const requireAuth = require("../middlewares/requireAuth");
 
 router.post("/signup", async (req, res) => {
   try {
