@@ -31,7 +31,7 @@ const HomeScreen = ({ navigation }) => {
         <View
           style={{
             width: "85%",
-            height: 220,
+            height: 180,
             marginTop: 30,
             // backgroundColor: "red",
             borderRadius: 9,

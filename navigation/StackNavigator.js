@@ -100,10 +100,14 @@ export const TabNavigator = () => {
         name="Profile"
         component={ProfileScreen}
         options={{
-          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="user-circle" size={size} color={color} />
           ),
+          headerStyle: {
+            backgroundColor: "black", // Background color of the header
+          },
+          headerTintColor: "white", // Text color of the header
+          headerTitleAlign: "center", // Alignment of the header title
         }}
       />
     </Tab.Navigator>
