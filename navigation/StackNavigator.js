@@ -14,6 +14,8 @@ import OrderDetailScreen from "../screens/OrderDetailScreen";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import PdfViewScreen from "../screens/PdfViewScreen";
+
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
 
@@ -22,6 +24,11 @@ const HomeNavigator = () => {
       <Stack.Screen
         name="Print"
         component={HomeScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PdfView"
+        component={PdfViewScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
