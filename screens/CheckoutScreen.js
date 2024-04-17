@@ -44,14 +44,12 @@ const CheckoutScreen = () => {
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Page Size:</Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
             {orderDetails.pageSize}
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Color:</Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
             {orderDetails.color}
           </Text>
         </View>
@@ -67,21 +65,18 @@ const CheckoutScreen = () => {
             numberOfLines={2}
             style={[styles.textStyle, { color: "white" }]}
           >
-            {" "}
             {orderDetails.pdfName}
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Print Type:</Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
             {orderDetails.printType}
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Total Pages:</Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
             {orderDetails.noOfPages}
           </Text>
         </View>
@@ -92,7 +87,6 @@ const CheckoutScreen = () => {
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Total Price:</Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
             {orderDetails.noOfPages} * 2.5 = Rs. {orderDetails.noOfPages * 2.5}
           </Text>
         </View>
