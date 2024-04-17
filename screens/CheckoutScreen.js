@@ -2,8 +2,11 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RazorpayCheckout from "react-native-razorpay";
+import { useSelector } from "react-redux";
 
 const CheckoutScreen = () => {
+  const orderDetails = useSelector((state) => state.order);
+
   const handleCheckout = () => {
     var options = {
       description: "Credits towards consultation",
@@ -40,32 +43,47 @@ const CheckoutScreen = () => {
       <View style={styles.checkoutInfo}>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Page Size:</Text>
-          <Text style={[styles.textStyle, { color: "white" }]}> A4</Text>
+          <Text style={[styles.textStyle, { color: "white" }]}>
+            {" "}
+            {orderDetails.pageSize}
+          </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Color:</Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
             {" "}
-            Black & White
+            {orderDetails.color}
           </Text>
         </View>
-        <View style={{ display: "flex", flexDirection: "row" }}>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+          }}
+        >
           <Text style={styles.textStyle}>Chosen File:</Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
+          <Text
+            numberOfLines={2}
+            style={[styles.textStyle, { color: "white" }]}
+          >
             {" "}
-            frontpage.pdf
+            {orderDetails.pdfName}
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Print Type:</Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
             {" "}
-            Both Sided
+            {orderDetails.printType}
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Total Pages:</Text>
-          <Text style={[styles.textStyle, { color: "white" }]}> 12</Text>
+          <Text style={[styles.textStyle, { color: "white" }]}>
+            {" "}
+            {orderDetails.noOfPages}
+          </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Price per page:</Text>
@@ -75,7 +93,7 @@ const CheckoutScreen = () => {
           <Text style={styles.textStyle}>Total Price:</Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
             {" "}
-            12 * 2.5 = Rs. 30
+            {orderDetails.noOfPages} * 2.5 = Rs. {orderDetails.noOfPages * 2.5}
           </Text>
         </View>
       </View>

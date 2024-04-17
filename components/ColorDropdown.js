@@ -2,16 +2,18 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { setColor } from "../redux/OrderSlice";
+import { useDispatch } from "react-redux";
 
 const data = [
   { label: "Black & White", value: "1" },
-  { label: "Color", value: "2" },
+  { label: "Coloured", value: "2" },
 ];
 
 const ColorDropdown = () => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
-
+  const dispatch = useDispatch();
   const renderLabel = () => {
     if (value || isFocus) {
       return (
@@ -34,8 +36,11 @@ const ColorDropdown = () => {
         iconStyle={styles.iconStyle}
         data={data}
         maxHeight={300}
+        containerStyle={styles.containerStyle}
+        itemTextStyle={styles.itemTextStyle}
         labelField="label"
         valueField="value"
+        activeColor="grey"
         placeholder={!isFocus ? "Select Color" : "..."}
         searchPlaceholder="Search..."
         value={value}
@@ -44,6 +49,7 @@ const ColorDropdown = () => {
         onChange={(item) => {
           setValue(item.value);
           setIsFocus(false);
+          dispatch(setColor({ color: item.label }));
         }}
         renderLeftIcon={() => (
           <AntDesign
@@ -64,6 +70,12 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "black",
     padding: 16,
+  },
+  containerStyle: {
+    backgroundColor: "black",
+  },
+  itemTextStyle: {
+    color: "white",
   },
   dropdown: {
     height: 65,

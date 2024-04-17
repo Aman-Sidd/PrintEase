@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { useDispatch } from "react-redux";
+import { setPageSize, setPrintType } from "../redux/OrderSlice";
 
 const data = [
   { label: "Single Sided", value: "1" },
@@ -22,7 +24,7 @@ const PrintTypeDropdown = () => {
     }
     return null;
   };
-
+  const dispatch = useDispatch();
   return (
     <View style={styles.container}>
       {renderLabel()}
@@ -34,7 +36,10 @@ const PrintTypeDropdown = () => {
         iconStyle={styles.iconStyle}
         data={data}
         maxHeight={300}
+        containerStyle={styles.containerStyle}
+        itemTextStyle={styles.itemTextStyle}
         labelField="label"
+        activeColor="grey"
         valueField="value"
         placeholder={!isFocus ? "Select Print Type" : "..."}
         searchPlaceholder="Search..."
@@ -44,6 +49,7 @@ const PrintTypeDropdown = () => {
         onChange={(item) => {
           setValue(item.value);
           setIsFocus(false);
+          dispatch(setPrintType({ printType: item.label }));
         }}
         renderLeftIcon={() => (
           <AntDesign
@@ -71,6 +77,12 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
+  },
+  containerStyle: {
+    backgroundColor: "black",
+  },
+  itemTextStyle: {
+    color: "white",
   },
   icon: {
     marginRight: 5,

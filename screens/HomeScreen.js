@@ -13,18 +13,29 @@ import { useDispatch, useSelector } from "react-redux";
 import myApi from "../api/myApi";
 import { add_user } from "../redux/UserSlice";
 import PageSizeDropdown from "../components/PageSizeDropdown";
+import { AntDesign } from "@expo/vector-icons";
 import ColorDropdown from "../components/ColorDropdown";
 import PrintTypeDropdown from "../components/PrintTypeDropdown";
 import GradientText from "../components/GradientText";
 import * as DocumentPicker from "expo-document-picker";
 import Pdf from "react-native-pdf";
+import AsyncStorage from "@react-native-community/async-storage";
+import PDFLib, { PDFDocument } from "react-native-pdf-lib";
+import UnderlinedText from "../components/UnderlinedText";
+import { setPdfName, setPdfUri } from "../redux/OrderSlice";
 
 const HomeScreen = ({ navigation }) => {
   const user = useSelector((state) => state.user);
-  const [selectedPDF, setSelectedPDF] = useState(null);
+  const dispatch = useDispatch();
+  const { pdfName, pdfUri, noOfPages } = useSelector((state) => state.order);
+
   console.log("USER:", user);
   const pickDocument = async () => {
     console.log("clicked");
+    if (pdfUri) {
+      navigation.navigate("PdfView", { uri: pdfUri });
+      return;
+    }
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/pdf", // Filter only PDF files
@@ -32,11 +43,13 @@ const HomeScreen = ({ navigation }) => {
       console.log(result);
       if (!result.canceled) {
         console.log("Document picked:", result.assets[0]);
-        setSelectedPDF({
-          name: result.assets[0].name,
-          uri: result.assets[0].uri,
-        });
+
+        dispatch(setPdfName({ pdfName: result.assets[0].name }));
+        dispatch(setPdfUri({ pdfUri: result.assets[0].uri }));
+
         // Handle the picked document URI, you may want to save it or upload it
+
+        navigation.navigate("PdfView", { uri: result.assets[0].uri });
       } else {
         console.log("Document picking canceled");
       }
@@ -45,156 +58,182 @@ const HomeScreen = ({ navigation }) => {
     }
   };
   const openPDF = () => {
-    if (selectedPDF) {
-      navigation.navigate("PdfView", { uri: selectedPDF.uri });
+    if (pdfUri) {
+      navigation.navigate("PdfView", { uri: pdfUri });
     }
   };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+        navigation.replace("Login");
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const onResetFile = () => {
+    dispatch(setPdfName({ pdfName: null }));
+    dispatch(setPdfUri({ pdfUri: null }));
+  };
+
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <GradientText
-        style={{ alignSelf: "center", fontSize: 40, marginTop: 20 }}
-        text="PrintEase"
-      />
+      <GradientText style={styles.gradientText} text="PrintEase" />
       <View>
         <PageSizeDropdown />
         <ColorDropdown />
         <PrintTypeDropdown />
       </View>
 
-      <View style={{ alignItems: "center", marginTop: 20 }}>
-        <Text style={{ color: "white", fontSize: 20 }}>
-          Select Your Document
-        </Text>
-        <Pressable
-          style={{
-            width: "85%",
-            height: 180,
-            marginTop: 30,
-            // backgroundColor: "red",
-            borderRadius: 9,
-            borderStyle: "dashed",
-            borderWidth: 1.5,
-            borderColor: "white",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onPress={pickDocument}
-        >
-          {!selectedPDF ? (
+      <View style={styles.selectDocumentContainer}>
+        <Text style={styles.selectDocumentText}>Select Your Document</Text>
+        <Pressable style={styles.documentPicker} onPress={pickDocument}>
+          {!pdfUri ? (
             <>
-              <View style={{ display: "flex", flexDirection: "row" }}>
-                <Text
-                  style={{ color: "#156CF7", marginRight: 5, fontSize: 15 }}
-                >
-                  Choose
-                </Text>
-                <Text style={{ color: "white", fontSize: 15 }}>
-                  file to upload
-                </Text>
+              <View style={styles.documentPickerContent}>
+                <Text style={styles.chooseText}>Choose</Text>
+                <Text style={styles.uploadText}>file to upload</Text>
               </View>
-              <Text style={{ color: "white", fontSize: 11 }}>
+              <Text style={styles.pdfFormatText}>
                 (Only PDF format is allowed)
               </Text>
             </>
           ) : (
             <>
-              <View style={{ display: "flex", flexDirection: "row" }}>
-                <Text
-                  style={{ color: "white", fontSize: 17, fontWeight: "500" }}
-                >
-                  {selectedPDF.name}
-                </Text>
-              </View>
-              <Pressable onPress={openPDF} style={styles.button}>
-                <Text style={styles.text}>Open File</Text>
+              <Pressable onPress={openPDF} style={styles.pdfPreview}>
+                <AntDesign
+                  name="pdffile1"
+                  size={40}
+                  color="white"
+                  style={styles.pdfIcon}
+                />
+                <View style={styles.pdfInfoContainer}>
+                  <UnderlinedText style={styles.pdfNameText}>
+                    {pdfName}
+                  </UnderlinedText>
+                </View>
+                <Text style={styles.pdfPagesText}>({noOfPages} Pages)</Text>
               </Pressable>
             </>
           )}
         </Pressable>
+      </View>
 
-        <View
-          style={{
-            display: "flex",
-            gap: 20,
-            flexDirection: "row",
-            marginTop: 50,
-          }}
+      <View style={styles.buttonContainer}>
+        <Pressable onPress={onResetFile} style={styles.cancelButton}>
+          <Text style={styles.cancelButtonText}>Reset File</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate("Checkout")}
+          style={styles.nextButton}
         >
-          <Pressable
-            style={{
-              width: 143,
-              borderWidth: 1,
-              borderColor: "white",
-              borderRadius: 8,
-              height: 44,
-              justifyContent: "center",
-              backgroundColor: "black",
-            }}
-          >
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "bold",
-                fontSize: 15,
-                alignSelf: "center",
-              }}
-            >
-              Cancel
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => navigation.navigate("Checkout")}
-            style={{
-              width: 143,
-              borderRadius: 8,
-              height: 44,
-              backgroundColor: "#B0B5C9",
-              justifyContent: "center",
-            }}
-          >
-            <Text
-              style={{
-                color: "black",
-                fontWeight: "bold",
-                fontSize: 15,
-                alignSelf: "center",
-              }}
-            >
-              Next
-            </Text>
-          </Pressable>
-        </View>
+          <Text style={styles.nextButtonText}>Next</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
 };
-
-export default HomeScreen;
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#080A0C",
   },
-  button: {
-    marginTop: 8,
-    backgroundColor: "#3498db", // Blue background
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    elevation: 3, // For Android shadow
-    shadowColor: "#000", // For iOS shadow
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+  gradientText: {
+    alignSelf: "center",
+    fontSize: 40,
+    marginTop: 20,
   },
-  text: {
-    fontSize: 16,
-    color: "#FFFFFF", // White text
+  selectDocumentContainer: {
+    alignItems: "center",
+    marginTop: 20,
+  },
+  selectDocumentText: {
+    color: "white",
+    fontSize: 20,
+  },
+  documentPicker: {
+    width: "85%",
+    height: 180,
+    marginTop: 30,
+    borderRadius: 9,
+    borderStyle: "dashed",
+    borderWidth: 1.5,
+    borderColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  documentPickerContent: {
+    flexDirection: "row",
+  },
+  chooseText: {
+    color: "#156CF7",
+    marginRight: 5,
+    fontSize: 15,
+  },
+  uploadText: {
+    color: "white",
+    fontSize: 15,
+  },
+  pdfFormatText: {
+    color: "white",
+    fontSize: 11,
+  },
+  pdfPreview: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pdfIcon: {
+    marginVertical: 10,
+  },
+  pdfInfoContainer: {
+    flexDirection: "row",
+  },
+  pdfNameText: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "500",
+  },
+  pdfPagesText: {
+    color: "#cfd0d1",
+    fontSize: 12,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    paddingHorizontal: 20,
+    marginTop: 50,
+  },
+  cancelButton: {
+    width: 143,
+    borderWidth: 1,
+    borderColor: "white",
+    borderRadius: 8,
+    height: 44,
+    justifyContent: "center",
+    backgroundColor: "black",
+  },
+  cancelButtonText: {
+    color: "white",
     fontWeight: "bold",
-    textAlign: "center",
+    fontSize: 15,
+    alignSelf: "center",
+  },
+  nextButton: {
+    width: 143,
+    borderRadius: 8,
+    height: 44,
+    backgroundColor: "#B0B5C9",
+    justifyContent: "center",
+  },
+  nextButtonText: {
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 15,
+    alignSelf: "center",
   },
 });
+
+export default HomeScreen;
