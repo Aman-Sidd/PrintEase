@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import axios from "axios";
 
 const myApi = axios.create({
-  baseURL: "https://b93b-220-227-41-65.ngrok-free.app",
+  baseURL: "https://printease-backend.vercel.app/",
 });
 
 myApi.interceptors.request.use(

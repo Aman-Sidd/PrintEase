@@ -3,24 +3,26 @@ import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RazorpayCheckout from "react-native-razorpay";
 import { useSelector } from "react-redux";
+import { RAZORPAY_PREFILL_NAME } from "../constants/RAZORPAY";
+import MailSender from "../components/MailSender";
 
 const CheckoutScreen = () => {
   const orderDetails = useSelector((state) => state.order);
 
   const handleCheckout = () => {
     var options = {
-      description: "Credits towards consultation",
+      description: "Printing Charges",
       image: "https://i.imgur.com/3g7nmJC.jpg",
       currency: "INR",
       // upi_link: true,
-      key: "rzp_test_1ssVL4OvAlLVyS",
+      key: RAZORPAY_API_KEY,
       amount: "5000",
-      name: "Print Ease",
+      name: RAZORPAY_ORG_NAME,
       order_id: "", //Replace this with an order_id created using Orders API.
       prefill: {
-        email: "amansidd.official@gmail.com",
-        contact: "9369776397",
-        name: "Aman Siddiqui",
+        email: RAZORPAY_PREFILL_EMAIL,
+        contact: RAZORPAY_PREFILL_CONTACT,
+        name: RAZORPAY_PREFILL_NAME,
       },
       theme: { color: "#53a20e" },
     };
@@ -99,6 +101,7 @@ const CheckoutScreen = () => {
         <Pressable style={styles.nextButton} onPress={handleCheckout}>
           <Text style={styles.nextButtonText}>Proceed to Pay</Text>
         </Pressable>
+        <MailSender />
       </View>
     </SafeAreaView>
   );

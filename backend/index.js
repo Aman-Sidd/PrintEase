@@ -10,6 +10,7 @@ const bodyParser = require("body-parser");
 const requireAuth = require("./middlewares/requireAuth");
 const shopOwnerRoute = require("./Routes/shopOwnerRoutes");
 const orderRoute = require("./Routes/orderRoute");
+const mailSenderRoute = require("./Routes/mailSenderRoute");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -17,6 +18,7 @@ app.use(cors());
 app.use(authRoute);
 app.use(shopOwnerRoute);
 app.use(orderRoute);
+app.use(mailSenderRoute);
 
 mongoose
   .connect(
