@@ -6,10 +6,15 @@ import {
   Text,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import myApi from "../api/myApi";
+import LoadingScreen from "../components/LoadingScreen";
 
 const OrdersScreen = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
+  const [ordersList, setOrdersList] = useState([]);
+
   const listOrders = [
     {
       id: 1,
@@ -31,36 +36,61 @@ const OrdersScreen = ({ navigation }) => {
     },
   ];
 
+  useEffect(() => {
+    const fetchOrderList = async () => {
+      try {
+        setLoading(true);
+        const response = await myApi.get("/user/my-orders");
+        setOrdersList(
+          response.data.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          )
+        );
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrderList();
+  }, []);
+
   const renderListItem = ({ item }) => {
     return (
       <Pressable
         onPress={() => navigation.navigate("OrderDetail")}
         style={styles.listStyle}
       >
-        <Text style={styles.listItemName}>{item?.name}</Text>
+        <Text style={styles.listItemName}>{item?.order_title}</Text>
         <View style={{ paddingRight: 20 }}>
-          <Text style={styles.listItemPrice}>Rs. {item?.price}</Text>
+          <Text style={styles.listItemPrice}>Rs. {item?.total_price}</Text>
           <Text
             style={[
               styles.listItemStatus,
               {
                 color:
-                  item.status === "Delivered"
+                  item.status === 2
                     ? "#4CAF50"
-                    : item.status === "Done"
+                    : item.status === 1
                     ? "#2196F3"
                     : "#FFC107",
               },
             ]}
           >
-            {item?.status}
+            {item?.status == 0
+              ? "Pending"
+              : item?.status == 1
+              ? "Done"
+              : "Hand Over"}
           </Text>
         </View>
       </Pressable>
     );
   };
 
-  return (
+  return loading ? (
+    <LoadingScreen />
+  ) : (
     <SafeAreaView style={{ backgroundColor: "black", flex: 1, paddingTop: 20 }}>
       <Text style={styles.headerTitle}>Your Orders</Text>
 
@@ -70,7 +100,7 @@ const OrdersScreen = ({ navigation }) => {
         </ScrollView> */}
 
         <FlatList
-          data={listOrders}
+          data={ordersList}
           keyExtractor={(item) => item.id}
           renderItem={renderListItem}
         />

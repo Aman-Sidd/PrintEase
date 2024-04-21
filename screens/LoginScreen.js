@@ -36,9 +36,24 @@ const LoginScreen = () => {
   const fetchUser = async (payload) => {
     try {
       setLoading(true);
-      const response = await myApi.post("/signin", payload);
+      const formData = new URLSearchParams();
+      formData.append("email", payload.email);
+      formData.append("pass", payload.password);
+
+      const config = {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      };
+
+      const response = await myApi.post("/login", formData, config);
       const user = response.data;
-      await AsyncStorage.setItem("authToken", user.token);
+      console.log("RESPONSE:", response.data);
+      if (response.data.user_found == "0") {
+        Alert.alert("Error!", "Invalid email or password");
+        return;
+      }
+      await AsyncStorage.setItem("authToken", user.JWT_TOKEN);
       dispatch(add_user(user));
       setLoading(false);
       navigation.replace("Main");

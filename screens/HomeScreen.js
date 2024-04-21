@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   Image,
   Linking,
@@ -27,7 +28,8 @@ import { setPdfName, setPdfUri } from "../redux/OrderSlice";
 const HomeScreen = ({ navigation }) => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const { pdfName, pdfUri, noOfPages } = useSelector((state) => state.order);
+  const { pdfName, pdfUri, noOfPages, pageSize, color, printType } =
+    useSelector((state) => state.order);
 
   console.log("USER:", user);
   const pickDocument = async () => {
@@ -78,6 +80,17 @@ const HomeScreen = ({ navigation }) => {
     dispatch(setPdfUri({ pdfUri: null }));
   };
 
+  const handleNextButton = () => {
+    if (!pageSize || !color || !printType) {
+      Alert.alert(
+        "Incomplete Selections",
+        "Please make sure to select all the dropdown selections."
+      );
+    } else if (!pdfName || !pdfUri) {
+      Alert.alert("File Not Selected", "Please select a file to proceed.");
+    } else navigation.navigate("Checkout");
+  };
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <GradientText style={styles.gradientText} text="PrintEase" />
@@ -125,10 +138,7 @@ const HomeScreen = ({ navigation }) => {
         <Pressable onPress={onResetFile} style={styles.cancelButton}>
           <Text style={styles.cancelButtonText}>Reset File</Text>
         </Pressable>
-        <Pressable
-          onPress={() => navigation.navigate("Checkout")}
-          style={styles.nextButton}
-        >
+        <Pressable onPress={handleNextButton} style={styles.nextButton}>
           <Text style={styles.nextButtonText}>Next</Text>
         </Pressable>
       </View>

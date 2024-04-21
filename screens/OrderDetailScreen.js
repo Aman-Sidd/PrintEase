@@ -10,7 +10,7 @@ const OrderDetailScreen = () => {
     >
       <View style={styles.checkoutInfo}>
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Transaction ID:</Text>
+          <Text style={styles.textStyle}>Transaction ID: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
             {" "}
             2325158412
@@ -18,29 +18,29 @@ const OrderDetailScreen = () => {
         </View>
 
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Page Size:</Text>
+          <Text style={styles.textStyle}>Page Size: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}> A4</Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Color:</Text>
+          <Text style={styles.textStyle}>Color: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
             {" "}
             Black & White
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Chosen File:</Text>
+          <Text style={styles.textStyle}>Chosen File: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
             {" "}
             frontpage.pdf
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Total Pages:</Text>
+          <Text style={styles.textStyle}>Total Pages: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}> 12</Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Price per page:</Text>
+          <Text style={styles.textStyle}>Price per page: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}> Rs. 2.5</Text>
         </View>
         <View
@@ -50,7 +50,7 @@ const OrderDetailScreen = () => {
             alignItems: "center",
           }}
         >
-          <Text style={styles.textStyle}>Total Price:</Text>
+          <Text style={styles.textStyle}>Total Price: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
             {" "}
             12 * 2.5 = Rs. 30
