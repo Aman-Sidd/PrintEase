@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CancelSelectButtons from "../components/CancelSelectButton";
 
 const PdfViewScreen = ({ navigation, route }) => {
-  const { uri } = route.params;
+  const { uri, showButtons } = route.params;
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useSelector((state) => state.order.noOfPages);
   const dispatch = useDispatch();
@@ -26,10 +26,37 @@ const PdfViewScreen = ({ navigation, route }) => {
     navigation.pop();
   };
 
+  useEffect(() => {
+    const handleBackPress = () => {
+      // Handle the back press event
+      // For example:
+      // if (shouldExitApp()) { // custom logic to exit app
+      //   BackHandler.exitApp();
+      //   return true;
+      // }
+      // else {
+      //   navigation.goBack(); // go back to previous screen
+      //   return true;
+      // }
+
+      // Returning true means that we've handled the event
+      return true;
+    };
+
+    // Subscribe to back press event
+    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+    // Clean up function to unsubscribe when component unmounts
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+    };
+  }, []);
+
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
         <Pdf
+          trustAllCerts={false}
           source={{ uri, cache: true }}
           onLoadComplete={(numberOfPages, filePath) => {
             console.log(`Number of pages: ${numberOfPages}`);
@@ -53,10 +80,12 @@ const PdfViewScreen = ({ navigation, route }) => {
           </Text>
         </View>
       </View>
-      <CancelSelectButtons
-        onCancelPress={onCancelPress}
-        onSelectPress={onSelectPress}
-      />
+      {showButtons && (
+        <CancelSelectButtons
+          onCancelPress={onCancelPress}
+          onSelectPress={onSelectPress}
+        />
+      )}
     </View>
   );
 };

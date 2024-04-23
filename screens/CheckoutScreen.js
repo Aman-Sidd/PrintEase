@@ -1,10 +1,13 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RazorpayCheckout from "react-native-razorpay";
 import { useSelector } from "react-redux";
 import {
   RAZORPAY_API_KEY,
+  RAZORPAY_CURRENCY,
+  RAZORPAY_DESCRIPTION,
+  RAZORPAY_IMAGE_URL,
   RAZORPAY_ORG_NAME,
   RAZORPAY_PREFILL_CONTACT,
   RAZORPAY_PREFILL_EMAIL,
@@ -13,42 +16,13 @@ import {
 import MailSender from "../components/MailSender";
 import { RATE16_25, RATE1_15, RATE26Above } from "../constants/PRICING";
 import myApi from "../api/myApi";
+import LoadingScreen from "../components/LoadingScreen";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
-
-  const handleCheckout = async (amount) => {
-    var options = {
-      description: "Printing Charges",
-      image:
-        "https://private-user-images.githubusercontent.com/67181624/324244587-b5694c36-eb15-47dc-a875-30183e3eda6f.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTM2OTk5OTgsIm5iZiI6MTcxMzY5OTY5OCwicGF0aCI6Ii82NzE4MTYyNC8zMjQyNDQ1ODctYjU2OTRjMzYtZWIxNS00N2RjLWE4NzUtMzAxODNlM2VkYTZmLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA0MjElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwNDIxVDExNDEzOFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWUzMjcxYjBjNzdkMGIxMTdiYmQ5N2I0MTg3OTliZDY5M2RiZmQ1MmEzYzg5NzE3N2RmMDhmNDM3MGVmOTBlNjMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0._Pom4dQcRdVGH72fH7CoNd6NItaH7AhwRGLTj-gr1ZA",
-      currency: "INR",
-      // upi_link: true,
-      key: RAZORPAY_API_KEY,
-      amount: amount * 100,
-      name: RAZORPAY_ORG_NAME,
-      order_id: "", //Replace this with an order_id created using Orders API.
-      prefill: {
-        email: RAZORPAY_PREFILL_EMAIL,
-        contact: RAZORPAY_PREFILL_CONTACT,
-        name: RAZORPAY_PREFILL_NAME,
-      },
-      theme: { color: "#53a20e" },
-    };
-    RazorpayCheckout.open(options)
-      .then(async (data) => {
-        // handle success
-        console.log("DATA: ", data);
-        // alert(
-        //   `Success: Order has been created with Txn ID: ${data.razorpay_payment_id}`
-        // );
-      })
-      .catch((error) => {
-        // handle failure
-        const errorObject = JSON.parse(error.description);
-        console.log(errorObject);
-        alert(`Error: ${errorObject.error.description}`);
-      });
+  const [loading, setLoading] = useState(false);
+  const placeOrder = async () => {
+    setLoading(true);
     const formData = new FormData();
 
     formData.append("file", {
@@ -69,10 +43,47 @@ const CheckoutScreen = ({ navigation }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("RESPONSE:", response.data);
+      Alert.alert("Success", "Order has been placed.");
     } catch (err) {
       console.log("ERROR:", err.response.data);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleCheckout = async (amount) => {
+    var options = {
+      description: RAZORPAY_DESCRIPTION,
+      image: RAZORPAY_IMAGE_URL,
+      currency: RAZORPAY_CURRENCY,
+      // upi_link: true,
+      key: RAZORPAY_API_KEY,
+      amount: amount * 100,
+      name: RAZORPAY_ORG_NAME,
+      order_id: "", //Replace this with an order_id created using Orders API.
+      prefill: {
+        email: RAZORPAY_PREFILL_EMAIL,
+        contact: RAZORPAY_PREFILL_CONTACT,
+        name: RAZORPAY_PREFILL_NAME,
+      },
+      theme: { color: "#53a20e" },
+    };
+    RazorpayCheckout.open(options)
+      .then(async (data) => {
+        // handle success
+        console.log("DATA: ", data);
+        await placeOrder();
+        // alert(
+        //   `Success: Order has been with Txn ID: ${data.razorpay_payment_id}`
+        // );
+      })
+      .catch((error) => {
+        // handle failure
+        const errorObject = JSON.parse(error.description);
+        // console.log(errorObject);
+        Alert.alert("Error", `${errorObject.error.description}`);
+        // alert(`Error: ${errorObject.error.description}`);
+      });
   };
 
   const priceRatePerPage =
@@ -82,11 +93,15 @@ const CheckoutScreen = ({ navigation }) => {
       ? RATE16_25
       : RATE26Above;
 
+  const totalAmount = orderDetails.noOfPages * priceRatePerPage;
+
   const handleBackButton = () => {
     navigation.pop();
   };
 
-  return (
+  return loading ? (
+    <LoadingScreen />
+  ) : (
     <SafeAreaView
       style={{ backgroundColor: "black", flex: 1, alignItems: "center" }}
     >
@@ -140,8 +155,7 @@ const CheckoutScreen = ({ navigation }) => {
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Total Price: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
-            {orderDetails.noOfPages} * {priceRatePerPage} = Rs.{" "}
-            {orderDetails.noOfPages * priceRatePerPage}
+            {orderDetails.noOfPages} * {priceRatePerPage} = Rs. {totalAmount}
           </Text>
         </View>
       </View>
@@ -152,9 +166,7 @@ const CheckoutScreen = ({ navigation }) => {
         </Pressable>
         <Pressable
           style={styles.nextButton}
-          onPress={() =>
-            handleCheckout((amount = orderDetails.noOfPages * priceRatePerPage))
-          }
+          onPress={() => handleCheckout(totalAmount)}
         >
           <Text style={styles.nextButtonText}>Proceed to Pay</Text>
         </Pressable>

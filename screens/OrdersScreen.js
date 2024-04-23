@@ -1,6 +1,7 @@
 import {
   FlatList,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,7 +15,8 @@ import LoadingScreen from "../components/LoadingScreen";
 const OrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [ordersList, setOrdersList] = useState([]);
-
+  const [activeStatus, setActiveStatus] = useState("All");
+  const [refreshing, setRefreshing] = useState(false);
   const listOrders = [
     {
       id: 1,
@@ -35,33 +37,55 @@ const OrdersScreen = ({ navigation }) => {
       status: "Pending",
     },
   ];
+  const fetchOrderList = async () => {
+    try {
+      setLoading(true);
+      const response = await myApi.get("/user/my-orders");
+      setOrdersList(
+        response.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )
+      );
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      const response = await myApi.get("/user/my-orders");
+      setOrdersList(
+        response.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )
+      );
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrderList = async () => {
-      try {
-        setLoading(true);
-        const response = await myApi.get("/user/my-orders");
-        setOrdersList(
-          response.data.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          )
-        );
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchOrderList();
   }, []);
 
   const renderListItem = ({ item }) => {
     return (
       <Pressable
-        onPress={() => navigation.navigate("OrderDetail")}
+        onPress={() =>
+          navigation.navigate("OrderDetail", { order_id: item.order_id })
+        }
         style={styles.listStyle}
       >
-        <Text style={styles.listItemName}>{item?.order_title}</Text>
+        <View style={{ maxWidth: "70%" }}>
+          <Text numberOfLines={2} style={styles.listItemName}>
+            {item?.order_title}
+          </Text>
+        </View>
         <View style={{ paddingRight: 20 }}>
           <Text style={styles.listItemPrice}>Rs. {item?.total_price}</Text>
           <Text
@@ -93,16 +117,19 @@ const OrdersScreen = ({ navigation }) => {
   ) : (
     <SafeAreaView style={{ backgroundColor: "black", flex: 1, paddingTop: 20 }}>
       <Text style={styles.headerTitle}>Your Orders</Text>
-
-      <View>
-        {/* <ScrollView>
-          {listOrders.map((item) => renderListItem(item))}
-        </ScrollView> */}
-
+      <Pressable style={styles.statusContainer}>
+        {/* Status buttons */}
+      </Pressable>
+      {/* FlatList container */}
+      <View style={{ flex: 1 }}>
         <FlatList
+          style={{ flex: 1 }} // Ensure FlatList has flex: 1
           data={ordersList}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()} // Convert id to string
           renderItem={renderListItem}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       </View>
     </SafeAreaView>
@@ -132,7 +159,36 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  listItemName: { color: "white", fontSize: 20, marginLeft: 20 },
-  listItemPrice: { color: "white", fontSize: 20 },
+  statusContainer: {
+    marginVertical: 10,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+  statusText: {
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+
+  statusButton: {
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    backgroundColor: "#F3F3F2",
+  },
+  statusTextInactive: {
+    color: "black",
+  },
+  statusTextActive: {
+    color: "white",
+  },
+  statusButtonInactive: {
+    backgroundColor: "#F3F3F2",
+  },
+  statusButtonActive: {
+    backgroundColor: "#333333",
+  },
+  listItemName: { color: "white", fontSize: 16, marginLeft: 20 },
+  listItemPrice: { color: "white", fontSize: 18 },
   listItemStatus: { fontSize: 14, textAlign: "center" },
 });

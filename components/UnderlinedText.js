@@ -1,8 +1,13 @@
 import React from "react";
 import { Text, StyleSheet } from "react-native";
 
-const UnderlinedText = ({ children, style }) => {
-  return <Text style={[styles.text, style]}>{children}</Text>;
+const UnderlinedText = ({ children, style, numberOfLines = 1 }) => {
+  const noOfLines = numberOfLines;
+  return (
+    <Text numberOfLines={noOfLines} style={[styles.text, style]}>
+      {children}
+    </Text>
+  );
 };
 
 const styles = StyleSheet.create({

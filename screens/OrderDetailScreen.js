@@ -1,10 +1,56 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { Button, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
+import myApi from "../api/myApi";
+import LoadingScreen from "../components/LoadingScreen";
+import { RATE16_25, RATE1_15, RATE26Above } from "../constants/PRICING";
+import UnderlinedText from "../components/UnderlinedText";
+import SvgQRCode from "react-native-qrcode-svg";
+import UserQRCode from "../components/UserQRCode";
+import OrderQRCode from "../components/UserQRCode";
 
-const OrderDetailScreen = () => {
-  return (
+const OrderDetailScreen = ({ navigation, route }) => {
+  const { order_id } = route.params;
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [priceRatePerPage, setPriceRatePerPage] = useState(null);
+  const [pdfUri, setPdfUri] = useState(null);
+  useEffect(() => {
+    const fetchOrderDetails = async () => {
+      try {
+        setLoading(true);
+        console.log("Order ID:", order_id);
+        const orderDetailsResponse = await myApi.get(
+          `/user/get-order-details?order_id=${order_id}`
+        );
+        setOrderDetails(orderDetailsResponse?.data);
+        setPdfUri(
+          JSON.parse(orderDetailsResponse.data.OrderDetails[0].file_details)[0]
+        );
+        setPriceRatePerPage(
+          orderDetailsResponse?.data.OrderDetails[0].total_pages <= 15
+            ? RATE1_15
+            : orderDetailsResponse?.data.OrderDetails[0].total_pages <= 25
+            ? RATE16_25
+            : RATE26Above
+        );
+      } catch (err) {
+        console.log("Err:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrderDetails();
+  }, []);
+
+  const openPdf = () => {
+    navigation.navigate("PdfView", { uri: pdfUri, showButtons: false });
+  };
+
+  return loading ? (
+    <LoadingScreen />
+  ) : (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "black", alignItems: "center" }}
     >
@@ -19,29 +65,44 @@ const OrderDetailScreen = () => {
 
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Page Size: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}> A4</Text>
+          <Text style={[styles.textStyle, { color: "white" }]}>
+            {" "}
+            {orderDetails?.OrderDetails[0].page_size}
+          </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Color: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
             {" "}
-            Black & White
+            {orderDetails?.OrderDetails[0].print_color}
           </Text>
         </View>
-        <View style={{ display: "flex", flexDirection: "row" }}>
+        <View
+          style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
+        >
           <Text style={styles.textStyle}>Chosen File: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
-            frontpage.pdf
-          </Text>
+          <Pressable onPress={openPdf}>
+            <UnderlinedText
+              numberOfLines={2}
+              style={[styles.textStyle, { color: "white" }]}
+            >
+              {orderDetails?.order_title}
+            </UnderlinedText>
+          </Pressable>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Total Pages: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}> 12</Text>
+          <Text style={[styles.textStyle, { color: "white" }]}>
+            {" "}
+            {orderDetails?.OrderDetails[0].total_pages}
+          </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Price per page: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}> Rs. 2.5</Text>
+          <Text style={[styles.textStyle, { color: "white" }]}>
+            {" "}
+            Rs. {priceRatePerPage}
+          </Text>
         </View>
         <View
           style={{
@@ -53,9 +114,14 @@ const OrderDetailScreen = () => {
           <Text style={styles.textStyle}>Total Price: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
             {" "}
-            12 * 2.5 = Rs. 30
+            {orderDetails?.OrderDetails[0].total_pages} * Rs. {priceRatePerPage}{" "}
+            = Rs. {orderDetails?.total_price}
           </Text>
         </View>
+        <View style={{ alignSelf: "center" }}>
+          <OrderQRCode orderId={order_id} />
+        </View>
+
         <View
           style={{
             display: "flex",

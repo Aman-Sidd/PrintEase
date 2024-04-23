@@ -13,14 +13,7 @@ const ProfileScreen = () => {
     navigation.replace("Login");
   };
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: "black",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <SafeAreaView style={styles.mainContainer}>
       <Pressable onPress={handleLogout} style={styles.listStyle}>
         <Text style={styles.listItemName}>Logout</Text>
       </Pressable>
@@ -31,6 +24,12 @@ const ProfileScreen = () => {
 export default ProfileScreen;
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: "black",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   listStyle: {
     height: 75,
     width: "40%",

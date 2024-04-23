@@ -8,7 +8,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import React, { useDebugValue, useState } from "react";
+import React, { useDebugValue, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GradientText from "../components/GradientText";
 import { Divider } from "@rneui/base";
@@ -33,6 +33,19 @@ const LoginScreen = () => {
   console.log(user);
   console.log(email);
   console.log(password);
+
+  useEffect(() => {
+    const checkForAuthToken = async () => {
+      setLoading(true);
+      const token = await AsyncStorage.getItem("authToken");
+      if (token) {
+        navigation.replace("Main");
+      }
+      setLoading(false);
+    };
+    checkForAuthToken();
+  }, []);
+
   const fetchUser = async (payload) => {
     try {
       setLoading(true);

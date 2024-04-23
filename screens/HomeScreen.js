@@ -21,7 +21,6 @@ import GradientText from "../components/GradientText";
 import * as DocumentPicker from "expo-document-picker";
 import Pdf from "react-native-pdf";
 import AsyncStorage from "@react-native-community/async-storage";
-import PDFLib, { PDFDocument } from "react-native-pdf-lib";
 import UnderlinedText from "../components/UnderlinedText";
 import { setPdfName, setPdfUri } from "../redux/OrderSlice";
 
@@ -35,7 +34,7 @@ const HomeScreen = ({ navigation }) => {
   const pickDocument = async () => {
     console.log("clicked");
     if (pdfUri) {
-      navigation.navigate("PdfView", { uri: pdfUri });
+      navigation.navigate("PdfView", { uri: pdfUri, showButtons: true });
       return;
     }
     try {
@@ -51,7 +50,10 @@ const HomeScreen = ({ navigation }) => {
 
         // Handle the picked document URI, you may want to save it or upload it
 
-        navigation.navigate("PdfView", { uri: result.assets[0].uri });
+        navigation.navigate("PdfView", {
+          uri: result.assets[0].uri,
+          showButtons: true,
+        });
       } else {
         console.log("Document picking canceled");
       }
@@ -61,7 +63,7 @@ const HomeScreen = ({ navigation }) => {
   };
   const openPDF = () => {
     if (pdfUri) {
-      navigation.navigate("PdfView", { uri: pdfUri });
+      navigation.navigate("PdfView", { uri: pdfUri, showButtons: true });
     }
   };
 
