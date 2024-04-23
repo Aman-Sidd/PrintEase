@@ -1,12 +1,12 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import GradientText from "../components/GradientText";
+import GradientText from "../../components/GradientText";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-community/async-storage";
-import myApi from "../api/myApi";
+import myApi from "../../api/myApi";
 import { useDispatch, useSelector } from "react-redux";
-import { add_user } from "../redux/UserSlice";
+import { add_user } from "../../redux/UserSlice";
 
 const WelcomeScreen = ({ navigation }) => {
   const user = useSelector((state) => state.user);
@@ -36,7 +36,7 @@ const WelcomeScreen = ({ navigation }) => {
         </View>
         <View style={styles.imageContainer}>
           <Image
-            source={require("../assets/printer.png")}
+            source={require("../../assets/printer.png")}
             style={styles.imageStyle}
           />
         </View>

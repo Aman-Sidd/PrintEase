@@ -12,11 +12,11 @@ import {
   RAZORPAY_PREFILL_CONTACT,
   RAZORPAY_PREFILL_EMAIL,
   RAZORPAY_PREFILL_NAME,
-} from "../constants/RAZORPAY";
-import MailSender from "../components/MailSender";
-import { RATE16_25, RATE1_15, RATE26Above } from "../constants/PRICING";
-import myApi from "../api/myApi";
-import LoadingScreen from "../components/LoadingScreen";
+} from "../../constants/RAZORPAY";
+import MailSender from "../../components/MailSender";
+import { RATE16_25, RATE1_15, RATE26Above } from "../../constants/PRICING";
+import myApi from "../../api/myApi";
+import LoadingScreen from "../../components/LoadingScreen";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);

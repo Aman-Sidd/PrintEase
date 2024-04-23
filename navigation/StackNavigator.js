@@ -1,20 +1,20 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import LoginScreen from "../screens/LoginScreen";
+import LoginScreen from "../screens/Auth/LoginScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import RegisterScreen from "../screens/RegisterScreen";
-import WelcomeScreen from "../screens/WelcomeScreen";
+import RegisterScreen from "../screens/Auth/RegisterScreen";
+import WelcomeScreen from "../screens/Onboarding/WelcomeScreen";
 import HomeScreen from "../screens/HomeScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import OrdersScreen from "../screens/OrdersScreen";
-import ProfileScreen from "../screens/ProfileScreen";
-import CheckoutScreen from "../screens/CheckoutScreen";
-import OrderDetailScreen from "../screens/OrderDetailScreen";
+import OrdersScreen from "../screens/Orders/OrdersScreen";
+import ProfileScreen from "../screens/Profile/ProfileScreen";
+import CheckoutScreen from "../screens/Orders/CheckoutScreen";
+import OrderDetailScreen from "../screens/Orders/OrderDetailScreen";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
-import PdfViewScreen from "../screens/PdfViewScreen";
+import PdfViewScreen from "../screens/PdfViewer/PdfViewScreen";
 import OwnerOrdersScreen from "../screens/Owner/OwnerOrdersScreen";
 import OwnerOrderDetailScreen from "../screens/Owner/OwnerOrderDetailScreen";
 
@@ -135,6 +135,11 @@ export const OwnerOrderStackNavigator = () => {
       <OwnerStack.Screen
         name="OwnerOrder"
         component={OwnerOrdersScreen}
+        options={{ headerShown: false }}
+      />
+      <OwnerStack.Screen
+        name="PdfView"
+        component={PdfViewScreen}
         options={{ headerShown: false }}
       />
       <OwnerStack.Screen

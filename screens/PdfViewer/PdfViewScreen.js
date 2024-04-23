@@ -7,9 +7,9 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import Pdf from "react-native-pdf";
-import { setNoOfPages, setPdfName, setPdfUri } from "../redux/OrderSlice";
+import { setNoOfPages, setPdfName, setPdfUri } from "../../redux/OrderSlice";
 import { useDispatch, useSelector } from "react-redux";
-import CancelSelectButtons from "../components/CancelSelectButton";
+import CancelSelectButtons from "../../components/CancelSelectButton";
 
 const PdfViewScreen = ({ navigation, route }) => {
   const { uri, showButtons } = route.params;
@@ -25,32 +25,6 @@ const PdfViewScreen = ({ navigation, route }) => {
   const onSelectPress = () => {
     navigation.pop();
   };
-
-  useEffect(() => {
-    const handleBackPress = () => {
-      // Handle the back press event
-      // For example:
-      // if (shouldExitApp()) { // custom logic to exit app
-      //   BackHandler.exitApp();
-      //   return true;
-      // }
-      // else {
-      //   navigation.goBack(); // go back to previous screen
-      //   return true;
-      // }
-
-      // Returning true means that we've handled the event
-      return true;
-    };
-
-    // Subscribe to back press event
-    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-
-    // Clean up function to unsubscribe when component unmounts
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
-    };
-  }, []);
 
   return (
     <View style={styles.mainContainer}>

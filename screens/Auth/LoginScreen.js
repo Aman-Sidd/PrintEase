@@ -8,58 +8,71 @@ import {
   TextInput,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useDebugValue, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import GradientText from "../components/GradientText";
+import GradientText from "../../components/GradientText";
 import { Divider } from "@rneui/base";
-import { useTheme } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import InputText from "../../components/InputText";
 import { useDispatch, useSelector } from "react-redux";
-import { add_user, registerUser } from "../redux/UserSlice";
-import InputText from "../components/InputText";
-import myApi from "../api/myApi";
-import LoadingScreen from "../components/LoadingScreen";
+import { add_user, fetchUser, login_user } from "../../redux/UserSlice";
+import myApi from "../../api/myApi";
+import LoadingScreen from "../../components/LoadingScreen";
+import AsyncStorage from "@react-native-community/async-storage";
 
-const RegisterScreen = ({ navigation }) => {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { theme } = useTheme();
-
-  const users = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
+  console.log(user);
+  console.log(email);
+  console.log(password);
 
-  const registerUser = async (payload) => {
+  useEffect(() => {
+    const checkForAuthToken = async () => {
+      setLoading(true);
+      const token = await AsyncStorage.getItem("authToken");
+      if (token) {
+        navigation.replace("OwnerTab");
+      }
+      setLoading(false);
+    };
+    checkForAuthToken();
+  }, []);
+
+  const fetchUser = async (payload) => {
     try {
       setLoading(true);
-      const registerFormData = new URLSearchParams();
-      registerFormData.append("username", payload.name);
-      registerFormData.append("email", payload.email);
-      registerFormData.append("pass", payload.password);
-      registerFormData.append("phone", payload.phone);
+      const formData = new URLSearchParams();
+      formData.append("email", payload.email);
+      formData.append("pass", payload.password);
+
       const config = {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       };
-      const response = await myApi.post("/register", registerFormData, config);
-      console.log("RESPONSE:", response);
-      // dispatch(add_user({ ...payload, token }));
-      Alert.alert("Successful", "You are registered successfully!");
-      setName("");
-      setEmail("");
-      setPhone("");
-      setPassword("");
+
+      const response = await myApi.post("/login", formData, config);
+      const user = response.data;
+      console.log("RESPONSE:", response.data);
+      if (response.data.user_found == "0") {
+        Alert.alert("Error!", "Invalid email or password");
+        return;
+      }
+      await AsyncStorage.setItem("authToken", user.JWT_TOKEN);
+      dispatch(add_user(user));
+      setLoading(false);
+      navigation.replace("Main");
     } catch (err) {
-      console.log(
-        "Something went wrong while creating user! ",
-        err.response.data
-      );
-      Alert.alert("Email already exist!", "Please! Choose another email.");
+      console.log("Error while fetching user details: ", err.response.data);
+      Alert.alert("Error", err.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -82,24 +95,14 @@ const RegisterScreen = ({ navigation }) => {
             </View>
             <View style={styles.inputContainer}>
               <InputText
-                keyboardType="name"
-                state={{ email, password, name, phone }}
-                actions={{ setName, setEmail, setPassword, setPhone }}
-              />
-              <InputText
                 keyboardType="email"
-                state={{ email, password, name, phone }}
-                actions={{ setName, setEmail, setPassword, setPhone }}
+                state={{ email, password }}
+                actions={{ setEmail, setPassword }}
               />
               <InputText
                 keyboardType="password"
-                state={{ email, password, name, phone }}
-                actions={{ setName, setEmail, setPassword, setPhone }}
-              />
-              <InputText
-                keyboardType="phone"
-                state={{ email, password, name, phone }}
-                actions={{ setName, setEmail, setPassword, setPhone }}
+                state={{ email, password }}
+                actions={{ setEmail, setPassword }}
               />
             </View>
             <View style={styles.thirdPartyContainer}>
@@ -111,7 +114,7 @@ const RegisterScreen = ({ navigation }) => {
               />
 
               <Text style={{ color: "gray", marginHorizontal: 15 }}>
-                or sign up with
+                or sign in with
               </Text>
 
               <Divider
@@ -129,27 +132,24 @@ const RegisterScreen = ({ navigation }) => {
             </View>
           </View>
           <Pressable
-            onPress={() => navigation.replace("Login")}
+            onPress={() => navigation.replace("Register")}
             style={{
               marginLeft: 40,
-              marginTop: 20,
+              marginTop: 30,
               display: "flex",
               flexDirection: "row",
             }}
           >
             <Text style={{ color: "gray", fontSize: 15 }}>
-              Already have an Account?
+              Didn't have an Account?
             </Text>
             <Text style={{ color: "#BEBEBE", fontWeight: "500", fontSize: 15 }}>
-              &nbsp;Log In Instead!
+              &nbsp;Sign Up Instead!
             </Text>
           </Pressable>
-
           <View style={styles.footerContainer}>
-            {email && password && phone && name ? (
-              <Pressable
-                onPress={() => registerUser({ email, password, phone, name })}
-              >
+            {email && password ? (
+              <Pressable onPress={() => fetchUser({ email, password })}>
                 <LinearGradient
                   colors={[
                     "rgba(138, 212, 236, 0.8)",
@@ -160,12 +160,12 @@ const RegisterScreen = ({ navigation }) => {
                   style={styles.linearGradButton}
                   start={{ x: 0, y: 0 }}
                 >
-                  <Text style={styles.linearGradButtonText}>Sign up</Text>
+                  <Text style={styles.linearGradButtonText}>Login</Text>
                 </LinearGradient>
               </Pressable>
             ) : (
               <Pressable style={styles.fadedButtonStyle}>
-                <Text style={styles.fadedButtonText}>Sign up</Text>
+                <Text style={styles.fadedButtonText}>Login</Text>
               </Pressable>
             )}
           </View>
@@ -175,7 +175,7 @@ const RegisterScreen = ({ navigation }) => {
   );
 };
 
-export default RegisterScreen;
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 15,
     marginTop: 50,
-    marginBottom: 20,
+    marginBottom: 40,
   },
   textInput: {
     width: "85%",
@@ -218,13 +218,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 35,
-    marginTop: 10,
+    marginTop: 20,
   },
   footerContainer: {
     marginBottom: 50,
     marginHorizontal: 40,
-    marginTop: 80,
     // justifyContent: "flex-end",
+    marginTop: 190,
     flex: 1,
   },
   linearGradButtonText: {

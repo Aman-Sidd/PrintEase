@@ -1,6 +1,7 @@
 import {
   FlatList,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,38 +11,51 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/LoadingScreen";
+import {
+  ORDER_STATUS_PENDING,
+  ORDER_STATUS_PICKED,
+  ORDER_STATUS_READY,
+} from "../../constants/ORDER_STATUS";
 
 const OwnerOrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [ordersList, setOrdersList] = useState([]);
   const [activeStatus, setActiveStatus] = useState("All");
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchOrderList = async () => {
+    try {
+      setLoading(true);
+      const response = await myApi.get("/user/my-orders");
+      setOrdersList(
+        response.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )
+      );
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrderList = async () => {
-      try {
-        setLoading(true);
-        const response = await myApi.get("/user/my-orders");
-        setOrdersList(
-          response.data.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          )
-        );
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchOrderList();
   }, []);
 
   const renderListItem = ({ item }) => {
     return (
       <Pressable
-        onPress={() => navigation.navigate("OwnerOrderDetail")}
+        onPress={() =>
+          navigation.navigate("OwnerOrderDetail", { order_id: item.order_id })
+        }
         style={styles.listStyle}
       >
-        <Text style={styles.listItemName}>{item?.order_title}</Text>
+        <View style={{ maxWidth: "70%" }}>
+          <Text numberOfLines={2} style={styles.listItemName}>
+            {item?.order_title}
+          </Text>
+        </View>
         <View style={{ paddingRight: 20 }}>
           <Text style={styles.listItemPrice}>Rs. {item?.total_price}</Text>
           <Text
@@ -58,14 +72,30 @@ const OwnerOrdersScreen = ({ navigation }) => {
             ]}
           >
             {item?.status == 0
-              ? "Pending"
+              ? ORDER_STATUS_PENDING
               : item?.status == 1
-              ? "Done"
-              : "Hand Over"}
+              ? ORDER_STATUS_READY
+              : ORDER_STATUS_PICKED}
           </Text>
         </View>
       </Pressable>
     );
+  };
+
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      const response = await myApi.get("/user/my-orders");
+      setOrdersList(
+        response.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )
+      );
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   return loading ? (
@@ -73,7 +103,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
   ) : (
     <SafeAreaView style={{ backgroundColor: "black", flex: 1, paddingTop: 20 }}>
       <Text style={styles.headerTitle}>Your Orders</Text>
-      <Pressable style={styles.statusContainer}>
+      <View style={styles.statusContainer}>
         <Pressable
           onPress={() => setActiveStatus("All")}
           style={[
@@ -95,10 +125,10 @@ const OwnerOrdersScreen = ({ navigation }) => {
           </Text>
         </Pressable>
         <Pressable
-          onPress={() => setActiveStatus("Pending")}
+          onPress={() => setActiveStatus(ORDER_STATUS_PENDING)}
           style={[
             styles.statusButton,
-            activeStatus == "Pending"
+            activeStatus == ORDER_STATUS_PENDING
               ? styles.statusButtonActive
               : styles.statusButtonInactive,
           ]}
@@ -106,19 +136,19 @@ const OwnerOrdersScreen = ({ navigation }) => {
           <Text
             style={[
               styles.statusText,
-              activeStatus == "Pending"
+              activeStatus == ORDER_STATUS_PENDING
                 ? styles.statusTextActive
                 : styles.statusTextInactive,
             ]}
           >
-            Pending
+            {ORDER_STATUS_PENDING}
           </Text>
         </Pressable>
         <Pressable
-          onPress={() => setActiveStatus("Printed")}
+          onPress={() => setActiveStatus(ORDER_STATUS_READY)}
           style={[
             styles.statusButton,
-            activeStatus == "Printed"
+            activeStatus == ORDER_STATUS_READY
               ? styles.statusButtonActive
               : styles.statusButtonInactive,
           ]}
@@ -126,19 +156,19 @@ const OwnerOrdersScreen = ({ navigation }) => {
           <Text
             style={[
               styles.statusText,
-              activeStatus == "Printed"
+              activeStatus == ORDER_STATUS_READY
                 ? styles.statusTextActive
                 : styles.statusTextInactive,
             ]}
           >
-            Printed
+            {ORDER_STATUS_READY}
           </Text>
         </Pressable>
         <Pressable
-          onPress={() => setActiveStatus("HandOver")}
+          onPress={() => setActiveStatus(ORDER_STATUS_PICKED)}
           style={[
             styles.statusButton,
-            activeStatus == "HandOver"
+            activeStatus == ORDER_STATUS_PICKED
               ? styles.statusButtonActive
               : styles.statusButtonInactive,
           ]}
@@ -146,24 +176,24 @@ const OwnerOrdersScreen = ({ navigation }) => {
           <Text
             style={[
               styles.statusText,
-              activeStatus == "HandOver"
+              activeStatus == ORDER_STATUS_PICKED
                 ? styles.statusTextActive
                 : styles.statusTextInactive,
             ]}
           >
-            Hand Over
+            {ORDER_STATUS_PICKED}
           </Text>
         </Pressable>
-      </Pressable>
-      <View>
-        {/* <ScrollView>
-          {listOrders.map((item) => renderListItem(item))}
-        </ScrollView> */}
-
+      </View>
+      <View style={{ flex: 1, paddingBottom: 20 }}>
         <FlatList
+          style={{ flex: 1 }} // Ensure FlatList has flex: 1
           data={ordersList}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()} // Convert id to string
           renderItem={renderListItem}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       </View>
     </SafeAreaView>

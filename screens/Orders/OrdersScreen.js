@@ -9,32 +9,90 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import myApi from "../api/myApi";
-import LoadingScreen from "../components/LoadingScreen";
+import myApi from "../../api/myApi";
+import LoadingScreen from "../../components/LoadingScreen";
+import {
+  ORDER_STATUS_PENDING,
+  ORDER_STATUS_PICKED,
+  ORDER_STATUS_READY,
+  PENDING,
+} from "../../constants/ORDER_STATUS";
 
 const OrdersScreen = ({ navigation }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [ordersList, setOrdersList] = useState([]);
   const [activeStatus, setActiveStatus] = useState("All");
   const [refreshing, setRefreshing] = useState(false);
   const listOrders = [
     {
       id: 1,
-      name: "frontpage.pdf",
-      price: 50,
-      status: "Delivered",
+      order_id: 1234,
+      order_title: "frontpage.pdf",
+      total_price: 50,
+      status: 2,
     },
     {
-      id: 2,
-      name: "backpage.pdf",
-      price: 100,
-      status: "Done",
+      id: 1,
+      order_id: 1234,
+      order_title: "frontpage.pdf",
+      total_price: 50,
+      status: 2,
     },
     {
-      id: 4,
-      name: "assignment.pdf",
-      price: 150,
-      status: "Pending",
+      id: 1,
+      order_id: 1234,
+      order_title: "frontpage.pdf",
+      total_price: 50,
+      status: 2,
+    },
+    {
+      id: 1,
+      order_id: 1234,
+      order_title: "frontpage.pdf",
+      total_price: 50,
+      status: 2,
+    },
+    {
+      id: 1,
+      order_id: 1234,
+      order_title: "frontpage.pdf",
+      total_price: 50,
+      status: 2,
+    },
+    {
+      id: 1,
+      order_id: 1234,
+      order_title: "frontpage.pdf",
+      total_price: 50,
+      status: 2,
+    },
+    {
+      id: 1,
+      order_id: 1234,
+      order_title: "frontpage.pdf",
+      total_price: 50,
+      status: 2,
+    },
+    {
+      id: 1,
+      order_id: 1234,
+      order_title: "frontpage.pdf",
+      total_price: 50,
+      status: 2,
+    },
+    {
+      id: 1,
+      order_id: 1234,
+      order_title: "frontpage.pdf",
+      total_price: 50,
+      status: 2,
+    },
+    {
+      id: 1,
+      order_id: 1234,
+      order_title: "frontpage.pdf",
+      total_price: 50,
+      status: 2,
     },
   ];
   const fetchOrderList = async () => {
@@ -102,10 +160,10 @@ const OrdersScreen = ({ navigation }) => {
             ]}
           >
             {item?.status == 0
-              ? "Pending"
+              ? ORDER_STATUS_PENDING
               : item?.status == 1
-              ? "Done"
-              : "Hand Over"}
+              ? ORDER_STATUS_READY
+              : ORDER_STATUS_PICKED}
           </Text>
         </View>
       </Pressable>
@@ -117,11 +175,90 @@ const OrdersScreen = ({ navigation }) => {
   ) : (
     <SafeAreaView style={{ backgroundColor: "black", flex: 1, paddingTop: 20 }}>
       <Text style={styles.headerTitle}>Your Orders</Text>
-      <Pressable style={styles.statusContainer}>
-        {/* Status buttons */}
-      </Pressable>
+      <View style={styles.statusContainer}>
+        <Pressable
+          onPress={() => setActiveStatus("All")}
+          style={[
+            styles.statusButton,
+            activeStatus == "All"
+              ? styles.statusButtonActive
+              : styles.statusButtonInactive,
+          ]}
+        >
+          <Text
+            style={[
+              styles.statusText,
+              activeStatus == "All"
+                ? styles.statusTextActive
+                : styles.statusTextInactive,
+            ]}
+          >
+            All
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => setActiveStatus(ORDER_STATUS_PENDING)}
+          style={[
+            styles.statusButton,
+            activeStatus == ORDER_STATUS_PENDING
+              ? styles.statusButtonActive
+              : styles.statusButtonInactive,
+          ]}
+        >
+          <Text
+            style={[
+              styles.statusText,
+              activeStatus == ORDER_STATUS_PENDING
+                ? styles.statusTextActive
+                : styles.statusTextInactive,
+            ]}
+          >
+            {ORDER_STATUS_PENDING}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => setActiveStatus(ORDER_STATUS_READY)}
+          style={[
+            styles.statusButton,
+            activeStatus == ORDER_STATUS_READY
+              ? styles.statusButtonActive
+              : styles.statusButtonInactive,
+          ]}
+        >
+          <Text
+            style={[
+              styles.statusText,
+              activeStatus == ORDER_STATUS_READY
+                ? styles.statusTextActive
+                : styles.statusTextInactive,
+            ]}
+          >
+            {ORDER_STATUS_READY}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => setActiveStatus(ORDER_STATUS_PICKED)}
+          style={[
+            styles.statusButton,
+            activeStatus == ORDER_STATUS_PICKED
+              ? styles.statusButtonActive
+              : styles.statusButtonInactive,
+          ]}
+        >
+          <Text
+            style={[
+              styles.statusText,
+              activeStatus == ORDER_STATUS_PICKED
+                ? styles.statusTextActive
+                : styles.statusTextInactive,
+            ]}
+          >
+            {ORDER_STATUS_PICKED}
+          </Text>
+        </Pressable>
+      </View>
       {/* FlatList container */}
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, paddingBottom: 20 }}>
         <FlatList
           style={{ flex: 1 }} // Ensure FlatList has flex: 1
           data={ordersList}
@@ -149,7 +286,7 @@ const styles = StyleSheet.create({
   listStyle: {
     height: 75,
     width: "90%",
-    marginTop: 20,
+    marginTop: 15,
     borderRadius: 8,
     // marginLeft: 8,
     alignSelf: "center",
