@@ -162,7 +162,17 @@ const OrderDetailScreen = ({ navigation, route }) => {
           </Text>
         </View>
 
-        <View style={{ alignSelf: "center" }}>
+        <View
+          style={{
+            alignSelf: "center",
+            borderRadius: 5,
+            borderColor: "white",
+            backgroundColor: "white",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 8,
+          }}
+        >
           <OrderQRCode orderId={order_id} />
         </View>
 

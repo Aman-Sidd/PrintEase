@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -23,7 +30,7 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
   const [priceRatePerPage, setPriceRatePerPage] = useState(null);
   const [pdfUri, setPdfUri] = useState(null);
   const [orderStatus, setOrderStatus] = useState(null);
-
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
@@ -70,134 +77,179 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
       curr_order_status: orderStatus,
     });
   };
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      console.log("Order ID:", order_id);
+      const orderDetailsResponse = await myApi.get(
+        `/get-order-details?order_id=${order_id}`
+      );
+      setOrderDetails(orderDetailsResponse?.data);
+      setPdfUri(
+        JSON.parse(orderDetailsResponse.data.OrderDetails[0].file_details)[0]
+      );
+      setPriceRatePerPage(
+        orderDetailsResponse?.data.OrderDetails[0].total_pages <= 15
+          ? RATE1_15
+          : orderDetailsResponse?.data.OrderDetails[0].total_pages <= 25
+          ? RATE16_25
+          : RATE26Above
+      );
+      console.log("status:", orderDetailsResponse?.data.status);
+      setOrderStatus(
+        orderDetailsResponse?.data.status == 0
+          ? ORDER_STATUS_PENDING
+          : orderDetailsResponse?.data.status == 1
+          ? ORDER_STATUS_READY
+          : ORDER_STATUS_PICKED
+      );
+    } catch (err) {
+      console.log("Err:", err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return loading ? (
     <LoadingScreen />
   ) : (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: "black", alignItems: "center" }}
+      style={{
+        flex: 1,
+        backgroundColor: "black",
+        alignItems: "center",
+      }}
     >
-      <View style={styles.checkoutInfo}>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Transaction ID: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
-            2325158412
-          </Text>
-        </View>
-
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Page Size: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
-            {orderDetails?.OrderDetails[0].page_size}
-          </Text>
-        </View>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Color: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
-            {orderDetails?.OrderDetails[0].print_color}
-          </Text>
-        </View>
-        <View
-          style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
-        >
-          <Text style={styles.textStyle}>Chosen File: </Text>
-          <Pressable onPress={openPdf}>
-            <UnderlinedText
-              numberOfLines={2}
-              style={[styles.textStyle, { color: "white" }]}
-            >
-              {orderDetails?.order_title}
-            </UnderlinedText>
-          </Pressable>
-        </View>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Total Pages: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
-            {orderDetails?.OrderDetails[0].total_pages}
-          </Text>
-        </View>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Price per page: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
-            Rs. {priceRatePerPage}
-          </Text>
-        </View>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Text style={styles.textStyle}>Total Price: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
-            {orderDetails?.OrderDetails[0].total_pages} * Rs. {priceRatePerPage}{" "}
-            = Rs. {orderDetails?.total_price}
-          </Text>
-        </View>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Text style={styles.textStyle}>Order Status: </Text>
-          <Text
-            style={[
-              styles.textStyle,
-              {
-                color:
-                  orderStatus === ORDER_STATUS_PICKED
-                    ? COLOR_ORDER_STATUS_PICKED
-                    : orderStatus === ORDER_STATUS_READY
-                    ? COLOR_ORDER_STATUS_READY
-                    : COLOR_ORDER_STATUS_PENDING,
-              },
-            ]}
-          >
-            {" "}
-            {orderStatus}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "flex-end",
-          }}
-        >
-          <MaterialIcons
-            name="paid"
-            size={13}
-            color="green"
-            style={{ margin: 2 }}
-          />
-          <Text
-            style={[
-              styles.textStyle,
-              { color: "green", fontSize: 13, fontWeight: "bold" },
-            ]}
-          >
-            Paid
-          </Text>
-        </View>
-      </View>
-
-      <Button
-        style={{ marginTop: 20 }}
-        mode="contained"
-        onPress={handleChangeOrderStatus}
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerStyle={{
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
-        Change Order Status
-      </Button>
+        <View style={styles.checkoutInfo}>
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            <Text style={styles.textStyle}>Transaction ID: </Text>
+            <Text style={[styles.textStyle, { color: "white" }]}>
+              {" "}
+              2325158412
+            </Text>
+          </View>
+
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            <Text style={styles.textStyle}>Page Size: </Text>
+            <Text style={[styles.textStyle, { color: "white" }]}>
+              {" "}
+              {orderDetails?.OrderDetails[0].page_size}
+            </Text>
+          </View>
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            <Text style={styles.textStyle}>Color: </Text>
+            <Text style={[styles.textStyle, { color: "white" }]}>
+              {" "}
+              {orderDetails?.OrderDetails[0].print_color}
+            </Text>
+          </View>
+          <View
+            style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
+          >
+            <Text style={styles.textStyle}>Chosen File: </Text>
+            <Pressable onPress={openPdf}>
+              <UnderlinedText
+                numberOfLines={2}
+                style={[styles.textStyle, { color: "white" }]}
+              >
+                {orderDetails?.order_title}
+              </UnderlinedText>
+            </Pressable>
+          </View>
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            <Text style={styles.textStyle}>Total Pages: </Text>
+            <Text style={[styles.textStyle, { color: "white" }]}>
+              {" "}
+              {orderDetails?.OrderDetails[0].total_pages}
+            </Text>
+          </View>
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            <Text style={styles.textStyle}>Price per page: </Text>
+            <Text style={[styles.textStyle, { color: "white" }]}>
+              {" "}
+              Rs. {priceRatePerPage}
+            </Text>
+          </View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Text style={styles.textStyle}>Total Price: </Text>
+            <Text style={[styles.textStyle, { color: "white" }]}>
+              {" "}
+              {orderDetails?.OrderDetails[0].total_pages} * Rs.{" "}
+              {priceRatePerPage} = Rs. {orderDetails?.total_price}
+            </Text>
+          </View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Text style={styles.textStyle}>Order Status: </Text>
+            <Text
+              style={[
+                styles.textStyle,
+                {
+                  color:
+                    orderStatus === ORDER_STATUS_PICKED
+                      ? COLOR_ORDER_STATUS_PICKED
+                      : orderStatus === ORDER_STATUS_READY
+                      ? COLOR_ORDER_STATUS_READY
+                      : COLOR_ORDER_STATUS_PENDING,
+                },
+              ]}
+            >
+              {" "}
+              {orderStatus}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-end",
+            }}
+          >
+            <MaterialIcons
+              name="paid"
+              size={13}
+              color="green"
+              style={{ margin: 2 }}
+            />
+            <Text
+              style={[
+                styles.textStyle,
+                { color: "green", fontSize: 13, fontWeight: "bold" },
+              ]}
+            >
+              Paid
+            </Text>
+          </View>
+        </View>
+        <Button
+          style={{ marginTop: 20 }}
+          mode="contained"
+          onPress={handleChangeOrderStatus}
+        >
+          Change Order Status
+        </Button>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -206,14 +258,16 @@ export default OwnerOrderDetailScreen;
 
 const styles = StyleSheet.create({
   checkoutInfo: {
-    width: "80%",
     gap: 15,
+    // width: "80%",
     justifyContent: "center",
     borderRadius: 10,
+    marginHorizontal: 20,
     paddingHorizontal: 20,
     paddingVertical: 20,
     marginTop: 20,
     backgroundColor: "#1E1E1E",
+    // backgroundColor: "red",
   },
   textStyle: {
     fontWeight: "500",

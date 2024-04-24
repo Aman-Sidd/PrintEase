@@ -17,6 +17,7 @@ const CameraComponent = ({ navigation, route }) => {
   const [facing, setFacing] = useState("back");
   const [permission, requestPermission] = useCameraPermissions();
   const [loading, setLoading] = useState(false);
+  const [enableTorch, setEnableTorch] = useState(false);
 
   const { order_id, curr_order_status } = route.params;
 
@@ -47,16 +48,33 @@ const CameraComponent = ({ navigation, route }) => {
       if (order_id === data) {
         // Hit the api to update the status to PICKED
 
+        const formData = new URLSearchParams();
+        formData.append("order_id", order_id);
+        formData.append("order_status", 2);
+
+        const config = {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        };
+
+        const response = await myApi.post(
+          "/owner/update-order-status",
+          formData,
+          config
+        );
+        console.log("update-order-status RESPONSE:", response.data);
         Alert.alert("Success", "Order status has been changed.");
         navigation.replace("UpdateOrder", {
           order_id,
-          ORDER_STATUS_PICKED,
+          curr_order_status: ORDER_STATUS_PICKED,
         });
       } else {
         Alert.alert("Failed", "QR didn't match.");
         navigation.replace("UpdateOrder", { order_id, curr_order_status });
       }
     } catch (err) {
+      console.log("ERROR:", err);
     } finally {
       setLoading(false);
     }
@@ -67,6 +85,7 @@ const CameraComponent = ({ navigation, route }) => {
   ) : (
     <View style={styles.container}>
       <CameraView
+        enableTorch={enableTorch}
         style={styles.camera}
         facing={facing}
         onBarcodeScanned={handleScannedBarcode}

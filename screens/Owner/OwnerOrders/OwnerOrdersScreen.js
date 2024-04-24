@@ -1,4 +1,5 @@
 import {
+  Alert,
   FlatList,
   Pressable,
   RefreshControl,
@@ -29,13 +30,14 @@ const OwnerOrdersScreen = ({ navigation }) => {
   const fetchOrderList = async () => {
     try {
       setLoading(true);
-      const response = await myApi.get("/user/my-orders");
+      const response = await myApi.post("/owner/get-all-orders");
       setOrdersList(
         response.data.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         )
       );
     } catch (err) {
+      Alert.alert("Error", err.response.data);
       console.log(err);
     } finally {
       setLoading(false);
@@ -91,7 +93,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
   const onRefresh = async () => {
     try {
       setRefreshing(true);
-      const response = await myApi.get("/user/my-orders");
+      const response = await myApi.post("/owner/get-all-orders");
       setOrdersList(
         response.data.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
