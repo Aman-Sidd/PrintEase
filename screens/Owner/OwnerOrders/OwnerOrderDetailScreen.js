@@ -2,10 +2,19 @@ import { StyleSheet, Text, View, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
-import LoadingScreen from "../../components/LoadingScreen";
-import UnderlinedText from "../../components/UnderlinedText";
-import myApi from "../../api/myApi";
-import { RATE16_25, RATE1_15, RATE26Above } from "../../constants/PRICING";
+import LoadingScreen from "../../../components/LoadingScreen";
+import UnderlinedText from "../../../components/UnderlinedText";
+import myApi from "../../../api/myApi";
+import { RATE16_25, RATE1_15, RATE26Above } from "../../../constants/PRICING";
+import {
+  COLOR_ORDER_STATUS_PENDING,
+  COLOR_ORDER_STATUS_PICKED,
+  COLOR_ORDER_STATUS_READY,
+  ORDER_STATUS_PENDING,
+  ORDER_STATUS_PICKED,
+  ORDER_STATUS_READY,
+} from "../../../constants/ORDER_STATUS";
+import { Button } from "react-native-paper";
 
 const OwnerOrderDetailScreen = ({ navigation, route }) => {
   const { order_id } = route.params;
@@ -13,6 +22,7 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [priceRatePerPage, setPriceRatePerPage] = useState(null);
   const [pdfUri, setPdfUri] = useState(null);
+  const [orderStatus, setOrderStatus] = useState(null);
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -20,7 +30,7 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
         setLoading(true);
         console.log("Order ID:", order_id);
         const orderDetailsResponse = await myApi.get(
-          `/user/get-order-details?order_id=${order_id}`
+          `/get-order-details?order_id=${order_id}`
         );
         setOrderDetails(orderDetailsResponse?.data);
         setPdfUri(
@@ -33,6 +43,14 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
             ? RATE16_25
             : RATE26Above
         );
+        console.log("status:", orderDetailsResponse?.data.status);
+        setOrderStatus(
+          orderDetailsResponse?.data.status == 0
+            ? ORDER_STATUS_PENDING
+            : orderDetailsResponse?.data.status == 1
+            ? ORDER_STATUS_READY
+            : ORDER_STATUS_PICKED
+        );
       } catch (err) {
         console.log("Err:", err);
       } finally {
@@ -44,6 +62,13 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
 
   const openPdf = () => {
     navigation.navigate("PdfView", { uri: pdfUri, showButtons: false });
+  };
+
+  const handleChangeOrderStatus = () => {
+    navigation.navigate("UpdateOrder", {
+      order_id,
+      curr_order_status: orderStatus,
+    });
   };
 
   return loading ? (
@@ -116,6 +141,31 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
             = Rs. {orderDetails?.total_price}
           </Text>
         </View>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Text style={styles.textStyle}>Order Status: </Text>
+          <Text
+            style={[
+              styles.textStyle,
+              {
+                color:
+                  orderStatus === ORDER_STATUS_PICKED
+                    ? COLOR_ORDER_STATUS_PICKED
+                    : orderStatus === ORDER_STATUS_READY
+                    ? COLOR_ORDER_STATUS_READY
+                    : COLOR_ORDER_STATUS_PENDING,
+              },
+            ]}
+          >
+            {" "}
+            {orderStatus}
+          </Text>
+        </View>
 
         <View
           style={{
@@ -140,6 +190,14 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
           </Text>
         </View>
       </View>
+
+      <Button
+        style={{ marginTop: 20 }}
+        mode="contained"
+        onPress={handleChangeOrderStatus}
+      >
+        Change Order Status
+      </Button>
     </SafeAreaView>
   );
 };

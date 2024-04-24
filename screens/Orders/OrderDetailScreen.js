@@ -9,6 +9,14 @@ import UnderlinedText from "../../components/UnderlinedText";
 import SvgQRCode from "react-native-qrcode-svg";
 import UserQRCode from "../../components/UserQRCode";
 import OrderQRCode from "../../components/UserQRCode";
+import {
+  COLOR_ORDER_STATUS_PENDING,
+  COLOR_ORDER_STATUS_PICKED,
+  COLOR_ORDER_STATUS_READY,
+  ORDER_STATUS_PENDING,
+  ORDER_STATUS_PICKED,
+  ORDER_STATUS_READY,
+} from "../../constants/ORDER_STATUS";
 
 const OrderDetailScreen = ({ navigation, route }) => {
   const { order_id } = route.params;
@@ -16,13 +24,14 @@ const OrderDetailScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [priceRatePerPage, setPriceRatePerPage] = useState(null);
   const [pdfUri, setPdfUri] = useState(null);
+  const [orderStatus, setOrderStatus] = useState(null);
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
         setLoading(true);
         console.log("Order ID:", order_id);
         const orderDetailsResponse = await myApi.get(
-          `/user/get-order-details?order_id=${order_id}`
+          `/get-order-details?order_id=${order_id}`
         );
         setOrderDetails(orderDetailsResponse?.data);
         setPdfUri(
@@ -34,6 +43,14 @@ const OrderDetailScreen = ({ navigation, route }) => {
             : orderDetailsResponse?.data.OrderDetails[0].total_pages <= 25
             ? RATE16_25
             : RATE26Above
+        );
+        console.log("status:", orderDetailsResponse.data.status);
+        setOrderStatus(
+          orderDetailsResponse?.data.status == 0
+            ? ORDER_STATUS_PENDING
+            : orderDetailsResponse?.data.status == 1
+            ? ORDER_STATUS_READY
+            : ORDER_STATUS_PICKED
         );
       } catch (err) {
         console.log("Err:", err);
@@ -118,6 +135,33 @@ const OrderDetailScreen = ({ navigation, route }) => {
             = Rs. {orderDetails?.total_price}
           </Text>
         </View>
+
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Text style={styles.textStyle}>Order Status: </Text>
+          <Text
+            style={[
+              styles.textStyle,
+              {
+                color:
+                  orderStatus === 2
+                    ? COLOR_ORDER_STATUS_PICKED
+                    : orderStatus === 1
+                    ? COLOR_ORDER_STATUS_READY
+                    : COLOR_ORDER_STATUS_PENDING,
+              },
+            ]}
+          >
+            {" "}
+            {orderStatus}
+          </Text>
+        </View>
+
         <View style={{ alignSelf: "center" }}>
           <OrderQRCode orderId={order_id} />
         </View>

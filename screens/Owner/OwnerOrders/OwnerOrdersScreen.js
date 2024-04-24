@@ -9,13 +9,16 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import myApi from "../../api/myApi";
-import LoadingScreen from "../../components/LoadingScreen";
+import myApi from "../../../api/myApi";
+import LoadingScreen from "../../../components/LoadingScreen";
 import {
+  COLOR_ORDER_STATUS_PENDING,
+  COLOR_ORDER_STATUS_PICKED,
+  COLOR_ORDER_STATUS_READY,
   ORDER_STATUS_PENDING,
   ORDER_STATUS_PICKED,
   ORDER_STATUS_READY,
-} from "../../constants/ORDER_STATUS";
+} from "../../../constants/ORDER_STATUS";
 
 const OwnerOrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -44,6 +47,13 @@ const OwnerOrdersScreen = ({ navigation }) => {
   }, []);
 
   const renderListItem = ({ item }) => {
+    const order_status =
+      item?.status == 0
+        ? ORDER_STATUS_PENDING
+        : item?.status == 1
+        ? ORDER_STATUS_READY
+        : ORDER_STATUS_PICKED;
+
     return (
       <Pressable
         onPress={() =>
@@ -64,18 +74,14 @@ const OwnerOrdersScreen = ({ navigation }) => {
               {
                 color:
                   item.status === 2
-                    ? "#4CAF50"
+                    ? COLOR_ORDER_STATUS_PICKED
                     : item.status === 1
-                    ? "#2196F3"
-                    : "#FFC107",
+                    ? COLOR_ORDER_STATUS_READY
+                    : COLOR_ORDER_STATUS_PENDING,
               },
             ]}
           >
-            {item?.status == 0
-              ? ORDER_STATUS_PENDING
-              : item?.status == 1
-              ? ORDER_STATUS_READY
-              : ORDER_STATUS_PICKED}
+            {order_status}
           </Text>
         </View>
       </Pressable>
@@ -252,7 +258,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  listItemName: { color: "white", fontSize: 20, marginLeft: 20 },
-  listItemPrice: { color: "white", fontSize: 20 },
+  listItemName: { color: "white", fontSize: 16, marginLeft: 20 },
+  listItemPrice: { color: "white", fontSize: 18 },
   listItemStatus: { fontSize: 14, textAlign: "center" },
 });

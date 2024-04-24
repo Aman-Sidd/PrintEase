@@ -15,8 +15,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import PdfViewScreen from "../screens/PdfViewer/PdfViewScreen";
-import OwnerOrdersScreen from "../screens/Owner/OwnerOrdersScreen";
-import OwnerOrderDetailScreen from "../screens/Owner/OwnerOrderDetailScreen";
+import OwnerOrdersScreen from "../screens/Owner/OwnerOrders/OwnerOrdersScreen";
+import OwnerOrderDetailScreen from "../screens/Owner/OwnerOrders/OwnerOrderDetailScreen";
+import UpdateOrderScreen from "../screens/Owner/OwnerOrders/UpdateOrderScreen";
+import CameraComponent from "../screens/Camera/CameraComponent";
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -138,6 +140,24 @@ export const OwnerOrderStackNavigator = () => {
         options={{ headerShown: false }}
       />
       <OwnerStack.Screen
+        name="Camera"
+        component={CameraComponent}
+        options={{ headerShown: false }}
+      />
+
+      <OwnerStack.Screen
+        name="UpdateOrder"
+        component={UpdateOrderScreen}
+        options={{
+          title: "Update Order Status",
+          headerStyle: {
+            backgroundColor: "#080A0C",
+          },
+          headerTintColor: "white",
+          headerTitleAlign: "center",
+        }}
+      />
+      <OwnerStack.Screen
         name="PdfView"
         component={PdfViewScreen}
         options={{ headerShown: false }}
@@ -179,6 +199,7 @@ export const OwnerTabNavigator = () => {
           ),
         }}
       />
+
       <OwnerTab.Screen
         name="Profile"
         component={ProfileScreen}
