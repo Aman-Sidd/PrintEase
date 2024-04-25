@@ -3,20 +3,25 @@ import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-community/async-storage";
 import { useNavigation, useTheme } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { Button } from "react-native-paper";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
+
+  const user = useSelector((state) => state.user);
+  console.log("User", user);
+
   const handleLogout = async () => {
-    const token = await AsyncStorage.getItem("authToken");
-    await AsyncStorage.removeItem("authToken");
-    console.log("Deleted token: ", token);
+    const keys = await AsyncStorage.getAllKeys();
+    await AsyncStorage.multiRemove(keys);
     navigation.replace("Login");
   };
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <Pressable onPress={handleLogout} style={styles.listStyle}>
-        <Text style={styles.listItemName}>Logout&nbsp;</Text>
-      </Pressable>
+      <Button style={styles.listStyle} mode="contained" onPress={handleLogout}>
+        <Text style={styles.listItemName}>Logout &nbsp;</Text>
+      </Button>
     </SafeAreaView>
   );
 };
@@ -31,12 +36,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   listStyle: {
-    height: 75,
-    width: "40%",
-    borderRadius: 8,
+    // height: 75,
+    // width: "40%",
+    // borderRadius: 8,
     // marginLeft: 8,
     alignSelf: "center",
-    backgroundColor: "#202020",
+    // backgroundColor: "#202020",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

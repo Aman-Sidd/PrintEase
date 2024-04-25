@@ -1,17 +1,11 @@
 import { CameraView, useCameraPermissions } from "expo-camera/next";
-import {
-  Alert,
-  Button,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 import CurvedRectangle from "../../components/CurvedRectangle";
 import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/LoadingScreen";
 import { ORDER_STATUS_PICKED } from "../../constants/ORDER_STATUS";
+import { Button } from "react-native-paper";
 
 const CameraComponent = ({ navigation, route }) => {
   const [facing, setFacing] = useState("back");
@@ -30,10 +24,16 @@ const CameraComponent = ({ navigation, route }) => {
     // Camera permissions are not granted yet
     return (
       <View style={styles.container}>
-        <Text style={{ textAlign: "center" }}>
+        <Text style={{ textAlign: "center", fontSize: 18, color: "white" }}>
           We need your permission to show the camera
         </Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button
+          style={{ marginTop: 20 }}
+          mode="contained"
+          onPress={requestPermission}
+        >
+          Allow Permission
+        </Button>
       </View>
     );
   }
@@ -105,7 +105,9 @@ export default CameraComponent;
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "black",
     flex: 1,
+    paddingHorizontal: 20,
     justifyContent: "center",
   },
   camera: {

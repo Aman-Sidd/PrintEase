@@ -21,12 +21,14 @@ import {
   ORDER_STATUS_READY,
 } from "../../../constants/ORDER_STATUS";
 import { StatusToValueConvertor } from "../../../components/StatusConversion";
+import { useDispatch, useSelector } from "react-redux";
 
 const OwnerOrdersScreen = ({ navigation }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [ordersList, setOrdersList] = useState([]);
   const [activeStatus, setActiveStatus] = useState("All");
   const [refreshing, setRefreshing] = useState(false);
+  const dispatch = useDispatch();
 
   const fetchOrderList = async (status = "All") => {
     try {
@@ -47,7 +49,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
         );
       }
     } catch (err) {
-      Alert.alert("Error", err.response.data);
+      Alert.alert("Error", "Something went wrong, Try Again!");
       console.log(err);
     } finally {
       setLoading(false);

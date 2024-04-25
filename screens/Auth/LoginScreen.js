@@ -22,6 +22,7 @@ import { add_user, fetchUser, login_user } from "../../redux/UserSlice";
 import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/LoadingScreen";
 import AsyncStorage from "@react-native-community/async-storage";
+import { USER_TYPE } from "../../constants/USER_TYPE";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -39,7 +40,15 @@ const LoginScreen = () => {
       setLoading(true);
       const token = await AsyncStorage.getItem("authToken");
       if (token) {
-        navigation.replace("OwnerTab");
+        const user_type = await AsyncStorage.getItem("user_type");
+        if (user_type === USER_TYPE.OWNER) {
+          navigation.replace("OwnerTab");
+          return;
+        }
+        if (user_type === USER_TYPE.CUSTOMER) {
+          navigation.replace("Main");
+          return;
+        }
       }
       setLoading(false);
     };
@@ -67,9 +76,15 @@ const LoginScreen = () => {
         return;
       }
       await AsyncStorage.setItem("authToken", user.JWT_TOKEN);
-      dispatch(add_user(user));
+      await AsyncStorage.setItem("user_type", user.user_type);
+
+      const fetchUserDetails = await myApi.get("/common/get-user-details");
+      console.log("USER:", fetchUserDetails.data);
+      dispatch(add_user(fetchUserDetails.data));
       setLoading(false);
-      navigation.replace("Main");
+      if (user.user_type == USER_TYPE.CUSTOMER) navigation.replace("Main");
+      else if (user.user_type == USER_TYPE.OWNER)
+        navigation.replace("OwnerTab");
     } catch (err) {
       console.log("Error while fetching user details: ", err.response.data);
       Alert.alert("Error", err.response.data.message);

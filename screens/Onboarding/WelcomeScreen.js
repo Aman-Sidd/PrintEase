@@ -1,5 +1,5 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GradientText from "../../components/GradientText";
 import { LinearGradient } from "expo-linear-gradient";
@@ -7,25 +7,35 @@ import AsyncStorage from "@react-native-community/async-storage";
 import myApi from "../../api/myApi";
 import { useDispatch, useSelector } from "react-redux";
 import { add_user } from "../../redux/UserSlice";
+import { USER_TYPE } from "../../constants/USER_TYPE";
+import LoadingScreen from "../../components/LoadingScreen";
 
 const WelcomeScreen = ({ navigation }) => {
   const user = useSelector((state) => state.user);
-  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const validate = async () => {
-      try {
-        const response = await myApi.get("/");
-        const user = response.data;
-        dispatch(add_user(user));
-        navigation.replace("Main");
-      } catch (err) {
-        console.log(err.response.data);
+    const checkForAuthToken = async () => {
+      setLoading(true);
+
+      const token = await AsyncStorage.getItem("authToken");
+      if (token) {
+        const user_type = await AsyncStorage.getItem("user_type");
+        if (user_type === USER_TYPE.OWNER) {
+          navigation.replace("OwnerTab");
+        }
+        if (user_type === USER_TYPE.CUSTOMER) {
+          navigation.replace("Main");
+        }
       }
+      setLoading(false);
     };
-    validate();
+    checkForAuthToken();
   }, []);
 
-  return (
+  return loading ? (
+    <LoadingScreen />
+  ) : (
     <SafeAreaView style={styles.mainContainer}>
       <View>
         <View style={{ alignItems: "center", marginTop: 50 }}>

@@ -1,5 +1,5 @@
 import { Alert, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, RadioButton } from "react-native-paper";
 import {
@@ -8,17 +8,20 @@ import {
   ORDER_STATUS_READY,
 } from "../../../constants/ORDER_STATUS";
 import myApi from "../../../api/myApi";
+import LoadingScreen from "../../../components/LoadingScreen";
 
 const UpdateOrderScreen = ({ navigation, route }) => {
   const { order_id, curr_order_status } = route.params;
-  const [value, setValue] = React.useState(curr_order_status);
+  const [value, setValue] = useState(curr_order_status);
+  const [loading, setLoading] = useState(false);
 
   const handleUpdateButton = async () => {
-    if (value === ORDER_STATUS_PICKED) {
-      navigation.replace("Camera", { order_id, curr_order_status });
-      return;
-    } else if (value === ORDER_STATUS_READY) {
-      try {
+    try {
+      setLoading(true);
+      if (value === ORDER_STATUS_PICKED) {
+        navigation.replace("Camera", { order_id, curr_order_status });
+        return;
+      } else if (value === ORDER_STATUS_READY) {
         const formData = new URLSearchParams();
         formData.append("order_id", order_id);
         formData.append("order_status", 1);
@@ -35,16 +38,10 @@ const UpdateOrderScreen = ({ navigation, route }) => {
         );
         console.log("update-order-status Resp:", response.data);
         Alert.alert("Success", "Order status has been changed.");
-      } catch (err) {
-        console.log(err.response.data);
-        Alert.alert("Error", "Status cannot be updated, Try Again!");
-      }
-    } else if (value === ORDER_STATUS_PENDING) {
-      try {
+      } else if (value === ORDER_STATUS_PENDING) {
         const formData = new URLSearchParams();
         formData.append("order_id", order_id);
         formData.append("order_status", 0);
-
         const config = {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -57,14 +54,18 @@ const UpdateOrderScreen = ({ navigation, route }) => {
         );
         console.log("update-order-status Resp:", response.data);
         Alert.alert("Success", "Order status has been changed.");
-      } catch (err) {
-        console.log(err);
-        Alert.alert("Error", "Status cannot be updated, Try Again!");
       }
+    } catch (err) {
+      console.log(err);
+      Alert.alert("Error", "Status cannot be updated, Try Again!");
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
+  return loading ? (
+    <LoadingScreen />
+  ) : (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "black", alignItems: "center" }}
     >

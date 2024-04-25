@@ -225,6 +225,11 @@ const StackNavigator = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
+          name="Welcome"
+          component={WelcomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="Login"
           component={LoginScreen}
           options={{
@@ -246,11 +251,6 @@ const StackNavigator = () => {
         <Stack.Screen
           name="OwnerTab"
           component={OwnerTabNavigator}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Welcome"
-          component={WelcomeScreen}
           options={{ headerShown: false }}
         />
 
