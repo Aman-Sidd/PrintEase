@@ -21,7 +21,8 @@ import LoadingScreen from "../../components/LoadingScreen";
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
   const [loading, setLoading] = useState(false);
-  const placeOrder = async () => {
+
+  const placeOrder = async (paymentid) => {
     setLoading(true);
     const formData = new FormData();
 
@@ -36,6 +37,8 @@ const CheckoutScreen = ({ navigation }) => {
     formData.append("color", orderDetails.color);
     formData.append("printtype", orderDetails.printType);
     formData.append("totalpages", orderDetails.noOfPages);
+    formData.append("priceperpage", priceRatePerPage);
+    formData.append("paymentid", paymentid);
 
     try {
       const response = await myApi.post("/user/create-order", formData, {
@@ -43,7 +46,9 @@ const CheckoutScreen = ({ navigation }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      Alert.alert("Success", "Order has been placed.");
+      if (response.data.success === "true")
+        Alert.alert("Success", "Order has been placed.");
+      else Alert.alert("Failed", "Something went wrong");
     } catch (err) {
       console.log("ERROR:", err.response.data);
     } finally {
@@ -72,7 +77,7 @@ const CheckoutScreen = ({ navigation }) => {
       .then(async (data) => {
         // handle success
         console.log("DATA: ", data);
-        await placeOrder();
+        await placeOrder(data.razorpay_payment_id);
         // alert(
         //   `Success: Order has been with Txn ID: ${data.razorpay_payment_id}`
         // );
@@ -109,13 +114,13 @@ const CheckoutScreen = ({ navigation }) => {
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Page Size: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
-            {orderDetails.pageSize}
+            {orderDetails.pageSize} &nbsp;
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Color: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
-            {orderDetails.color}
+            {orderDetails.color} &nbsp;
           </Text>
         </View>
         <View
@@ -130,45 +135,46 @@ const CheckoutScreen = ({ navigation }) => {
             numberOfLines={2}
             style={[styles.textStyle, { color: "white" }]}
           >
-            {orderDetails.pdfName}
+            {orderDetails.pdfName + " "}
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Print Type: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
-            {orderDetails.printType}
+            {orderDetails.printType} &nbsp;
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Total Pages: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
-            {orderDetails.noOfPages}
+            {orderDetails.noOfPages} &nbsp;
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Price per page: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
             {" "}
-            Rs. {priceRatePerPage}
+            Rs. {priceRatePerPage} &nbsp;
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Total Price: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
             {orderDetails.noOfPages} * {priceRatePerPage} = Rs. {totalAmount}
+            &nbsp;
           </Text>
         </View>
       </View>
 
       <View style={styles.buttonContainer}>
         <Pressable style={styles.cancelButton} onPress={handleBackButton}>
-          <Text style={styles.cancelButtonText}>Back</Text>
+          <Text style={styles.cancelButtonText}>Back &nbsp;</Text>
         </Pressable>
         <Pressable
           style={styles.nextButton}
           onPress={() => handleCheckout(totalAmount)}
         >
-          <Text style={styles.nextButtonText}>Proceed to Pay</Text>
+          <Text style={styles.nextButtonText}>Proceed to Pay &nbsp;</Text>
         </Pressable>
         {/* <MailSender /> */}
       </View>

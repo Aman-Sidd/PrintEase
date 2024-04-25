@@ -4,6 +4,7 @@ import {
   Image,
   Linking,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -95,18 +96,19 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <GradientText style={styles.gradientText} text="PrintEase" />
-      <View>
-        <PageSizeDropdown />
-        <ColorDropdown />
-        <PrintTypeDropdown />
-      </View>
+      <ScrollView>
+        <GradientText style={styles.gradientText} text="PrintEase" />
+        <View>
+          <PageSizeDropdown />
+          <ColorDropdown />
+          <PrintTypeDropdown />
+        </View>
 
-      <View style={styles.selectDocumentContainer}>
-        <Text style={styles.selectDocumentText}>Select Your Document</Text>
-        <Pressable style={styles.documentPicker} onPress={pickDocument}>
+        <View style={styles.selectDocumentContainer}>
+          <Text style={styles.selectDocumentText}>Select Your Document</Text>
+
           {!pdfUri ? (
-            <>
+            <Pressable style={styles.documentPicker} onPress={pickDocument}>
               <View style={styles.documentPickerContent}>
                 <Text style={styles.chooseText}>Choose</Text>
                 <Text style={styles.uploadText}>file to upload</Text>
@@ -114,13 +116,16 @@ const HomeScreen = ({ navigation }) => {
               <Text style={styles.pdfFormatText}>
                 (Only PDF format is allowed)
               </Text>
-            </>
+            </Pressable>
           ) : (
-            <>
+            <Pressable
+              style={[styles.documentPicker, { paddingVertical: "10%" }]}
+              onPress={pickDocument}
+            >
               <Pressable onPress={openPDF} style={styles.pdfPreview}>
                 <AntDesign
                   name="pdffile1"
-                  size={40}
+                  size={25}
                   color="white"
                   style={styles.pdfIcon}
                 />
@@ -131,19 +136,19 @@ const HomeScreen = ({ navigation }) => {
                 </View>
                 <Text style={styles.pdfPagesText}>({noOfPages} Pages)</Text>
               </Pressable>
-            </>
+            </Pressable>
           )}
-        </Pressable>
-      </View>
+        </View>
 
-      <View style={styles.buttonContainer}>
-        <Pressable onPress={onResetFile} style={styles.cancelButton}>
-          <Text style={styles.cancelButtonText}>Reset File</Text>
-        </Pressable>
-        <Pressable onPress={handleNextButton} style={styles.nextButton}>
-          <Text style={styles.nextButtonText}>Next</Text>
-        </Pressable>
-      </View>
+        <View style={styles.buttonContainer}>
+          <Pressable onPress={onResetFile} style={styles.cancelButton}>
+            <Text style={styles.cancelButtonText}>Reset File&nbsp;</Text>
+          </Pressable>
+          <Pressable onPress={handleNextButton} style={styles.nextButton}>
+            <Text style={styles.nextButtonText}>Next&nbsp;</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -168,7 +173,7 @@ const styles = StyleSheet.create({
   },
   documentPicker: {
     width: "85%",
-    height: 180,
+    paddingVertical: "15%",
     marginTop: 30,
     borderRadius: 9,
     borderStyle: "dashed",
@@ -205,7 +210,7 @@ const styles = StyleSheet.create({
   },
   pdfNameText: {
     color: "white",
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: "500",
   },
   pdfPagesText: {
@@ -216,7 +221,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     paddingHorizontal: 20,
-    marginTop: 50,
+    marginTop: "8%",
   },
   cancelButton: {
     width: 143,

@@ -15,7 +15,7 @@ const ProfileScreen = () => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <Pressable onPress={handleLogout} style={styles.listStyle}>
-        <Text style={styles.listItemName}>Logout</Text>
+        <Text style={styles.listItemName}>Logout&nbsp;</Text>
       </Pressable>
     </SafeAreaView>
   );

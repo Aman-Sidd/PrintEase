@@ -134,7 +134,7 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
             <Text style={styles.textStyle}>Transaction ID: </Text>
             <Text style={[styles.textStyle, { color: "white" }]}>
               {" "}
-              2325158412
+              2325158412 &nbsp;
             </Text>
           </View>
 
@@ -142,14 +142,14 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
             <Text style={styles.textStyle}>Page Size: </Text>
             <Text style={[styles.textStyle, { color: "white" }]}>
               {" "}
-              {orderDetails?.OrderDetails[0].page_size}
+              {orderDetails?.OrderDetails[0].page_size + " "}
             </Text>
           </View>
           <View style={{ display: "flex", flexDirection: "row" }}>
             <Text style={styles.textStyle}>Color: </Text>
             <Text style={[styles.textStyle, { color: "white" }]}>
               {" "}
-              {orderDetails?.OrderDetails[0].print_color}
+              {orderDetails?.OrderDetails[0].print_color + " "}
             </Text>
           </View>
           <View
@@ -169,14 +169,14 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
             <Text style={styles.textStyle}>Total Pages: </Text>
             <Text style={[styles.textStyle, { color: "white" }]}>
               {" "}
-              {orderDetails?.OrderDetails[0].total_pages}
+              {orderDetails?.OrderDetails[0].total_pages + " "}
             </Text>
           </View>
           <View style={{ display: "flex", flexDirection: "row" }}>
             <Text style={styles.textStyle}>Price per page: </Text>
             <Text style={[styles.textStyle, { color: "white" }]}>
               {" "}
-              Rs. {priceRatePerPage}
+              Rs. {priceRatePerPage + " "}
             </Text>
           </View>
           <View
@@ -190,7 +190,7 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
             <Text style={[styles.textStyle, { color: "white" }]}>
               {" "}
               {orderDetails?.OrderDetails[0].total_pages} * Rs.{" "}
-              {priceRatePerPage} = Rs. {orderDetails?.total_price}
+              {priceRatePerPage} = Rs. {orderDetails?.total_price + " "}
             </Text>
           </View>
           <View
@@ -215,7 +215,7 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
               ]}
             >
               {" "}
-              {orderStatus}
+              {orderStatus + " "}
             </Text>
           </View>
 
@@ -238,7 +238,7 @@ const OwnerOrderDetailScreen = ({ navigation, route }) => {
                 { color: "green", fontSize: 13, fontWeight: "bold" },
               ]}
             >
-              Paid
+              Paid &nbsp;
             </Text>
           </View>
         </View>

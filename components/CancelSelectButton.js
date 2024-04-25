@@ -13,10 +13,10 @@ const CancelSelectButtons = ({ onCancelPress, onSelectPress }) => {
   return (
     <View style={styles.container}>
       <Pressable onPress={onCancelPress} style={styles.cancelButton}>
-        <Text style={styles.cancelButtonText}>Cancel</Text>
+        <Text style={styles.cancelButtonText}>Cancel&nbsp;</Text>
       </Pressable>
       <Pressable onPress={onSelectPress} style={styles.selectButton}>
-        <Text style={styles.selectButtonText}>Select</Text>
+        <Text style={styles.selectButtonText}>Select&nbsp;</Text>
       </Pressable>
     </View>
   );

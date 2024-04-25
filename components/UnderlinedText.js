@@ -5,7 +5,7 @@ const UnderlinedText = ({ children, style, numberOfLines = 1 }) => {
   const noOfLines = numberOfLines;
   return (
     <Text numberOfLines={noOfLines} style={[styles.text, style]}>
-      {children}
+      {children + " "}
     </Text>
   );
 };

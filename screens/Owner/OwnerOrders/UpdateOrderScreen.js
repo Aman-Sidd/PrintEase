@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, RadioButton } from "react-native-paper";
@@ -7,17 +7,61 @@ import {
   ORDER_STATUS_PICKED,
   ORDER_STATUS_READY,
 } from "../../../constants/ORDER_STATUS";
+import myApi from "../../../api/myApi";
 
 const UpdateOrderScreen = ({ navigation, route }) => {
   const { order_id, curr_order_status } = route.params;
   const [value, setValue] = React.useState(curr_order_status);
 
-  const handleUpdateButton = () => {
-    if (value === "Picked") {
+  const handleUpdateButton = async () => {
+    if (value === ORDER_STATUS_PICKED) {
       navigation.replace("Camera", { order_id, curr_order_status });
       return;
+    } else if (value === ORDER_STATUS_READY) {
+      try {
+        const formData = new URLSearchParams();
+        formData.append("order_id", order_id);
+        formData.append("order_status", 1);
+
+        const config = {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        };
+        const response = await myApi.post(
+          "/owner/update-order-status",
+          formData,
+          config
+        );
+        console.log("update-order-status Resp:", response.data);
+        Alert.alert("Success", "Order status has been changed.");
+      } catch (err) {
+        console.log(err.response.data);
+        Alert.alert("Error", "Status cannot be updated, Try Again!");
+      }
+    } else if (value === ORDER_STATUS_PENDING) {
+      try {
+        const formData = new URLSearchParams();
+        formData.append("order_id", order_id);
+        formData.append("order_status", 0);
+
+        const config = {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        };
+        const response = await myApi.post(
+          "/owner/update-order-status",
+          formData,
+          config
+        );
+        console.log("update-order-status Resp:", response.data);
+        Alert.alert("Success", "Order status has been changed.");
+      } catch (err) {
+        console.log(err);
+        Alert.alert("Error", "Status cannot be updated, Try Again!");
+      }
     }
-    console.log("Update Button Pressed!");
   };
 
   return (

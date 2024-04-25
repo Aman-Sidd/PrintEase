@@ -20,6 +20,7 @@ import {
   ORDER_STATUS_PICKED,
   ORDER_STATUS_READY,
 } from "../../../constants/ORDER_STATUS";
+import { StatusToValueConvertor } from "../../../components/StatusConversion";
 
 const OwnerOrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -27,15 +28,24 @@ const OwnerOrdersScreen = ({ navigation }) => {
   const [activeStatus, setActiveStatus] = useState("All");
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchOrderList = async () => {
+  const fetchOrderList = async (status = "All") => {
     try {
       setLoading(true);
       const response = await myApi.post("/owner/get-all-orders");
-      setOrdersList(
-        response.data.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )
-      );
+      if (status === "All") {
+        setOrdersList(
+          response.data.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          )
+        );
+      } else {
+        const statusVal = StatusToValueConvertor(status);
+        setOrdersList(
+          response.data
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .filter((data) => data.status === statusVal)
+        );
+      }
     } catch (err) {
       Alert.alert("Error", err.response.data);
       console.log(err);
@@ -69,7 +79,9 @@ const OwnerOrdersScreen = ({ navigation }) => {
           </Text>
         </View>
         <View style={{ paddingRight: 20 }}>
-          <Text style={styles.listItemPrice}>Rs. {item?.total_price}</Text>
+          <Text style={styles.listItemPrice}>
+            Rs. {item?.total_price + " "}
+          </Text>
           <Text
             style={[
               styles.listItemStatus,
@@ -83,7 +95,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
               },
             ]}
           >
-            {order_status}
+            {order_status + " "}
           </Text>
         </View>
       </Pressable>
@@ -94,16 +106,30 @@ const OwnerOrdersScreen = ({ navigation }) => {
     try {
       setRefreshing(true);
       const response = await myApi.post("/owner/get-all-orders");
-      setOrdersList(
-        response.data.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )
-      );
+      if (activeStatus === "All") {
+        setOrdersList(
+          response.data.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          )
+        );
+      } else {
+        const statusVal = StatusToValueConvertor(activeStatus);
+        setOrdersList(
+          response.data
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .filter((data) => data.status === statusVal)
+        );
+      }
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data);
     } finally {
       setRefreshing(false);
     }
+  };
+
+  const handleStatusButton = async (status) => {
+    await fetchOrderList(status);
+    setActiveStatus(status);
   };
 
   return loading ? (
@@ -113,7 +139,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
       <Text style={styles.headerTitle}>Your Orders</Text>
       <View style={styles.statusContainer}>
         <Pressable
-          onPress={() => setActiveStatus("All")}
+          onPress={() => handleStatusButton("All")}
           style={[
             styles.statusButton,
             activeStatus == "All"
@@ -129,11 +155,11 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
-            All
+            All &nbsp;
           </Text>
         </Pressable>
         <Pressable
-          onPress={() => setActiveStatus(ORDER_STATUS_PENDING)}
+          onPress={() => handleStatusButton(ORDER_STATUS_PENDING)}
           style={[
             styles.statusButton,
             activeStatus == ORDER_STATUS_PENDING
@@ -149,11 +175,11 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
-            {ORDER_STATUS_PENDING}
+            {ORDER_STATUS_PENDING + " "}
           </Text>
         </Pressable>
         <Pressable
-          onPress={() => setActiveStatus(ORDER_STATUS_READY)}
+          onPress={() => handleStatusButton(ORDER_STATUS_READY)}
           style={[
             styles.statusButton,
             activeStatus == ORDER_STATUS_READY
@@ -169,11 +195,11 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
-            {ORDER_STATUS_READY}
+            {ORDER_STATUS_READY + " "}
           </Text>
         </Pressable>
         <Pressable
-          onPress={() => setActiveStatus(ORDER_STATUS_PICKED)}
+          onPress={() => handleStatusButton(ORDER_STATUS_PICKED)}
           style={[
             styles.statusButton,
             activeStatus == ORDER_STATUS_PICKED
@@ -189,7 +215,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
-            {ORDER_STATUS_PICKED}
+            {ORDER_STATUS_PICKED + " "}
           </Text>
         </Pressable>
       </View>
