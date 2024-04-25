@@ -35,22 +35,4 @@ const OrderDetailScreen = ({ navigation, route }) => {
 
 export default OrderDetailScreen;
 
-const styles = StyleSheet.create({
-  checkoutInfo: {
-    gap: 15,
-    // width: "80%",
-    justifyContent: "center",
-    borderRadius: 10,
-    marginHorizontal: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    marginTop: 20,
-    backgroundColor: "#1E1E1E",
-  },
-  textStyle: {
-    fontWeight: "500",
-    color: "white",
-    fontSize: 18,
-    color: "#AAAAAA",
-  },
-});
+const styles = StyleSheet.create({});
