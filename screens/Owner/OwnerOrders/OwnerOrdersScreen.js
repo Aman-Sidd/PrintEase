@@ -1,17 +1,24 @@
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   Pressable,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import myApi from "../../../api/myApi";
 import LoadingScreen from "../../../components/LoadingScreen";
+import {
+  StatusToValueConvertor,
+  ValueToStatusColorConvertor,
+  ValueToStatusConvertor,
+} from "../../../components/StatusConversion";
+import { PAGE_LIMIT } from "../../../constants/PAGE_LIMIT";
 import {
   COLOR_ORDER_STATUS_PENDING,
   COLOR_ORDER_STATUS_PICKED,
@@ -20,38 +27,70 @@ import {
   ORDER_STATUS_PICKED,
   ORDER_STATUS_READY,
 } from "../../../constants/ORDER_STATUS";
-import { StatusToValueConvertor } from "../../../components/StatusConversion";
-import { useDispatch, useSelector } from "react-redux";
+import { getAllOrders } from "../../../api/methods/getAllOrders";
+import { getPendingOrders } from "../../../api/methods/getPendingOrders";
+import { getPrintedOrders } from "../../../api/methods/getPrintedOrders";
+import { getPickedOrders } from "../../../api/methods/getPickedOrders";
+import { Button } from "react-native-paper";
 
 const OwnerOrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [ordersList, setOrdersList] = useState([]);
   const [activeStatus, setActiveStatus] = useState("All");
   const [refreshing, setRefreshing] = useState(false);
-  const dispatch = useDispatch();
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  const fetchOrderList = async (status = "All") => {
+  const fetchOrderList = async (status = activeStatus, page = 0) => {
     try {
-      setLoading(true);
-      const response = await myApi.post("/owner/get-all-orders");
-      if (status === "All") {
-        setOrdersList(
-          response.data.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          )
-        );
-      } else {
-        const statusVal = StatusToValueConvertor(status);
-        setOrdersList(
-          response.data
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .filter((data) => data.status === statusVal)
-        );
+      if (page === 0) setLoading(true);
+      else setLoadingMore(true);
+
+      const limit = PAGE_LIMIT;
+      const offset = page * PAGE_LIMIT;
+      let response = null;
+
+      switch (status) {
+        case "All":
+          response = await getAllOrders({ limit, offset });
+          break;
+
+        case ORDER_STATUS_PENDING:
+          response = await getPendingOrders({ limit, offset });
+          break;
+
+        case ORDER_STATUS_READY:
+          response = await getPrintedOrders({ limit, offset });
+          break;
+        case ORDER_STATUS_PICKED:
+          response = await getPickedOrders({ limit, offset });
+          break;
+        default:
+          response = null;
       }
+      if (!response) return;
+
+      const newData = response || [];
+      console.log("new data len:", newData.length);
+      console.log("PAGE_LIMIT:", PAGE_LIMIT);
+      if (newData.length < PAGE_LIMIT) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+      }
+      if (page === 0) {
+        setOrdersList(newData);
+      } else {
+        setOrdersList([...ordersList, ...newData]);
+      }
+      const nextOffset = page + 1;
+      setOffset(nextOffset);
     } catch (err) {
       Alert.alert("Error", "Something went wrong, Try Again!");
       console.log(err);
     } finally {
+      setLoadingMore(false);
       setLoading(false);
     }
   };
@@ -61,12 +100,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
   }, []);
 
   const renderListItem = ({ item }) => {
-    const order_status =
-      item?.status == 0
-        ? ORDER_STATUS_PENDING
-        : item?.status == 1
-        ? ORDER_STATUS_READY
-        : ORDER_STATUS_PICKED;
+    const order_status = ValueToStatusConvertor(item?.status);
 
     return (
       <Pressable
@@ -88,12 +122,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
             style={[
               styles.listItemStatus,
               {
-                color:
-                  item.status === 2
-                    ? COLOR_ORDER_STATUS_PICKED
-                    : item.status === 1
-                    ? COLOR_ORDER_STATUS_READY
-                    : COLOR_ORDER_STATUS_PENDING,
+                color: ValueToStatusColorConvertor(item?.status),
               },
             ]}
           >
@@ -107,31 +136,47 @@ const OwnerOrdersScreen = ({ navigation }) => {
   const onRefresh = async () => {
     try {
       setRefreshing(true);
-      const response = await myApi.post("/owner/get-all-orders");
-      if (activeStatus === "All") {
-        setOrdersList(
-          response.data.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          )
-        );
-      } else {
-        const statusVal = StatusToValueConvertor(activeStatus);
-        setOrdersList(
-          response.data
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .filter((data) => data.status === statusVal)
-        );
-      }
+      await fetchOrderList(activeStatus);
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err);
     } finally {
       setRefreshing(false);
     }
   };
 
   const handleStatusButton = async (status) => {
-    await fetchOrderList(status);
+    await fetchOrderList(status, 0);
     setActiveStatus(status);
+  };
+
+  const loadMore = async () => {
+    console.log("Clicked...");
+    if (hasMore) {
+      console.log("Entered");
+      await fetchOrderList(activeStatus, offset);
+    }
+  };
+
+  const renderFooter = () => {
+    return (
+      <View>
+        {loadingMore ? (
+          <ActivityIndicator
+            style={{ margin: 8 }}
+            size="large"
+            color="#0000ff"
+          />
+        ) : !hasMore ? null : (
+          <Button
+            style={{ alignSelf: "center", margin: 10 }}
+            mode="contained"
+            onPress={loadMore}
+          >
+            <Text style={styles.listItemName}>Show More &nbsp;</Text>
+          </Button>
+        )}
+      </View>
+    );
   };
 
   return loading ? (
@@ -230,6 +275,9 @@ const OwnerOrdersScreen = ({ navigation }) => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
+          // onEndReached={loadMore}
+          // onEndReachedThreshold={0.1}
+          ListFooterComponent={renderFooter}
         />
       </View>
     </SafeAreaView>

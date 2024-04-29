@@ -18,7 +18,11 @@ import {
   ORDER_STATUS_READY,
   PENDING,
 } from "../../constants/ORDER_STATUS";
-import { StatusToValueConvertor } from "../../components/StatusConversion";
+import {
+  StatusToValueConvertor,
+  ValueToStatusColorConvertor,
+  ValueToStatusConvertor,
+} from "../../components/StatusConversion";
 
 const OrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -103,18 +107,10 @@ const OrdersScreen = ({ navigation }) => {
       const response = await myApi.get("/user/my-orders");
       console.log("RESPONSE:", response.data);
       if (status === "All") {
-        setOrdersList(
-          response.data.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          )
-        );
+        setOrdersList(response.data);
       } else {
         const statusVal = StatusToValueConvertor(status);
-        setOrdersList(
-          response.data
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .filter((data) => data.status === statusVal)
-        );
+        setOrdersList(response.data);
       }
     } catch (err) {
       Alert.alert("Error", err.response.data);
@@ -129,11 +125,8 @@ const OrdersScreen = ({ navigation }) => {
       setRefreshing(true);
       const response = await myApi.get("/user/my-orders");
       if (activeStatus === "All") {
-        setOrdersList(
-          response.data.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          )
-        );
+        console.log("RESPONSE:", response);
+        setOrdersList(response.data);
       } else {
         const statusVal = StatusToValueConvertor(activeStatus);
         setOrdersList(
@@ -177,20 +170,23 @@ const OrdersScreen = ({ navigation }) => {
             style={[
               styles.listItemStatus,
               {
-                color:
-                  item.status === 2
-                    ? "#4CAF50"
-                    : item.status === 1
-                    ? "#2196F3"
-                    : "#FFC107",
+                color: ValueToStatusColorConvertor(item?.status),
+                // item.status === 2
+                //   ? "#4CAF50"
+                //   : item.status === 1
+                //   ? "#2196F3"
+                //   : "#FFC107",
               },
             ]}
           >
-            {item?.status == 0
+            {
+              /* {item?.status == 0
               ? ORDER_STATUS_PENDING
               : item?.status == 1
               ? ORDER_STATUS_READY
-              : ORDER_STATUS_PICKED}
+              : ORDER_STATUS_PICKED} */
+              ValueToStatusConvertor(item?.status)
+            }
           </Text>
         </View>
       </Pressable>
@@ -202,7 +198,7 @@ const OrdersScreen = ({ navigation }) => {
   ) : (
     <SafeAreaView style={{ backgroundColor: "black", flex: 1, paddingTop: 20 }}>
       <Text style={styles.headerTitle}>Your Orders</Text>
-      <View style={styles.statusContainer}>
+      {/* <View style={styles.statusContainer}>
         <Pressable
           onPress={() => handleStatusButton("All")}
           style={[
@@ -283,7 +279,7 @@ const OrdersScreen = ({ navigation }) => {
             {ORDER_STATUS_PICKED}
           </Text>
         </Pressable>
-      </View>
+      </View> */}
       {/* FlatList container */}
       <View style={{ flex: 1, paddingBottom: 20 }}>
         <FlatList

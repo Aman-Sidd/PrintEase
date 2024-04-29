@@ -9,10 +9,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { add_user } from "../../redux/UserSlice";
 import { USER_TYPE } from "../../constants/USER_TYPE";
 import LoadingScreen from "../../components/LoadingScreen";
+import { getUserDetails } from "../../api/methods/getUserDetails";
 
 const WelcomeScreen = ({ navigation }) => {
   const user = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const checkForAuthToken = async () => {
@@ -20,12 +22,16 @@ const WelcomeScreen = ({ navigation }) => {
 
       const token = await AsyncStorage.getItem("authToken");
       if (token) {
-        const user_type = await AsyncStorage.getItem("user_type");
-        if (user_type === USER_TYPE.OWNER) {
-          navigation.replace("OwnerTab");
-        }
-        if (user_type === USER_TYPE.CUSTOMER) {
-          navigation.replace("Main");
+        const user = await getUserDetails();
+        console.log(user);
+        if (user.success) {
+          dispatch(add_user(user));
+          if (user.user_type === USER_TYPE.OWNER) {
+            navigation.replace("OwnerTab");
+          }
+          if (user.user_type === USER_TYPE.CUSTOMER) {
+            navigation.replace("Main");
+          }
         }
       }
       setLoading(false);

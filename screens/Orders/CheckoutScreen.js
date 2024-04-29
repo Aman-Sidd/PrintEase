@@ -1,4 +1,11 @@
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RazorpayCheckout from "react-native-razorpay";
@@ -47,10 +54,11 @@ const CheckoutScreen = ({ navigation }) => {
         },
       });
       if (response.data.success === "true")
-        Alert.alert("Success", "Order has been placed.");
-      else Alert.alert("Failed", "Something went wrong");
+        ToastAndroid.show("Order has been placed!", ToastAndroid.SHORT);
+      else ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
     } catch (err) {
       console.log("ERROR:", err.response.data);
+      ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
     } finally {
       setLoading(false);
     }

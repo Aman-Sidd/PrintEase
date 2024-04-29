@@ -24,6 +24,11 @@ import {
 import { Button } from "react-native-paper";
 import OrderQRCode from "../UserQRCode";
 import { useNavigation } from "@react-navigation/native";
+import {
+  StatusToColorConvertor,
+  ValueToStatusConvertor,
+} from "../StatusConversion";
+import { getPerPagePrice } from "../GetPerPagePrice";
 
 const OrderDetails = ({ order_id, isOwner }) => {
   const navigation = useNavigation();
@@ -33,6 +38,7 @@ const OrderDetails = ({ order_id, isOwner }) => {
   const [pdfUri, setPdfUri] = useState(null);
   const [orderStatus, setOrderStatus] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
@@ -41,24 +47,19 @@ const OrderDetails = ({ order_id, isOwner }) => {
         const orderDetailsResponse = await myApi.get(
           `/get-order-details?order_id=${order_id}`
         );
+        console.log("OrderDetailsResp:", orderDetailsResponse.data);
         setOrderDetails(orderDetailsResponse?.data);
         setPdfUri(
-          JSON.parse(orderDetailsResponse.data.OrderDetails[0].file_details)[0]
+          JSON.parse(orderDetailsResponse?.data.OrderDetails[0].file_details)[0]
         );
         setPriceRatePerPage(
-          orderDetailsResponse?.data.OrderDetails[0].total_pages <= 15
-            ? RATE1_15
-            : orderDetailsResponse?.data.OrderDetails[0].total_pages <= 25
-            ? RATE16_25
-            : RATE26Above
+          getPerPagePrice(
+            orderDetailsResponse?.data.OrderDetails[0].total_pages
+          )
         );
         console.log("status:", orderDetailsResponse?.data.status);
         setOrderStatus(
-          orderDetailsResponse?.data.status == 0
-            ? ORDER_STATUS_PENDING
-            : orderDetailsResponse?.data.status == 1
-            ? ORDER_STATUS_READY
-            : ORDER_STATUS_PICKED
+          ValueToStatusConvertor(orderDetailsResponse?.data.status)
         );
       } catch (err) {
         console.log("Err:", err);
@@ -91,20 +92,10 @@ const OrderDetails = ({ order_id, isOwner }) => {
         JSON.parse(orderDetailsResponse.data.OrderDetails[0].file_details)[0]
       );
       setPriceRatePerPage(
-        orderDetailsResponse?.data.OrderDetails[0].total_pages <= 15
-          ? RATE1_15
-          : orderDetailsResponse?.data.OrderDetails[0].total_pages <= 25
-          ? RATE16_25
-          : RATE26Above
+        getPerPagePrice(orderDetailsResponse?.data.OrderDetails[0].total_pages)
       );
       console.log("status:", orderDetailsResponse?.data.status);
-      setOrderStatus(
-        orderDetailsResponse?.data.status == 0
-          ? ORDER_STATUS_PENDING
-          : orderDetailsResponse?.data.status == 1
-          ? ORDER_STATUS_READY
-          : ORDER_STATUS_PICKED
-      );
+      setOrderStatus(ValueToStatusConvertor(orderDetailsResponse?.data.status));
     } catch (err) {
       console.log("Err:", err);
     } finally {
@@ -208,12 +199,7 @@ const OrderDetails = ({ order_id, isOwner }) => {
               style={[
                 styles.textStyle,
                 {
-                  color:
-                    orderStatus === ORDER_STATUS_PICKED
-                      ? COLOR_ORDER_STATUS_PICKED
-                      : orderStatus === ORDER_STATUS_READY
-                      ? COLOR_ORDER_STATUS_READY
-                      : COLOR_ORDER_STATUS_PENDING,
+                  color: StatusToColorConvertor(orderStatus),
                 },
               ]}
             >

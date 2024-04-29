@@ -24,14 +24,19 @@ import Pdf from "react-native-pdf";
 import AsyncStorage from "@react-native-community/async-storage";
 import UnderlinedText from "../components/UnderlinedText";
 import { setPdfName, setPdfUri } from "../redux/OrderSlice";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
+
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 const HomeScreen = ({ navigation }) => {
-  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const { pdfName, pdfUri, noOfPages, pageSize, color, printType } =
     useSelector((state) => state.order);
 
-  console.log("USER:", user);
   const pickDocument = async () => {
     console.log("clicked");
     if (pdfUri) {
@@ -160,20 +165,19 @@ const styles = StyleSheet.create({
   },
   gradientText: {
     alignSelf: "center",
-    fontSize: 40,
-    marginTop: 20,
+    fontSize: hp("5%"),
   },
   selectDocumentContainer: {
     alignItems: "center",
-    marginTop: 20,
+    marginTop: hp("2%"),
   },
   selectDocumentText: {
     color: "white",
-    fontSize: 20,
+    fontSize: hp("2.5%"),
   },
   documentPicker: {
-    width: "85%",
-    paddingVertical: "15%",
+    width: wp("82%"),
+    height: hp("18%"),
     marginTop: 30,
     borderRadius: 9,
     borderStyle: "dashed",
