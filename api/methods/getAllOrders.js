@@ -13,7 +13,7 @@ export const getAllOrders = async ({ limit = 10, offset = 0 }) => {
     };
 
     const response = await myApi.post(
-      "/owner/get-all-orders",
+      "/common/get-all-orders",
       formData,
       config
     );

@@ -1,8 +1,6 @@
 import {
   Alert,
   Dimensions,
-  Image,
-  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,22 +10,19 @@ import {
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import myApi from "../api/myApi";
-import { add_user } from "../redux/UserSlice";
-import PageSizeDropdown from "../components/PageSizeDropdown";
 import { AntDesign } from "@expo/vector-icons";
-import ColorDropdown from "../components/ColorDropdown";
-import PrintTypeDropdown from "../components/PrintTypeDropdown";
-import GradientText from "../components/GradientText";
 import * as DocumentPicker from "expo-document-picker";
-import Pdf from "react-native-pdf";
 import AsyncStorage from "@react-native-community/async-storage";
-import UnderlinedText from "../components/UnderlinedText";
 import { setPdfName, setPdfUri } from "../redux/OrderSlice";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import GradientText from "../components/formUtils/GradientText";
+import PageSizeDropdown from "../components/dropdown/PageSizeDropdown";
+import ColorDropdown from "../components/dropdown/ColorDropdown";
+import PrintTypeDropdown from "../components/dropdown/PrintTypeDropdown";
+import UnderlinedText from "../components/formUtils/UnderlinedText";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;

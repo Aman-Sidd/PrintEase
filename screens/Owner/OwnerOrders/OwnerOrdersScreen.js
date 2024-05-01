@@ -12,12 +12,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import myApi from "../../../api/myApi";
-import LoadingScreen from "../../../components/LoadingScreen";
+import LoadingScreen from "../../../components/utils/LoadingScreen";
 import {
   StatusToValueConvertor,
   ValueToStatusColorConvertor,
   ValueToStatusConvertor,
-} from "../../../components/StatusConversion";
+} from "../../../components/helpers/StatusConversion";
 import { PAGE_LIMIT } from "../../../constants/PAGE_LIMIT";
 import {
   COLOR_ORDER_STATUS_PENDING,
@@ -69,7 +69,10 @@ const OwnerOrdersScreen = ({ navigation }) => {
         default:
           response = null;
       }
-      if (!response) return;
+      if (!response) {
+        setHasMore(false);
+        return;
+      }
 
       const newData = response || [];
       console.log("new data len:", newData.length);
@@ -168,7 +171,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
           />
         ) : !hasMore ? null : (
           <Button
-            style={{ alignSelf: "center", margin: 10 }}
+            style={{ alignSelf: "center", marginTop: 15 }}
             mode="contained"
             onPress={loadMore}
           >
@@ -275,8 +278,6 @@ const OwnerOrdersScreen = ({ navigation }) => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          // onEndReached={loadMore}
-          // onEndReachedThreshold={0.1}
           ListFooterComponent={renderFooter}
         />
       </View>

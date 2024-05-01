@@ -10,6 +10,10 @@ import { add_user } from "../../redux/UserSlice";
 import { USER_TYPE } from "../../constants/USER_TYPE";
 import LoadingScreen from "../../components/utils/LoadingScreen";
 import { getUserDetails } from "../../api/methods/getUserDetails";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 import { Image } from "expo-image";
 
 const WelcomeScreen = ({ navigation }) => {
@@ -57,7 +61,7 @@ const WelcomeScreen = ({ navigation }) => {
           <Image
             style={styles.imageStyle}
             source={require("../../assets/printer.png")}
-            // placeholder={blurhash}
+            placeholder={blurhash}
             contentFit="cover"
             transition={1000}
           />
@@ -98,8 +102,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#080A0C",
   },
   imageStyle: {
-    height: "52%",
-    width: "40%",
+    height: 250,
+    width: 250,
   },
   imageContainer: {
     justifyContent: "center",

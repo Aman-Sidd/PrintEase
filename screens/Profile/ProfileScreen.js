@@ -1,15 +1,13 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useNavigation, useTheme } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { Button } from "react-native-paper";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const user = useSelector((state) => state.user.data);
-  console.log("User", user.data);
 
   const handleLogout = async () => {
     const keys = await AsyncStorage.getAllKeys();

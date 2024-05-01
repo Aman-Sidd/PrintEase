@@ -10,17 +10,17 @@ import {
 } from "react-native";
 import React, { useDebugValue, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import GradientText from "../../components/GradientText";
+import GradientText from "../../components/formUtils/GradientText";
 import { Divider } from "@rneui/base";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import InputText from "../../components/InputText";
+import InputText from "../../components/formUtils/InputText";
 import { useDispatch, useSelector } from "react-redux";
 import { add_user, fetchUser, login_user } from "../../redux/UserSlice";
 import myApi from "../../api/myApi";
-import LoadingScreen from "../../components/LoadingScreen";
+import LoadingScreen from "../../components/utils/LoadingScreen";
 import AsyncStorage from "@react-native-community/async-storage";
 import { USER_TYPE } from "../../constants/USER_TYPE";
 
@@ -70,6 +70,7 @@ const LoginScreen = () => {
 
       const response = await myApi.post("/login", formData, config);
       const user = response.data;
+      console.log("USER in login screen:", user);
       console.log("RESPONSE:", response.data);
       if (response.data.user_found == "0") {
         Alert.alert("Error!", "Invalid email or password");
@@ -86,8 +87,8 @@ const LoginScreen = () => {
       else if (user.user_type == USER_TYPE.OWNER)
         navigation.replace("OwnerTab");
     } catch (err) {
-      console.log("Error while fetching user details: ", err.response.data);
-      Alert.alert("Error", err.response.data.message);
+      console.log("Error while fetching user details: ", err);
+      Alert.alert("Error", err);
     } finally {
       setLoading(false);
     }

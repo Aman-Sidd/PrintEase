@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import GradientText from "../../components/GradientText";
+import GradientText from "../../components/formUtils/GradientText";
 import { Divider } from "@rneui/base";
 import { useTheme } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
@@ -18,9 +18,9 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useDispatch, useSelector } from "react-redux";
 import { add_user, registerUser } from "../../redux/UserSlice";
-import InputText from "../../components/InputText";
+import InputText from "../../components/formUtils/InputText";
 import myApi from "../../api/myApi";
-import LoadingScreen from "../../components/LoadingScreen";
+import LoadingScreen from "../../components/utils/LoadingScreen";
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");

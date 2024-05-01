@@ -20,16 +20,16 @@ import {
   RAZORPAY_PREFILL_EMAIL,
   RAZORPAY_PREFILL_NAME,
 } from "../../constants/RAZORPAY";
-import MailSender from "../../components/MailSender";
-import { RATE16_25, RATE1_15, RATE26Above } from "../../constants/PRICING";
 import myApi from "../../api/myApi";
-import LoadingScreen from "../../components/LoadingScreen";
+import LoadingScreen from "../../components/utils/LoadingScreen";
+import { updatePaymentId } from "../../api/methods/updatePaymentId";
+import { getPerPagePrice } from "../../components/helpers/GetPerPagePrice";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
   const [loading, setLoading] = useState(false);
 
-  const placeOrder = async (paymentid) => {
+  const placeOrder = async () => {
     setLoading(true);
     const formData = new FormData();
 
@@ -45,7 +45,7 @@ const CheckoutScreen = ({ navigation }) => {
     formData.append("printtype", orderDetails.printType);
     formData.append("totalpages", orderDetails.noOfPages);
     formData.append("priceperpage", priceRatePerPage);
-    formData.append("paymentid", paymentid);
+    formData.append("paymentid", 12345);
 
     try {
       const response = await myApi.post("/user/create-order", formData, {
@@ -53,12 +53,35 @@ const CheckoutScreen = ({ navigation }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      if (response.data.success === "true")
-        ToastAndroid.show("Order has been placed!", ToastAndroid.SHORT);
-      else ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
+      console.log("response in checkoutscreen:", response.data);
+      if (response.data.success === "true") {
+        console.log(
+          "OrderId from checkoutScrn:",
+          response.data.data.orderDetails.order_id
+        );
+        return response.data.data.orderDetails.order_id;
+      } else return null;
     } catch (err) {
-      console.log("ERROR:", err.response.data);
-      ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
+      console.log("Error while creating order:", err.response);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updatePaymentInfo = async ({ orderid, paymentid }) => {
+    try {
+      setLoading(true);
+      const response = await updatePaymentId({
+        orderid,
+        paymentid,
+      });
+      if (response.success === true)
+        Alert.alert("Success!", "Order placed successfully.");
+      else Alert.alert("Failed!", "Something went wrong");
+    } catch (err) {
+      console.log("Error in updating payment id:", err.response.data);
+      Alert.alert("Failed!", "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -81,17 +104,26 @@ const CheckoutScreen = ({ navigation }) => {
       },
       theme: { color: "#53a20e" },
     };
+    const order_id = await placeOrder();
+
+    if (order_id === null) {
+      Alert.alert("Failed!", "Something went wrong.");
+      return;
+    }
+    console.log("Order Id from CheckoutScreen:", order_id);
     RazorpayCheckout.open(options)
       .then(async (data) => {
         // handle success
         console.log("DATA: ", data);
-        await placeOrder(data.razorpay_payment_id);
-        // alert(
-        //   `Success: Order has been with Txn ID: ${data.razorpay_payment_id}`
-        // );
+
+        await updatePaymentInfo({
+          orderid: order_id,
+          paymentid: data.razorpay_payment_id,
+        });
       })
       .catch((error) => {
         // handle failure
+        console.log("Error:", error);
         const errorObject = JSON.parse(error.description);
         // console.log(errorObject);
         Alert.alert("Error", `${errorObject.error.description}`);
@@ -99,12 +131,7 @@ const CheckoutScreen = ({ navigation }) => {
       });
   };
 
-  const priceRatePerPage =
-    orderDetails.noOfPages <= 15
-      ? RATE1_15
-      : orderDetails.noOfPages <= 25
-      ? RATE16_25
-      : RATE26Above;
+  const priceRatePerPage = getPerPagePrice(orderDetails.noOfPages);
 
   const totalAmount = orderDetails.noOfPages * priceRatePerPage;
 

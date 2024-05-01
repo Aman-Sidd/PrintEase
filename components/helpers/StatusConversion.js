@@ -11,7 +11,7 @@ import {
   ORDER_STATUS_PICKED_VALUE,
   ORDER_STATUS_READY,
   ORDER_STATUS_READY_VALUE,
-} from "../constants/ORDER_STATUS";
+} from "../../constants/ORDER_STATUS";
 
 const StatusToValueConvertor = (status) => {
   return status === ORDER_STATUS_PENDING

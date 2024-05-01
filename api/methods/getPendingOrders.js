@@ -14,7 +14,7 @@ export const getPendingOrders = async ({ limit = 10, offset = 0 }) => {
     };
 
     const response = await myApi.post(
-      "/owner/get-pending-orders",
+      "/common/get-pending-orders",
       formData,
       config
     );

@@ -13,7 +13,7 @@ export const getPickedOrders = async ({ limit = 10, offset = 0 }) => {
     };
 
     const response = await myApi.post(
-      "/owner/get-picked-orders",
+      "/common/get-picked-orders",
       formData,
       config
     );

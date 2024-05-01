@@ -1,37 +1,34 @@
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   Pressable,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import myApi from "../../api/myApi";
-import LoadingScreen from "../../components/utils/LoadingScreen";
+import LoadingScreen from "../../../components/utils/LoadingScreen";
+import {
+  ValueToStatusColorConvertor,
+  ValueToStatusConvertor,
+} from "../../../components/helpers/StatusConversion";
+import { PAGE_LIMIT } from "../../../constants/PAGE_LIMIT";
 import {
   ORDER_STATUS_PENDING,
   ORDER_STATUS_PICKED,
   ORDER_STATUS_READY,
-  PENDING,
-} from "../../constants/ORDER_STATUS";
-import {
-  StatusToValueConvertor,
-  ValueToStatusColorConvertor,
-  ValueToStatusConvertor,
-} from "../../components/helpers/StatusConversion";
-import { getAllOrders } from "../../api/methods/getAllOrders";
-import { PAGE_LIMIT } from "../../constants/PAGE_LIMIT";
-import { getPendingOrders } from "../../api/methods/getPendingOrders";
-import { getPrintedOrders } from "../../api/methods/getPrintedOrders";
-import { getPickedOrders } from "../../api/methods/getPickedOrders";
+} from "../../../constants/ORDER_STATUS";
+import { getAllOrders } from "../../../api/methods/getAllOrders";
+import { getPendingOrders } from "../../../api/methods/getPendingOrders";
+import { getPrintedOrders } from "../../../api/methods/getPrintedOrders";
+import { getPickedOrders } from "../../../api/methods/getPickedOrders";
 import { Button } from "react-native-paper";
-import { ActivityIndicator } from "react-native";
 
-const OrdersScreen = ({ navigation }) => {
+const OwnerOrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [ordersList, setOrdersList] = useState([]);
   const [activeStatus, setActiveStatus] = useState("All");
@@ -67,10 +64,7 @@ const OrdersScreen = ({ navigation }) => {
         default:
           response = null;
       }
-      if (!response) {
-        setHasMore(false);
-        return;
-      }
+      if (!response) return;
 
       const newData = response || [];
       console.log("new data len:", newData.length);
@@ -96,12 +90,42 @@ const OrdersScreen = ({ navigation }) => {
     }
   };
 
-  const loadMore = async () => {
-    console.log("Clicked...");
-    if (hasMore) {
-      console.log("Entered");
-      await fetchOrderList(activeStatus, offset);
-    }
+  useEffect(() => {
+    fetchOrderList();
+  }, []);
+
+  const renderListItem = ({ item }) => {
+    const order_status = ValueToStatusConvertor(item?.status);
+
+    return (
+      <Pressable
+        onPress={() =>
+          navigation.navigate("OwnerOrderDetail", { order_id: item.order_id })
+        }
+        style={styles.listStyle}
+      >
+        <View style={{ maxWidth: "70%" }}>
+          <Text numberOfLines={2} style={styles.listItemName}>
+            {item?.order_title}
+          </Text>
+        </View>
+        <View style={{ paddingRight: 20 }}>
+          <Text style={styles.listItemPrice}>
+            Rs. {item?.total_price + " "}
+          </Text>
+          <Text
+            style={[
+              styles.listItemStatus,
+              {
+                color: ValueToStatusColorConvertor(item?.status),
+              },
+            ]}
+          >
+            {order_status + " "}
+          </Text>
+        </View>
+      </Pressable>
+    );
   };
 
   const onRefresh = async () => {
@@ -115,13 +139,17 @@ const OrdersScreen = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    fetchOrderList();
-  }, []);
-
   const handleStatusButton = async (status) => {
-    await fetchOrderList(status);
+    await fetchOrderList(status, 0);
     setActiveStatus(status);
+  };
+
+  const loadMore = async () => {
+    console.log("Clicked...");
+    if (hasMore) {
+      console.log("Entered");
+      await fetchOrderList(activeStatus, offset);
+    }
   };
 
   const renderFooter = () => {
@@ -143,36 +171,6 @@ const OrdersScreen = ({ navigation }) => {
           </Button>
         )}
       </View>
-    );
-  };
-
-  const renderListItem = ({ item }) => {
-    return (
-      <Pressable
-        onPress={() =>
-          navigation.navigate("OrderDetail", { order_id: item.order_id })
-        }
-        style={styles.listStyle}
-      >
-        <View style={{ maxWidth: "70%" }}>
-          <Text numberOfLines={2} style={styles.listItemName}>
-            {item?.order_title}
-          </Text>
-        </View>
-        <View style={{ paddingRight: 20 }}>
-          <Text style={styles.listItemPrice}>Rs. {item?.total_price}</Text>
-          <Text
-            style={[
-              styles.listItemStatus,
-              {
-                color: ValueToStatusColorConvertor(item?.status),
-              },
-            ]}
-          >
-            {ValueToStatusConvertor(item?.status)}
-          </Text>
-        </View>
-      </Pressable>
     );
   };
 
@@ -199,7 +197,7 @@ const OrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
-            All
+            All &nbsp;
           </Text>
         </Pressable>
         <Pressable
@@ -219,7 +217,7 @@ const OrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
-            {ORDER_STATUS_PENDING}
+            {ORDER_STATUS_PENDING + " "}
           </Text>
         </Pressable>
         <Pressable
@@ -239,7 +237,7 @@ const OrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
-            {ORDER_STATUS_READY}
+            {ORDER_STATUS_READY + " "}
           </Text>
         </Pressable>
         <Pressable
@@ -259,11 +257,10 @@ const OrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
-            {ORDER_STATUS_PICKED}
+            {ORDER_STATUS_PICKED + " "}
           </Text>
         </Pressable>
       </View>
-      {/* FlatList container */}
       <View style={{ flex: 1, paddingBottom: 20 }}>
         <FlatList
           style={{ flex: 1 }} // Ensure FlatList has flex: 1
@@ -273,6 +270,8 @@ const OrdersScreen = ({ navigation }) => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
+          // onEndReached={loadMore}
+          // onEndReachedThreshold={0.1}
           ListFooterComponent={renderFooter}
         />
       </View>
@@ -280,7 +279,7 @@ const OrdersScreen = ({ navigation }) => {
   );
 };
 
-export default OrdersScreen;
+export default OwnerOrdersScreen;
 
 const styles = StyleSheet.create({
   headerTitle: {
@@ -289,19 +288,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 10,
     fontWeight: "500",
-  },
-  listStyle: {
-    height: 75,
-    width: "90%",
-    marginTop: 15,
-    borderRadius: 8,
-    // marginLeft: 8,
-    alignSelf: "center",
-    backgroundColor: "#202020",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
   },
   statusContainer: {
     marginVertical: 10,
@@ -331,6 +317,19 @@ const styles = StyleSheet.create({
   },
   statusButtonActive: {
     backgroundColor: "#333333",
+  },
+  listStyle: {
+    height: 75,
+    width: "90%",
+    marginTop: 20,
+    borderRadius: 8,
+    // marginLeft: 8,
+    alignSelf: "center",
+    backgroundColor: "#202020",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   listItemName: { color: "white", fontSize: 16, marginLeft: 20 },
   listItemPrice: { color: "white", fontSize: 18 },

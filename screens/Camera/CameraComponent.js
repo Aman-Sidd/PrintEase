@@ -1,9 +1,9 @@
 import { CameraView, useCameraPermissions } from "expo-camera/next";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
-import CurvedRectangle from "../../components/CurvedRectangle";
+import CurvedRectangle from "../../components/utils/CurvedRectangle";
 import myApi from "../../api/myApi";
-import LoadingScreen from "../../components/LoadingScreen";
+import LoadingScreen from "../../components/utils/LoadingScreen";
 import { ORDER_STATUS_PICKED } from "../../constants/ORDER_STATUS";
 import { Button } from "react-native-paper";
 

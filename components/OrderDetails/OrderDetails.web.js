@@ -9,7 +9,18 @@ import {
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
+import LoadingScreen from "../utils/LoadingScreen";
+import UnderlinedText from "../formUtils/UnderlinedText";
 import myApi from "../../api/myApi";
+import { RATE16_25, RATE1_15, RATE26Above } from "../../constants/PRICING";
+import {
+  COLOR_ORDER_STATUS_PENDING,
+  COLOR_ORDER_STATUS_PICKED,
+  COLOR_ORDER_STATUS_READY,
+  ORDER_STATUS_PENDING,
+  ORDER_STATUS_PICKED,
+  ORDER_STATUS_READY,
+} from "../../constants/ORDER_STATUS";
 import { Button } from "react-native-paper";
 import OrderQRCode from "../helpers/UserQRCode.native";
 import { useNavigation } from "@react-navigation/native";
@@ -18,8 +29,6 @@ import {
   ValueToStatusConvertor,
 } from "../helpers/StatusConversion";
 import { getPerPagePrice } from "../helpers/GetPerPagePrice";
-import LoadingScreen from "../utils/LoadingScreen";
-import UnderlinedText from "../formUtils/UnderlinedText";
 
 const OrderDetails = ({ order_id, isOwner }) => {
   const navigation = useNavigation();

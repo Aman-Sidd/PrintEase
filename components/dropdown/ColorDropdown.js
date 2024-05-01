@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { setColor } from "../redux/OrderSlice";
+import { setColor } from "../../redux/OrderSlice";
 import { useDispatch } from "react-redux";
 
 const data = [

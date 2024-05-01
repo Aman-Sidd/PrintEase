@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useDispatch } from "react-redux";
-import { setPageSize, setPrintType } from "../redux/OrderSlice";
+import { setPageSize, setPrintType } from "../../redux/OrderSlice";
 
 const data = [
   { label: "Single Sided", value: "1" },

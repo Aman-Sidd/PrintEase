@@ -9,7 +9,7 @@ import React, { useState } from "react";
 import Pdf from "react-native-pdf";
 import { setNoOfPages, setPdfName, setPdfUri } from "../../redux/OrderSlice";
 import { useDispatch, useSelector } from "react-redux";
-import CancelSelectButtons from "../../components/CancelSelectButton";
+import CancelSelectButtons from "../../components/utils/CancelSelectButton";
 
 const PdfViewScreen = ({ navigation, route }) => {
   const { uri, showButtons } = route.params;

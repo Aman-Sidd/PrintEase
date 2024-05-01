@@ -8,7 +8,7 @@ import {
   ORDER_STATUS_READY,
 } from "../../../constants/ORDER_STATUS";
 import myApi from "../../../api/myApi";
-import LoadingScreen from "../../../components/LoadingScreen";
+import LoadingScreen from "../../../components/utils/LoadingScreen";
 
 const UpdateOrderScreen = ({ navigation, route }) => {
   const { order_id, curr_order_status } = route.params;
