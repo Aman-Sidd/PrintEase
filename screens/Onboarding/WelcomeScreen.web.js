@@ -100,10 +100,11 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#080A0C",
+    alignItems: "center",
   },
   imageStyle: {
-    height: 250,
-    width: 250,
+    height: 200,
+    width: 200,
   },
   imageContainer: {
     justifyContent: "center",
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     marginHorizontal: 20,
     justifyContent: "flex-end",
-    // marginTop: 190,
+    width: "25%",
     flex: 1,
     gap: 10,
   },
