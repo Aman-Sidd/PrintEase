@@ -9,11 +9,16 @@ import {
 } from "../../../constants/ORDER_STATUS";
 import myApi from "../../../api/myApi";
 import LoadingScreen from "../../../components/utils/LoadingScreen";
+import { useMediaQuery } from "react-responsive";
 
 const UpdateOrderScreen = ({ navigation, route }) => {
   const { order_id, curr_order_status } = route.params;
   const [value, setValue] = useState(curr_order_status);
   const [loading, setLoading] = useState(false);
+
+  const isDesktopOrLaptop = useMediaQuery({
+    query: "(min-width: 1224px)",
+  });
 
   const handleUpdateButton = async () => {
     try {
@@ -37,7 +42,7 @@ const UpdateOrderScreen = ({ navigation, route }) => {
           config
         );
         console.log("update-order-status Resp:", response.data);
-        Alert.alert("Success", "Order status has been changed.");
+        alert("Order status has been changed.");
       } else if (value === ORDER_STATUS_PENDING) {
         const formData = new URLSearchParams();
         formData.append("order_id", order_id);
@@ -53,11 +58,15 @@ const UpdateOrderScreen = ({ navigation, route }) => {
           config
         );
         console.log("update-order-status Resp:", response.data);
-        Alert.alert("Success", "Order status has been changed.");
+        const alertObj = {
+          title: "Success",
+          message: "Order has been changed.",
+        };
+        alert("Order status has been changed.");
       }
     } catch (err) {
       console.log(err);
-      Alert.alert("Error", "Status cannot be updated, Try Again!");
+      alert("Status cannot be updated, Try Again!");
     } finally {
       setLoading(false);
     }
@@ -69,7 +78,12 @@ const UpdateOrderScreen = ({ navigation, route }) => {
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "black", alignItems: "center" }}
     >
-      <View style={{ backgroundColor: "black", width: "90%" }}>
+      <View
+        style={{
+          backgroundColor: "black",
+          width: isDesktopOrLaptop ? "30%" : "90%",
+        }}
+      >
         <RadioButton.Group
           onValueChange={(value) => setValue(value)}
           value={value}

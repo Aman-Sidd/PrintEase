@@ -32,6 +32,10 @@ import { getPendingOrders } from "../../../api/methods/getPendingOrders";
 import { getPrintedOrders } from "../../../api/methods/getPrintedOrders";
 import { getPickedOrders } from "../../../api/methods/getPickedOrders";
 import { Button } from "react-native-paper";
+import {
+  convertTimeToAMPM,
+  formatDate,
+} from "../../../components/utils/formatDateTime";
 
 const OwnerOrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -113,8 +117,21 @@ const OwnerOrdersScreen = ({ navigation }) => {
         style={styles.listStyle}
       >
         <View style={{ maxWidth: "70%" }}>
-          <Text numberOfLines={2} style={styles.listItemName}>
+          <Text numberOfLines={1} style={styles.listItemName}>
             {item?.order_title}
+          </Text>
+          <Text
+            style={{
+              ...styles.listItemName,
+              fontSize: 12,
+              marginTop: 7,
+              color: "#CCCCCC",
+            }}
+          >
+            {convertTimeToAMPM(item.createdAt) +
+              " (" +
+              formatDate(item.createdAt) +
+              ")"}
           </Text>
         </View>
         <View style={{ paddingRight: 20 }}>

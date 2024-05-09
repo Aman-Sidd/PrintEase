@@ -20,6 +20,7 @@ import {
 import { getPerPagePrice } from "../helpers/GetPerPagePrice";
 import LoadingScreen from "../utils/LoadingScreen";
 import UnderlinedText from "../formUtils/UnderlinedText";
+import { convertTimeToAMPM, formatDate } from "../utils/formatDateTime";
 
 const OrderDetails = ({ order_id, isOwner }) => {
   const navigation = useNavigation();
@@ -114,10 +115,10 @@ const OrderDetails = ({ order_id, isOwner }) => {
       >
         <View style={styles.checkoutInfo}>
           <View style={{ display: "flex", flexDirection: "row" }}>
-            <Text style={styles.textStyle}>Transaction ID: </Text>
+            <Text style={styles.textStyle}>Payment ID: </Text>
             <Text style={[styles.textStyle, { color: "white" }]}>
               {" "}
-              2325158412 &nbsp;
+              {orderDetails?.payment_id + " "}
             </Text>
           </View>
 
@@ -176,6 +177,23 @@ const OrderDetails = ({ order_id, isOwner }) => {
               {priceRatePerPage} = Rs. {orderDetails?.total_price + " "}
             </Text>
           </View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Text style={styles.textStyle}>Time and Date: </Text>
+            <Text style={[styles.textStyle, { color: "white" }]}>
+              {" "}
+              {convertTimeToAMPM(orderDetails?.createdAt) +
+                " (" +
+                formatDate(orderDetails?.createdAt) +
+                ")"}
+            </Text>
+          </View>
+
           <View
             style={{
               display: "flex",
@@ -267,7 +285,7 @@ const styles = StyleSheet.create({
   textStyle: {
     fontWeight: "500",
     color: "white",
-    fontSize: 18,
+    fontSize: 16,
     color: "#AAAAAA",
   },
 });

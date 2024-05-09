@@ -36,11 +36,10 @@ const LoginScreen = () => {
   console.log(user);
   console.log(email);
   console.log(password);
+  const isDesktop = useSelector((state) => state.util.isDesktop);
   const isDesktopOrLaptop = useMediaQuery({
     query: "(min-width: 1224px)",
   });
-  const isDesktop = useSelector((state) => state.util.isDesktop);
-
   useEffect(() => {
     const checkForAuthToken = async () => {
       setLoading(true);
@@ -256,7 +255,7 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     marginHorizontal: 40,
     // justifyContent: "flex-end",
-    marginTop: 190,
+    marginTop: 100,
     flex: 1,
   },
   linearGradButtonText: {

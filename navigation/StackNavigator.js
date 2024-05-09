@@ -82,8 +82,19 @@ const OrderNavigation = () => {
 };
 
 export const TabNavigator = () => {
+  const linking = {
+    // prefixes: ["https://mychat.com", "mychat://"],
+    config: {
+      screens: {
+        Home: "/home",
+        Profile: "/profile",
+        Orders: "/orders",
+      },
+    },
+  };
   const Tab = createBottomTabNavigator();
   return (
+    // <NavigationContainer linking={linking} independent={true}>
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: { backgroundColor: "black" },
@@ -127,6 +138,7 @@ export const TabNavigator = () => {
         }}
       />
     </Tab.Navigator>
+    // </NavigationContainer>
   );
 };
 
@@ -180,7 +192,17 @@ export const OwnerOrderStackNavigator = () => {
 
 export const OwnerTabNavigator = () => {
   const OwnerTab = createBottomTabNavigator();
+  const linking = {
+    // prefixes: ["https://mychat.com", "mychat://"],
+    config: {
+      screens: {
+        Orders: "/orders/OwnerOrder",
+        Profile: "/profile",
+      },
+    },
+  };
   return (
+    // <NavigationContainer independent={true} linking={linking}>
     <OwnerTab.Navigator
       screenOptions={{
         tabBarStyle: { backgroundColor: "black" },
@@ -215,14 +237,25 @@ export const OwnerTabNavigator = () => {
         }}
       />
     </OwnerTab.Navigator>
+    // </NavigationContainer>
   );
 };
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
-
+  const linking = {
+    // prefixes: ["https://mychat.com", "mychat://"],
+    config: {
+      screens: {
+        Welcome: "",
+        Login: "/login",
+        Register: "/signup",
+        OwnerTab: "/owner",
+      },
+    },
+  };
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Stack.Navigator>
         <Stack.Screen
           name="Welcome"

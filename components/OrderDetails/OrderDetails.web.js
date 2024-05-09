@@ -247,7 +247,7 @@ const OrderDetails = ({ order_id, isOwner }) => {
         </View>
         {isOwner && (
           <Button
-            style={{ marginTop: 20, width: "50%", alignSelf: "center" }}
+            style={{ marginTop: 20, width: "20%", alignSelf: "center" }}
             mode="contained"
             onPress={handleChangeOrderStatus}
           >
@@ -264,9 +264,11 @@ export default OrderDetails;
 const styles = StyleSheet.create({
   checkoutInfo: {
     gap: 15,
-    width: "90%",
+    width: "40%",
     justifyContent: "center",
+    marginTop: "2%",
     borderRadius: 10,
+    alignSelf: "center",
     marginHorizontal: 20,
     paddingHorizontal: 20,
     paddingVertical: 20,

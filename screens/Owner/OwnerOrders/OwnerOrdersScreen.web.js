@@ -27,6 +27,13 @@ import { getPendingOrders } from "../../../api/methods/getPendingOrders";
 import { getPrintedOrders } from "../../../api/methods/getPrintedOrders";
 import { getPickedOrders } from "../../../api/methods/getPickedOrders";
 import { Button } from "react-native-paper";
+import {
+  convertTimeToAMPM,
+  formatDate,
+} from "../../../components/utils/formatDateTime";
+import { useMediaQuery } from "react-responsive";
+import { isDesktop } from "../../../hooks/isDesktop";
+import { widthPercentageToDP } from "react-native-responsive-screen";
 
 const OwnerOrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -36,6 +43,8 @@ const OwnerOrdersScreen = ({ navigation }) => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  let isPC = isDesktop();
 
   const fetchOrderList = async (status = activeStatus, page = 0) => {
     try {
@@ -102,11 +111,27 @@ const OwnerOrdersScreen = ({ navigation }) => {
         onPress={() =>
           navigation.navigate("OwnerOrderDetail", { order_id: item.order_id })
         }
-        style={styles.listStyle}
+        style={{
+          ...styles.listStyle,
+          width: isPC ? "50%" : "80%",
+        }}
       >
         <View style={{ maxWidth: "70%" }}>
-          <Text numberOfLines={2} style={styles.listItemName}>
+          <Text numberOfLines={1} style={styles.listItemName}>
             {item?.order_title}
+          </Text>
+          <Text
+            style={{
+              ...styles.listItemName,
+              fontSize: 12,
+              marginTop: 7,
+              color: "#CCCCCC",
+            }}
+          >
+            {convertTimeToAMPM(item.createdAt) +
+              " (" +
+              formatDate(item.createdAt) +
+              ")"}
           </Text>
         </View>
         <View style={{ paddingRight: 20 }}>
@@ -184,6 +209,11 @@ const OwnerOrdersScreen = ({ navigation }) => {
           onPress={() => handleStatusButton("All")}
           style={[
             styles.statusButton,
+            {
+              paddingHorizontal: isPC
+                ? widthPercentageToDP("3%")
+                : widthPercentageToDP("1%"),
+            },
             activeStatus == "All"
               ? styles.statusButtonActive
               : styles.statusButtonInactive,
@@ -204,6 +234,11 @@ const OwnerOrdersScreen = ({ navigation }) => {
           onPress={() => handleStatusButton(ORDER_STATUS_PENDING)}
           style={[
             styles.statusButton,
+            {
+              paddingHorizontal: isPC
+                ? widthPercentageToDP("3%")
+                : widthPercentageToDP("1%"),
+            },
             activeStatus == ORDER_STATUS_PENDING
               ? styles.statusButtonActive
               : styles.statusButtonInactive,
@@ -224,6 +259,11 @@ const OwnerOrdersScreen = ({ navigation }) => {
           onPress={() => handleStatusButton(ORDER_STATUS_READY)}
           style={[
             styles.statusButton,
+            {
+              paddingHorizontal: isPC
+                ? widthPercentageToDP("3%")
+                : widthPercentageToDP("1%"),
+            },
             activeStatus == ORDER_STATUS_READY
               ? styles.statusButtonActive
               : styles.statusButtonInactive,
@@ -244,6 +284,11 @@ const OwnerOrdersScreen = ({ navigation }) => {
           onPress={() => handleStatusButton(ORDER_STATUS_PICKED)}
           style={[
             styles.statusButton,
+            {
+              paddingHorizontal: isPC
+                ? widthPercentageToDP("3%")
+                : widthPercentageToDP("1%"),
+            },
             activeStatus == ORDER_STATUS_PICKED
               ? styles.statusButtonActive
               : styles.statusButtonInactive,
@@ -293,10 +338,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "center",
+    gap: 20,
   },
   statusText: {
-    fontWeight: "bold",
+    fontWeight: "500",
     fontSize: 15,
   },
 
@@ -319,9 +365,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#333333",
   },
   listStyle: {
-    height: 75,
-    width: "90%",
-    marginTop: 20,
+    // height: 75,
+    paddingVertical: "1%",
+    width: "50%",
+    marginTop: 15,
     borderRadius: 8,
     // marginLeft: 8,
     alignSelf: "center",

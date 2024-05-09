@@ -34,6 +34,15 @@ import {
   convertTimeToAMPM,
   formatDate,
 } from "../../components/utils/formatDateTime";
+import { setIsDesktop } from "../../redux/UtilSlice";
+import { useMediaQuery } from "react-responsive";
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from "react-native-responsive-screen";
+import { isDesktop, isDesktopOrLaptop } from "../../hooks/isDesktop";
+
+let isPC;
 
 const OrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -43,7 +52,8 @@ const OrdersScreen = ({ navigation }) => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-
+  isPC = isDesktop();
+  console.log("isDesk:", isPC);
   const fetchOrderList = async (status = activeStatus, page = 0) => {
     try {
       if (page === 0) setLoading(true);
@@ -156,7 +166,10 @@ const OrdersScreen = ({ navigation }) => {
         onPress={() =>
           navigation.navigate("OrderDetail", { order_id: item.order_id })
         }
-        style={styles.listStyle}
+        style={{
+          ...styles.listStyle,
+          width: isPC ? "50%" : "80%",
+        }}
       >
         <View style={{ maxWidth: "70%" }}>
           <Text numberOfLines={1} style={styles.listItemName}>
@@ -203,6 +216,11 @@ const OrdersScreen = ({ navigation }) => {
           onPress={() => handleStatusButton("All")}
           style={[
             styles.statusButton,
+            {
+              paddingHorizontal: isPC
+                ? widthPercentageToDP("3%")
+                : widthPercentageToDP("1%"),
+            },
             activeStatus == "All"
               ? styles.statusButtonActive
               : styles.statusButtonInactive,
@@ -223,6 +241,11 @@ const OrdersScreen = ({ navigation }) => {
           onPress={() => handleStatusButton(ORDER_STATUS_PENDING)}
           style={[
             styles.statusButton,
+            {
+              paddingHorizontal: isPC
+                ? widthPercentageToDP("3%")
+                : widthPercentageToDP("1%"),
+            },
             activeStatus == ORDER_STATUS_PENDING
               ? styles.statusButtonActive
               : styles.statusButtonInactive,
@@ -243,6 +266,11 @@ const OrdersScreen = ({ navigation }) => {
           onPress={() => handleStatusButton(ORDER_STATUS_READY)}
           style={[
             styles.statusButton,
+            {
+              paddingHorizontal: isPC
+                ? widthPercentageToDP("3%")
+                : widthPercentageToDP("1%"),
+            },
             activeStatus == ORDER_STATUS_READY
               ? styles.statusButtonActive
               : styles.statusButtonInactive,
@@ -263,6 +291,11 @@ const OrdersScreen = ({ navigation }) => {
           onPress={() => handleStatusButton(ORDER_STATUS_PICKED)}
           style={[
             styles.statusButton,
+            {
+              paddingHorizontal: isPC
+                ? widthPercentageToDP("3%")
+                : widthPercentageToDP("1%"),
+            },
             activeStatus == ORDER_STATUS_PICKED
               ? styles.statusButtonActive
               : styles.statusButtonInactive,
@@ -309,8 +342,8 @@ const styles = StyleSheet.create({
   },
   listStyle: {
     // height: 75,
-    paddingVertical: "4%",
-    width: "90%",
+    paddingVertical: "1%",
+    width: "50%",
     marginTop: 15,
     borderRadius: 8,
     // marginLeft: 8,
@@ -325,17 +358,18 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "center",
+    gap: 20,
   },
   statusText: {
-    fontWeight: "bold",
+    fontWeight: "500",
     fontSize: 15,
   },
 
   statusButton: {
     borderRadius: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 15,
+    paddingVertical: heightPercentageToDP("1%"),
+    paddingHorizontal: widthPercentageToDP("3%"),
     backgroundColor: "#F3F3F2",
   },
   statusTextInactive: {
