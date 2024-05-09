@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { Button } from "react-native-paper";
 import LoadingScreen from "../../components/utils/LoadingScreen";
 import { getUserDetails } from "../../api/methods/getUserDetails";
+import { isDesktop } from "../../hooks/isDesktop";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -35,13 +36,15 @@ const ProfileScreen = () => {
     fetchUser();
   }, []);
 
+  let isPC = isDesktop();
+
   const userType = user?.user_type === "0" ? "Owner" : "Customer";
 
   return loading ? (
     <LoadingScreen />
   ) : (
     <View style={styles.container}>
-      <View style={styles.innerContainer}>
+      <View style={{ ...styles.innerContainer, width: isPC ? "30%" : "90%" }}>
         <Text style={styles.label}>Name: {user?.username + " "}</Text>
         {/* <Text style={styles.value}>{user.username + " "}</Text> */}
 

@@ -1,15 +1,17 @@
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import StackNavigator from "./navigation/StackNavigator";
 import { Provider } from "react-redux";
 import MyStore from "./redux/MyStore";
-import { TabNavigator } from "./navigation/StackNavigator";
 
 export default function App() {
   return (
-    <Provider store={MyStore}>
-      <StackNavigator />
-    </Provider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Provider store={MyStore}>
+        <StackNavigator />
+      </Provider>
+    </GestureHandlerRootView>
   );
 }
 

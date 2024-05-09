@@ -1,6 +1,7 @@
 import {
   Alert,
   Dimensions,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -40,7 +41,7 @@ const HomeScreen = ({ navigation }) => {
   console.log("isMobile", isMobile);
   const pickDocument = async () => {
     console.log("clicked");
-    if (pdfUri) {
+    if (pdfUri && Platform.OS !== "web") {
       navigation.navigate("PdfView", { uri: pdfUri, showButtons: true });
       return;
     }
@@ -56,11 +57,11 @@ const HomeScreen = ({ navigation }) => {
         dispatch(setPdfUri({ pdfUri: result.assets[0].uri }));
 
         // Handle the picked document URI, you may want to save it or upload it
-
-        navigation.navigate("PdfView", {
-          uri: result.assets[0].uri,
-          showButtons: true,
-        });
+        if (Platform.OS !== "web")
+          navigation.navigate("PdfView", {
+            uri: result.assets[0].uri,
+            showButtons: true,
+          });
       } else {
         console.log("Document picking canceled");
       }
@@ -69,7 +70,7 @@ const HomeScreen = ({ navigation }) => {
     }
   };
   const openPDF = () => {
-    if (pdfUri) {
+    if (pdfUri && Platform.OS !== "web") {
       navigation.navigate("PdfView", { uri: pdfUri, showButtons: true });
     }
   };
@@ -124,7 +125,7 @@ const HomeScreen = ({ navigation }) => {
               style={{
                 ...styles.documentPicker,
                 alignSelf: "center",
-                // width: isDesktopOrLaptop ? "48%" : "48%",
+                width: isDesktopOrLaptop ? "48%" : "70%",
               }}
               onPress={pickDocument}
             >
@@ -138,7 +139,13 @@ const HomeScreen = ({ navigation }) => {
             </Pressable>
           ) : (
             <Pressable
-              style={[styles.documentPicker, { paddingVertical: "10%" }]}
+              style={[
+                styles.documentPicker,
+                {
+                  paddingVertical: "10%",
+                  width: isDesktopOrLaptop ? "48%" : "70%",
+                },
+              ]}
               onPress={pickDocument}
             >
               <Pressable onPress={openPDF} style={styles.pdfPreview}>

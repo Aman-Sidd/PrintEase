@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useDispatch } from "react-redux";
 import { setPageSize, setPrintType } from "../../redux/OrderSlice";
+import { useMediaQuery } from "react-responsive";
 
 const data = [
   { label: "Single Sided", value: "1" },
@@ -25,11 +26,18 @@ const PrintTypeDropdown = () => {
     return null;
   };
   const dispatch = useDispatch();
+  const isPC = useMediaQuery({
+    query: "(min-width: 1224px)",
+  });
   return (
-    <View style={styles.container}>
+    <View style={{ ...styles.container, padding: isPC ? 8 : 16 }}>
       {renderLabel()}
       <Dropdown
-        style={[styles.dropdown, isFocus && { borderColor: "white" }]}
+        style={[
+          styles.dropdown,
+          !isPC && Platform.OS === "web" && { height: 45 },
+          isFocus && { borderColor: "white" },
+        ]}
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
         inputSearchStyle={styles.inputSearchStyle}

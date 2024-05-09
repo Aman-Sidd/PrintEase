@@ -29,6 +29,7 @@ import {
   ValueToStatusConvertor,
 } from "../helpers/StatusConversion";
 import { getPerPagePrice } from "../helpers/GetPerPagePrice";
+import { isDesktop } from "../../hooks/isDesktop";
 
 const OrderDetails = ({ order_id, isOwner }) => {
   const navigation = useNavigation();
@@ -39,6 +40,7 @@ const OrderDetails = ({ order_id, isOwner }) => {
   const [orderStatus, setOrderStatus] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  let isPC = isDesktop();
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
@@ -121,25 +123,46 @@ const OrderDetails = ({ order_id, isOwner }) => {
           }
         }
       >
-        <View style={styles.checkoutInfo}>
+        <View style={{ ...styles.checkoutInfo, width: isPC ? "40%" : "90%" }}>
           <View style={{ display: "flex", flexDirection: "row" }}>
-            <Text style={styles.textStyle}>Transaction ID: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
+            <Text style={{ ...styles.textStyle, fontSize: isPC ? 18 : 15 }}>
+              Transaction ID:{" "}
+            </Text>
+            <Text
+              style={[
+                styles.textStyle,
+                { color: "white", fontSize: isPC ? 18 : 15 },
+              ]}
+            >
               {" "}
               2325158412 &nbsp;
             </Text>
           </View>
 
           <View style={{ display: "flex", flexDirection: "row" }}>
-            <Text style={styles.textStyle}>Page Size: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
+            <Text style={{ ...styles.textStyle, fontSize: isPC ? 18 : 15 }}>
+              Page Size:{" "}
+            </Text>
+            <Text
+              style={[
+                styles.textStyle,
+                { color: "white", fontSize: isPC ? 18 : 15 },
+              ]}
+            >
               {" "}
               {orderDetails?.OrderDetails[0].page_size + " "}
             </Text>
           </View>
           <View style={{ display: "flex", flexDirection: "row" }}>
-            <Text style={styles.textStyle}>Color: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
+            <Text style={{ ...styles.textStyle, fontSize: isPC ? 18 : 15 }}>
+              Color:{" "}
+            </Text>
+            <Text
+              style={[
+                styles.textStyle,
+                { color: "white", fontSize: isPC ? 18 : 15 },
+              ]}
+            >
               {" "}
               {orderDetails?.OrderDetails[0].print_color + " "}
             </Text>
@@ -147,26 +170,45 @@ const OrderDetails = ({ order_id, isOwner }) => {
           <View
             style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
           >
-            <Text style={styles.textStyle}>Chosen File: </Text>
+            <Text style={{ ...styles.textStyle, fontSize: isPC ? 18 : 15 }}>
+              Chosen File:{" "}
+            </Text>
             <Pressable onPress={openPdf}>
               <UnderlinedText
                 numberOfLines={1}
-                style={[styles.textStyle, { color: "white" }]}
+                style={[
+                  styles.textStyle,
+                  { color: "white", fontSize: isPC ? 18 : 15 },
+                ]}
               >
                 {orderDetails?.order_title}
               </UnderlinedText>
             </Pressable>
           </View>
           <View style={{ display: "flex", flexDirection: "row" }}>
-            <Text style={styles.textStyle}>Total Pages: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
+            <Text style={{ ...styles.textStyle, fontSize: isPC ? 18 : 15 }}>
+              Total Pages:{" "}
+            </Text>
+            <Text
+              style={[
+                styles.textStyle,
+                { color: "white", fontSize: isPC ? 18 : 15 },
+              ]}
+            >
               {" "}
               {orderDetails?.OrderDetails[0].total_pages + " "}
             </Text>
           </View>
           <View style={{ display: "flex", flexDirection: "row" }}>
-            <Text style={styles.textStyle}>Price per page: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
+            <Text style={{ ...styles.textStyle, fontSize: isPC ? 18 : 15 }}>
+              Price per page:{" "}
+            </Text>
+            <Text
+              style={[
+                styles.textStyle,
+                { color: "white", fontSize: isPC ? 18 : 15 },
+              ]}
+            >
               {" "}
               Rs. {priceRatePerPage + " "}
             </Text>
@@ -178,8 +220,15 @@ const OrderDetails = ({ order_id, isOwner }) => {
               alignItems: "center",
             }}
           >
-            <Text style={styles.textStyle}>Total Price: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
+            <Text style={{ ...styles.textStyle, fontSize: isPC ? 18 : 15 }}>
+              Total Price:{" "}
+            </Text>
+            <Text
+              style={[
+                styles.textStyle,
+                { color: "white", fontSize: isPC ? 18 : 15 },
+              ]}
+            >
               {" "}
               {orderDetails?.OrderDetails[0].total_pages} * Rs.{" "}
               {priceRatePerPage} = Rs. {orderDetails?.total_price + " "}
@@ -192,12 +241,15 @@ const OrderDetails = ({ order_id, isOwner }) => {
               alignItems: "center",
             }}
           >
-            <Text style={styles.textStyle}>Order Status: </Text>
+            <Text style={{ ...styles.textStyle, fontSize: isPC ? 18 : 15 }}>
+              Order Status:{" "}
+            </Text>
             <Text
               style={[
                 styles.textStyle,
                 {
                   color: StatusToColorConvertor(orderStatus),
+                  fontSize: isPC ? 18 : 15,
                 },
               ]}
             >
@@ -247,7 +299,11 @@ const OrderDetails = ({ order_id, isOwner }) => {
         </View>
         {isOwner && (
           <Button
-            style={{ marginTop: 20, width: "20%", alignSelf: "center" }}
+            style={{
+              marginTop: 20,
+              width: isPC ? "20%" : "80%",
+              alignSelf: "center",
+            }}
             mode="contained"
             onPress={handleChangeOrderStatus}
           >
