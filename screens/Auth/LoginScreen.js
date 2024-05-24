@@ -40,6 +40,7 @@ const LoginScreen = () => {
   const isDesktopOrLaptop = useMediaQuery({
     query: "(min-width: 1224px)",
   });
+
   useEffect(() => {
     const checkForAuthToken = async () => {
       setLoading(true);
@@ -109,7 +110,13 @@ const LoginScreen = () => {
         <LoadingScreen />
       ) : (
         <SafeAreaView style={styles.mainContainer}>
-          <View style={isDesktop ? styles.container : null}>
+          <View
+            style={
+              isDesktop
+                ? { width: "30%", alignSelf: "center" }
+                : { width: "90%", alignSelf: "center" }
+            }
+          >
             <View>
               <View style={{ alignItems: "center" }}>
                 <GradientText style={{ fontSize: 45 }} text="PrintEase" />

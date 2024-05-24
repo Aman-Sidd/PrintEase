@@ -17,6 +17,16 @@ import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/utils/LoadingScreen";
 import { updatePaymentId } from "../../api/methods/updatePaymentId";
 import { getPerPagePrice } from "../../components/helpers/GetPerPagePrice";
+import {
+  RAZORPAY_API_KEY,
+  RAZORPAY_CURRENCY,
+  RAZORPAY_DESCRIPTION,
+  RAZORPAY_IMAGE_URL,
+  RAZORPAY_ORG_NAME,
+  RAZORPAY_PREFILL_CONTACT,
+  RAZORPAY_PREFILL_EMAIL,
+  RAZORPAY_PREFILL_NAME,
+} from "../../constants/RAZORPAY";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
@@ -25,6 +35,7 @@ const CheckoutScreen = ({ navigation }) => {
   const placeOrder = async () => {
     setLoading(true);
     const formData = new FormData();
+    console.log("Order Details: ", orderDetails);
 
     formData.append("file", {
       uri: orderDetails.pdfUri,
@@ -32,7 +43,7 @@ const CheckoutScreen = ({ navigation }) => {
       type: "application/pdf", // Set MIME type for PDF files
     });
     formData.append("title", orderDetails.pdfName);
-    formData.append("totalprice", orderDetails.noOfPages * priceRatePerPage);
+    formData.append("totalprice", totalAmount);
     formData.append("pagesize", orderDetails.pageSize);
     formData.append("color", orderDetails.color);
     formData.append("printtype", orderDetails.printType);
@@ -80,49 +91,81 @@ const CheckoutScreen = ({ navigation }) => {
     }
   };
 
-  // const handleCheckout = async (amount) => {
-  //   var options = {
-  //     description: RAZORPAY_DESCRIPTION,
-  //     image: RAZORPAY_IMAGE_URL,
-  //     currency: RAZORPAY_CURRENCY,
-  //     // upi_link: true,
-  //     key: RAZORPAY_API_KEY,
-  //     amount: amount * 100,
-  //     name: RAZORPAY_ORG_NAME,
-  //     order_id: "", //Replace this with an order_id created using Orders API.
-  //     prefill: {
-  //       email: RAZORPAY_PREFILL_EMAIL,
-  //       contact: RAZORPAY_PREFILL_CONTACT,
-  //       name: RAZORPAY_PREFILL_NAME,
-  //     },
-  //     theme: { color: "#53a20e" },
-  //   };
-  //   const order_id = await placeOrder();
+  function loadScript(src) {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
+  }
 
-  //   if (order_id === null) {
-  //     Alert.alert("Failed!", "Something went wrong.");
-  //     return;
-  //   }
-  //   console.log("Order Id from CheckoutScreen:", order_id);
-  //   RazorpayCheckout.open(options)
-  //     .then(async (data) => {
-  //       // handle success
-  //       console.log("DATA: ", data);
+  async function handleCheckout(amount) {
+    const res = await loadScript(
+      "https://checkout.razorpay.com/v1/checkout.js"
+    );
 
-  //       await updatePaymentInfo({
-  //         orderid: order_id,
-  //         paymentid: data.razorpay_payment_id,
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       // handle failure
-  //       console.log("Error:", error);
-  //       const errorObject = JSON.parse(error.description);
-  //       // console.log(errorObject);
-  //       Alert.alert("Error", `${errorObject.error.description}`);
-  //       // alert(`Error: ${errorObject.error.description}`);
-  //     });
-  // };
+    if (!res) {
+      alert("Razropay failed to load!!");
+      return;
+    }
+
+    var options = {
+      key: RAZORPAY_API_KEY, // Enter the Key ID generated from the Dashboard
+      amount: amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      currency: RAZORPAY_CURRENCY,
+      name: RAZORPAY_ORG_NAME,
+      description: RAZORPAY_DESCRIPTION,
+      image: RAZORPAY_IMAGE_URL,
+      order_id: "", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      handler: async function (response) {
+        // console.log("RESPONSE:", response);
+        await updatePaymentInfo({
+          orderid: order_id,
+          paymentid: data.razorpay_payment_id,
+        })
+          .then((data) => {
+            alert("Order Successful!");
+          })
+          .catch((err) => {
+            alert("payment successfull but error in updating payment info!");
+          });
+      },
+      prefill: {
+        email: RAZORPAY_PREFILL_EMAIL,
+        contact: RAZORPAY_PREFILL_CONTACT,
+        name: RAZORPAY_PREFILL_NAME,
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+
+    const order_id = await placeOrder();
+
+    if (order_id === null) {
+      alert("Failed! Something went wrong.");
+      return;
+    }
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.on("payment.failed", function (response) {
+      alert(
+        `Error occured while making payment: ${response.error.description}`
+      );
+      // alert(response.error.source);
+      // alert(response.error.step);
+      // alert(response.error.reason);
+      // alert(response.error.metadata.order_id);
+      // alert(response.error.metadata.payment_id);
+    });
+    paymentObject.open();
+  }
 
   const priceRatePerPage = getPerPagePrice(orderDetails.noOfPages);
 
@@ -188,7 +231,7 @@ const CheckoutScreen = ({ navigation }) => {
         <View style={{ display: "flex", flexDirection: "row" }}>
           <Text style={styles.textStyle}>Total Price: </Text>
           <Text style={[styles.textStyle, { color: "white" }]}>
-            {orderDetails.noOfPages} * {priceRatePerPage} = Rs. {totalAmount}
+            {orderDetails.noOfPages} X {priceRatePerPage} = Rs. {totalAmount}
             &nbsp;
           </Text>
         </View>

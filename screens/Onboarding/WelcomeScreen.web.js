@@ -15,6 +15,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { Image } from "expo-image";
+import { useMediaQuery } from "react-responsive";
 
 const WelcomeScreen = ({ navigation }) => {
   const user = useSelector((state) => state.user);
@@ -46,6 +47,10 @@ const WelcomeScreen = ({ navigation }) => {
   const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
+  const isDesktopOrLaptop = useMediaQuery({
+    query: "(min-width: 1224px)",
+  });
+
   return loading ? (
     <LoadingScreen />
   ) : (
@@ -59,7 +64,10 @@ const WelcomeScreen = ({ navigation }) => {
         </View>
         <View style={styles.imageContainer}>
           <Image
-            style={styles.imageStyle}
+            style={[
+              styles.imageStyle,
+              !isDesktopOrLaptop && { width: 170, height: 170 },
+            ]}
             source={require("../../assets/printer.png")}
             placeholder={blurhash}
             contentFit="cover"
@@ -68,7 +76,9 @@ const WelcomeScreen = ({ navigation }) => {
         </View>
       </View>
 
-      <View style={styles.footerContainer}>
+      <View
+        style={[styles.footerContainer, !isDesktopOrLaptop && { width: "80%" }]}
+      >
         <Pressable
           style={styles.fadedButtonStyle}
           onPress={() => navigation.replace("Login")}

@@ -8,10 +8,14 @@ import {
   Pressable,
 } from "react-native";
 
-const CancelSelectButtons = ({ onCancelPress, onSelectPress }) => {
+const CancelSelectButtons = ({
+  onCancelPress,
+  onSelectPress,
+  containerStyle,
+}) => {
   const navigation = useNavigation();
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <Pressable onPress={onCancelPress} style={styles.cancelButton}>
         <Text style={styles.cancelButtonText}>Cancel&nbsp;</Text>
       </Pressable>

@@ -25,6 +25,9 @@ import ColorDropdown from "../components/dropdown/ColorDropdown";
 import PrintTypeDropdown from "../components/dropdown/PrintTypeDropdown";
 import UnderlinedText from "../components/formUtils/UnderlinedText";
 import { useMediaQuery } from "react-responsive";
+import { pdfjs } from "react-pdf";
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -57,11 +60,11 @@ const HomeScreen = ({ navigation }) => {
         dispatch(setPdfUri({ pdfUri: result.assets[0].uri }));
 
         // Handle the picked document URI, you may want to save it or upload it
-        if (Platform.OS !== "web")
-          navigation.navigate("PdfView", {
-            uri: result.assets[0].uri,
-            showButtons: true,
-          });
+
+        navigation.navigate("PdfView", {
+          uri: result.assets[0].uri,
+          showButtons: true,
+        });
       } else {
         console.log("Document picking canceled");
       }
@@ -72,7 +75,7 @@ const HomeScreen = ({ navigation }) => {
   const openPDF = () => {
     if (pdfUri && Platform.OS !== "web") {
       navigation.navigate("PdfView", { uri: pdfUri, showButtons: true });
-    }
+    } else navigation.navigate("PdfView", { uri: pdfUri, showButtons: true });
   };
 
   useEffect(() => {
@@ -142,7 +145,7 @@ const HomeScreen = ({ navigation }) => {
               style={[
                 styles.documentPicker,
                 {
-                  paddingVertical: "10%",
+                  paddingVertical: "5%",
                   width: isDesktopOrLaptop ? "48%" : "70%",
                 },
               ]}
@@ -166,7 +169,12 @@ const HomeScreen = ({ navigation }) => {
           )}
         </View>
 
-        <View style={styles.buttonContainer}>
+        <View
+          style={[
+            styles.buttonContainer,
+            !isDesktopOrLaptop && { marginTop: "10%" },
+          ]}
+        >
           <Pressable onPress={onResetFile} style={styles.cancelButton}>
             <Text style={styles.cancelButtonText}>Reset File&nbsp;</Text>
           </Pressable>

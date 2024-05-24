@@ -6,7 +6,7 @@ const initialState = {
   printType: null,
   pdfUri: null,
   pdfName: null,
-  noOfpages: null,
+  noOfPages: null,
   pricePerPage: null,
   totalPrice: null,
 };
