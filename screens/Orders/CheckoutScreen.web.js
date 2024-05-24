@@ -114,6 +114,7 @@ const CheckoutScreen = ({ navigation }) => {
       alert("Razropay failed to load!!");
       return;
     }
+    const order_id = await placeOrder();
 
     var options = {
       key: RAZORPAY_API_KEY, // Enter the Key ID generated from the Dashboard
@@ -127,7 +128,7 @@ const CheckoutScreen = ({ navigation }) => {
         // console.log("RESPONSE:", response);
         await updatePaymentInfo({
           orderid: order_id,
-          paymentid: data.razorpay_payment_id,
+          paymentid: response.razorpay_payment_id,
         })
           .then((data) => {
             alert("Order Successful!");
@@ -145,8 +146,6 @@ const CheckoutScreen = ({ navigation }) => {
         color: "#3399cc",
       },
     };
-
-    const order_id = await placeOrder();
 
     if (order_id === null) {
       alert("Failed! Something went wrong.");

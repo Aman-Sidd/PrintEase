@@ -21,6 +21,7 @@ import { add_user, registerUser } from "../../redux/UserSlice";
 import InputText from "../../components/formUtils/InputText";
 import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/utils/LoadingScreen";
+import { useMediaQuery } from "react-responsive";
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -30,7 +31,9 @@ const RegisterScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
 
-  const isDesktop = useSelector((state) => state.util.isDesktop);
+  const isDesktop = useMediaQuery({
+    query: "(min-width: 1224px)",
+  });
   const dispatch = useDispatch();
 
   const registerUser = async (payload) => {
@@ -155,18 +158,27 @@ const RegisterScreen = ({ navigation }) => {
                 <Pressable
                   onPress={() => registerUser({ email, password, phone, name })}
                 >
-                  <LinearGradient
-                    colors={[
-                      "rgba(138, 212, 236, 0.8)",
-                      "rgba(239, 150, 255, 0.8)",
-                      "rgba(255, 86, 169, 0.8)",
-                      "rgba(255, 170, 108, 0.8)",
-                    ]}
-                    style={styles.linearGradButton}
-                    start={{ x: 0, y: 0 }}
-                  >
-                    <Text style={styles.linearGradButtonText}>Sign up</Text>
-                  </LinearGradient>
+                  {Platform.OS !== "web" ? (
+                    <LinearGradient
+                      colors={[
+                        "rgba(138, 212, 236, 0.8)",
+                        "rgba(239, 150, 255, 0.8)",
+                        "rgba(255, 86, 169, 0.8)",
+                        "rgba(255, 170, 108, 0.8)",
+                      ]}
+                      style={styles.linearGradButton}
+                      start={{ x: 0, y: 0 }}
+                    >
+                      <Text style={styles.linearGradButtonText}>Login</Text>
+                    </LinearGradient>
+                  ) : (
+                    <Pressable
+                      style={styles.fadedButtonStyle}
+                      onPress={() => fetchUser({ email, password })}
+                    >
+                      <Text style={styles.linearGradButtonText}>Sign up</Text>
+                    </Pressable>
+                  )}
                 </Pressable>
               ) : (
                 <Pressable style={styles.fadedButtonStyle}>

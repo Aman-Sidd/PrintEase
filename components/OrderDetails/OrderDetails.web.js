@@ -103,6 +103,18 @@ const OrderDetails = ({ order_id, isOwner }) => {
     }
   };
 
+  const handleDownload = () => {
+    // For web, create an anchor tag and trigger download
+    setLoading(true);
+    const link = document.createElement("a");
+    link.href = pdfUri;
+    link.download = "document.pdf"; // Name of the file to download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setLoading(false);
+  };
+
   return loading ? (
     <LoadingScreen />
   ) : (
@@ -173,7 +185,7 @@ const OrderDetails = ({ order_id, isOwner }) => {
             <Text style={{ ...styles.textStyle, fontSize: isPC ? 18 : 15 }}>
               Chosen File:{" "}
             </Text>
-            <Pressable onPress={openPdf}>
+            <Pressable onPress={handleDownload}>
               <UnderlinedText
                 numberOfLines={1}
                 style={[

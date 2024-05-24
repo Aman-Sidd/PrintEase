@@ -85,19 +85,11 @@ const WelcomeScreen = ({ navigation }) => {
         >
           <Text style={styles.fadedButtonText}>Login</Text>
         </Pressable>
-        <Pressable onPress={() => navigation.replace("Register")}>
-          <LinearGradient
-            colors={[
-              "rgba(138, 212, 236, 0.8)",
-              "rgba(239, 150, 255, 0.8)",
-              "rgba(255, 86, 169, 0.8)",
-              "rgba(255, 170, 108, 0.8)",
-            ]}
-            style={styles.linearGradButton}
-            start={{ x: 0, y: 0 }}
-          >
-            <Text style={styles.linearGradButtonText}>Sign up</Text>
-          </LinearGradient>
+        <Pressable
+          style={{ ...styles.fadedButtonStyle, backgroundColor: "#454f84" }}
+          onPress={() => navigation.replace("Register")}
+        >
+          <Text style={styles.linearGradButtonText}>Sign up</Text>
         </Pressable>
       </View>
     </SafeAreaView>

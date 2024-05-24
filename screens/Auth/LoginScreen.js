@@ -113,7 +113,7 @@ const LoginScreen = () => {
           <View
             style={
               isDesktop
-                ? { width: "30%", alignSelf: "center" }
+                ? styles.container
                 : { width: "90%", alignSelf: "center" }
             }
           >
@@ -183,18 +183,27 @@ const LoginScreen = () => {
             <View style={styles.footerContainer}>
               {email && password ? (
                 <Pressable onPress={() => fetchUser({ email, password })}>
-                  <LinearGradient
-                    colors={[
-                      "rgba(138, 212, 236, 0.8)",
-                      "rgba(239, 150, 255, 0.8)",
-                      "rgba(255, 86, 169, 0.8)",
-                      "rgba(255, 170, 108, 0.8)",
-                    ]}
-                    style={styles.linearGradButton}
-                    start={{ x: 0, y: 0 }}
-                  >
-                    <Text style={styles.linearGradButtonText}>Login</Text>
-                  </LinearGradient>
+                  {Platform.OS !== "web" ? (
+                    <LinearGradient
+                      colors={[
+                        "rgba(138, 212, 236, 0.8)",
+                        "rgba(239, 150, 255, 0.8)",
+                        "rgba(255, 86, 169, 0.8)",
+                        "rgba(255, 170, 108, 0.8)",
+                      ]}
+                      style={styles.linearGradButton}
+                      start={{ x: 0, y: 0 }}
+                    >
+                      <Text style={styles.linearGradButtonText}>Login</Text>
+                    </LinearGradient>
+                  ) : (
+                    <Pressable
+                      style={styles.fadedButtonStyle}
+                      onPress={() => fetchUser({ email, password })}
+                    >
+                      <Text style={styles.linearGradButtonText}>Login</Text>
+                    </Pressable>
+                  )}
                 </Pressable>
               ) : (
                 <Pressable style={styles.fadedButtonStyle}>
