@@ -88,7 +88,7 @@ const OrdersScreen = ({ navigation }) => {
 
       const newData = response || [];
       console.log("new data len:", newData.length);
-      console.log("PAGE_LIMIT:", PAGE_LIMIT);
+      console.log("PAGE_LIMIT: ", PAGE_LIMIT);
       if (newData.length < PAGE_LIMIT) {
         setHasMore(false);
       } else {
@@ -192,6 +192,7 @@ const OrdersScreen = ({ navigation }) => {
         <View style={{ paddingRight: 20 }}>
           <Text style={styles.listItemPrice}>Rs. {item?.total_price}</Text>
           <Text
+            numberOfLines={1}
             style={[
               styles.listItemStatus,
               {
@@ -219,7 +220,7 @@ const OrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("2%"),
             },
             activeStatus == "All"
               ? styles.statusButtonActive
@@ -244,7 +245,7 @@ const OrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("2%"),
             },
             activeStatus == ORDER_STATUS_PENDING
               ? styles.statusButtonActive
@@ -269,7 +270,7 @@ const OrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("2%"),
             },
             activeStatus == ORDER_STATUS_READY
               ? styles.statusButtonActive
@@ -294,7 +295,7 @@ const OrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("2%"),
             },
             activeStatus == ORDER_STATUS_PICKED
               ? styles.statusButtonActive
@@ -362,20 +363,24 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   statusText: {
+    textAlign: "center",
     fontWeight: "500",
     fontSize: 15,
   },
-
   statusButton: {
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 10,
     paddingVertical: heightPercentageToDP("1%"),
     paddingHorizontal: widthPercentageToDP("3%"),
     backgroundColor: "#F3F3F2",
   },
   statusTextInactive: {
+    alignSelf: "center",
     color: "black",
   },
   statusTextActive: {
+    alignSelf: "center",
     color: "white",
   },
   statusButtonInactive: {
@@ -386,5 +391,8 @@ const styles = StyleSheet.create({
   },
   listItemName: { color: "white", fontSize: 16, marginLeft: 20 },
   listItemPrice: { color: "white", fontSize: 18 },
-  listItemStatus: { fontSize: 14, textAlign: "center" },
+  listItemStatus: {
+    fontSize: 11,
+    textAlign: "center",
+  },
 });

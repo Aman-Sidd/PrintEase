@@ -223,6 +223,7 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    paddingTop: 10,
     backgroundColor: "#080A0C",
   },
   container: {

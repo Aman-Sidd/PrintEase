@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import AsyncStorage from "@react-native-community/async-storage";
-import { setPdfName, setPdfUri } from "../redux/OrderSlice";
+import { setFile, setPdfName, setPdfUri } from "../redux/OrderSlice";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -55,7 +55,7 @@ const HomeScreen = ({ navigation }) => {
       console.log(result);
       if (!result.canceled) {
         console.log("Document picked:", result.assets[0]);
-
+        dispatch(setFile({ file: result.assets[0].file }));
         dispatch(setPdfName({ pdfName: result.assets[0].name }));
         dispatch(setPdfUri({ pdfUri: result.assets[0].uri }));
 
@@ -106,7 +106,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ScrollView>
-        <View style={{ alignSelf: "center" }}>
+        <View style={{ alignSelf: "center", marginTop: 10 }}>
           <GradientText style={styles.gradientText} text="PrintEase" />
         </View>
         <View
@@ -159,7 +159,7 @@ const HomeScreen = ({ navigation }) => {
                   style={styles.pdfIcon}
                 />
                 <View style={styles.pdfInfoContainer}>
-                  <UnderlinedText style={styles.pdfNameText}>
+                  <UnderlinedText numberOfLines={1} style={styles.pdfNameText}>
                     {pdfName}
                   </UnderlinedText>
                 </View>

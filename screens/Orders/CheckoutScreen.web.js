@@ -38,11 +38,11 @@ import {
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
   const [loading, setLoading] = useState(false);
-
+  const fileObj = orderDetails.file;
   const createFileObject = (uri, name, type) => {
     if (Platform.OS === "web") {
       // For web, create a file object directly
-      return new File([uri], name, { type });
+      return fileObj;
     } else {
       // For React Native, use the existing approach
       return {

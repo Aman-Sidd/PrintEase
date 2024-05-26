@@ -9,6 +9,7 @@ const initialState = {
   noOfPages: null,
   pricePerPage: null,
   totalPrice: null,
+  file: null,
 };
 
 const OrderSlice = createSlice({
@@ -17,6 +18,9 @@ const OrderSlice = createSlice({
   reducers: {
     setPageSize(state, action) {
       state.pageSize = action.payload.pageSize;
+    },
+    setFile(state, action) {
+      state.file = action.payload.file;
     },
     setColor(state, action) {
       state.color = action.payload.color;
@@ -51,6 +55,7 @@ export const {
   setPrintType,
   setPricePerPage,
   setTotalPrice,
+  setFile,
 } = OrderSlice.actions;
 
 export default OrderSlice.reducer;
