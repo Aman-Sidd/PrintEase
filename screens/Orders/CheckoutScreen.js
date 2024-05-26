@@ -29,15 +29,30 @@ const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
   const [loading, setLoading] = useState(false);
 
+  const createFileObject = (uri, name, type) => {
+    if (Platform.OS === "web") {
+      // For web, create a file object directly
+      return new File([uri], name, { type });
+    } else {
+      // For React Native, use the existing approach
+      return {
+        uri,
+        name,
+        type,
+      };
+    }
+  };
+
   const placeOrder = async () => {
     setLoading(true);
     const formData = new FormData();
 
-    formData.append("file", {
-      uri: orderDetails.pdfUri,
-      name: orderDetails.pdfName, // Set the file name with appropriate extension
-      type: "application/pdf", // Set MIME type for PDF files
-    });
+    const file = createFileObject(
+      orderDetails.pdfUri,
+      orderDetails.pdfName,
+      "application/pdf"
+    );
+    formData.append("file", file);
     formData.append("title", orderDetails.pdfName);
     formData.append("totalprice", orderDetails.noOfPages * priceRatePerPage);
     formData.append("pagesize", orderDetails.pageSize);
@@ -60,7 +75,9 @@ const CheckoutScreen = ({ navigation }) => {
           response.data.data.orderDetails.order_id
         );
         return response.data.data.orderDetails.order_id;
-      } else return null;
+      } else {
+        return null;
+      }
     } catch (err) {
       console.log("Error while creating order:", err.response);
       return null;

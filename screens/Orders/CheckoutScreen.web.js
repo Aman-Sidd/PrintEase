@@ -1,4 +1,11 @@
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
@@ -32,18 +39,32 @@ const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
   const [loading, setLoading] = useState(false);
 
+  const createFileObject = (uri, name, type) => {
+    if (Platform.OS === "web") {
+      // For web, create a file object directly
+      return new File([uri], name, { type });
+    } else {
+      // For React Native, use the existing approach
+      return {
+        uri,
+        name,
+        type,
+      };
+    }
+  };
+
   const placeOrder = async () => {
     setLoading(true);
     const formData = new FormData();
-    console.log("Order Details: ", orderDetails);
 
-    formData.append("file", {
-      uri: orderDetails.pdfUri,
-      name: orderDetails.pdfName, // Set the file name with appropriate extension
-      type: "application/pdf", // Set MIME type for PDF files
-    });
+    const file = createFileObject(
+      orderDetails.pdfUri,
+      orderDetails.pdfName,
+      "application/pdf"
+    );
+    formData.append("file", file);
     formData.append("title", orderDetails.pdfName);
-    formData.append("totalprice", totalAmount);
+    formData.append("totalprice", orderDetails.noOfPages * priceRatePerPage);
     formData.append("pagesize", orderDetails.pageSize);
     formData.append("color", orderDetails.color);
     formData.append("printtype", orderDetails.printType);
@@ -64,7 +85,9 @@ const CheckoutScreen = ({ navigation }) => {
           response.data.data.orderDetails.order_id
         );
         return response.data.data.orderDetails.order_id;
-      } else return null;
+      } else {
+        return null;
+      }
     } catch (err) {
       console.log("Error while creating order:", err.response);
       return null;
@@ -105,7 +128,7 @@ const CheckoutScreen = ({ navigation }) => {
     });
   }
 
-  async function handleCheckout(amount) {
+  async function handleCheckout(totalAmount) {
     const res = await loadScript(
       "https://checkout.razorpay.com/v1/checkout.js"
     );
@@ -118,7 +141,7 @@ const CheckoutScreen = ({ navigation }) => {
 
     var options = {
       key: RAZORPAY_API_KEY, // Enter the Key ID generated from the Dashboard
-      amount: amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      amount: totalAmount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
       currency: RAZORPAY_CURRENCY,
       name: RAZORPAY_ORG_NAME,
       description: RAZORPAY_DESCRIPTION,
