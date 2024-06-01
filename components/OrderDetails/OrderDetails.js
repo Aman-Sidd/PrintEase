@@ -22,7 +22,8 @@ import LoadingScreen from "../utils/LoadingScreen";
 import UnderlinedText from "../formUtils/UnderlinedText";
 import { convertTimeToAMPM, formatDate } from "../utils/formatDateTime";
 
-const OrderDetails = ({ order_id, isOwner }) => {
+const OrderDetails = ({ order_id, isOwner, _id }) => {
+  console.log("orderDetails_id:", _id);
   const navigation = useNavigation();
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);

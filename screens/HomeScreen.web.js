@@ -26,6 +26,7 @@ import PrintTypeDropdown from "../components/dropdown/PrintTypeDropdown";
 import UnderlinedText from "../components/formUtils/UnderlinedText";
 import { useMediaQuery } from "react-responsive";
 import { pdfjs } from "react-pdf";
+import { Image } from "expo-image";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
@@ -106,8 +107,27 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ScrollView>
-        <View style={{ alignSelf: "center", marginTop: 10 }}>
-          <GradientText style={styles.gradientText} text="PrintEase" />
+        <View
+          style={{
+            alignSelf: "center",
+            marginTop: 10,
+            // backgroundColor: "red",
+            marginBottom: 10,
+          }}
+        >
+          <Image
+            style={[
+              styles.imageStyle,
+              !isDesktopOrLaptop && { width: 170, height: 170 },
+            ]}
+            source={require("../assets/logo.png")}
+            contentFit="contain"
+            transition={1000}
+          />
+          <Text style={{ color: "white", textAlign: "center", fontSize: 20 }}>
+            Create Your Order
+          </Text>
+          {/* <GradientText style={styles.gradientText} text="PrintEase" /> */}
         </View>
         <View
           style={{
@@ -192,6 +212,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#080A0C",
   },
+  imageStyle: {
+    height: 150,
+    width: 150,
+  },
   gradientText: {
     alignSelf: "center",
     fontSize: hp("5%"),
@@ -257,7 +281,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 30,
     paddingHorizontal: 20,
-    marginTop: "3%",
+    marginTop: "1%",
   },
   cancelButton: {
     width: 143,

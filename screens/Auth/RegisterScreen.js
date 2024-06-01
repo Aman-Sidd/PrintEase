@@ -52,7 +52,10 @@ const RegisterScreen = ({ navigation }) => {
       const response = await myApi.post("/register", registerFormData, config);
       console.log("RESPONSE:", response);
       // dispatch(add_user({ ...payload, token }));
-      Alert.alert("Successful", "You are registered successfully!");
+      if (Platform.OS !== "web")
+        Alert.alert("Successful", "You are registered successfully!");
+      else alert("Successful! You are registered successfully!");
+
       setName("");
       setEmail("");
       setPhone("");
@@ -62,7 +65,9 @@ const RegisterScreen = ({ navigation }) => {
         "Something went wrong while creating user! ",
         err.response.data
       );
-      Alert.alert("Email already exist!", "Please! Choose another email.");
+      if (Platform.OS !== "web")
+        Alert.alert("Email already exist!", "Please! Choose another email.");
+      else alert("Email already exist. Try another email.");
     } finally {
       setLoading(false);
     }
@@ -106,7 +111,7 @@ const RegisterScreen = ({ navigation }) => {
                   actions={{ setName, setEmail, setPassword, setPhone }}
                 />
               </View>
-              <View style={styles.thirdPartyContainer}>
+              {/* <View style={styles.thirdPartyContainer}>
                 <Divider
                   style={{ width: "20%" }}
                   color="gray"
@@ -130,15 +135,16 @@ const RegisterScreen = ({ navigation }) => {
                 <AntDesign name="google" size={24} color="#959595" />
                 <FontAwesome5 name="facebook" size={24} color="#959595" />
                 <AntDesign name="apple1" size={24} color="#959595" />
-              </View>
+              </View> */}
             </View>
             <Pressable
               onPress={() => navigation.replace("Login")}
               style={{
-                marginLeft: 40,
-                marginTop: 20,
+                // marginLeft: 40,
+                marginTop: 10,
                 display: "flex",
                 flexDirection: "row",
+                justifyContent: "center",
               }}
             >
               <Text style={{ color: "gray", fontSize: 15 }}>
@@ -169,15 +175,12 @@ const RegisterScreen = ({ navigation }) => {
                       style={styles.linearGradButton}
                       start={{ x: 0, y: 0 }}
                     >
-                      <Text style={styles.linearGradButtonText}>Login</Text>
+                      <Text style={styles.linearGradButtonText}>Sign up</Text>
                     </LinearGradient>
                   ) : (
-                    <Pressable
-                      style={styles.fadedButtonStyle}
-                      onPress={() => fetchUser({ email, password })}
-                    >
+                    <View style={styles.fadedButtonStyle}>
                       <Text style={styles.linearGradButtonText}>Sign up</Text>
-                    </Pressable>
+                    </View>
                   )}
                 </Pressable>
               ) : (

@@ -35,6 +35,7 @@ const ColorDropdown = () => {
       <Dropdown
         style={[
           styles.dropdown,
+          isPC && Platform.OS === "web" && { height: 50 },
           !isPC && Platform.OS === "web" && { height: 45 },
           isFocus && { borderColor: "white" },
         ]}

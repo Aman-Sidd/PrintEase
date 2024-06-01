@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "299399334677",
+    "project_id": "printease-5ba57",
+    "storage_bucket": "printease-5ba57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299399334677:android:64b2268eabbeb8399ef71c",
+        "android_client_info": {
+          "package_name": "com.aman_sidd.PrintEase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvGR_NZvR7_aGzn0obbOaC3F4MjbkjNdA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

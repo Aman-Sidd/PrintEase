@@ -154,10 +154,14 @@ const OrdersScreen = ({ navigation }) => {
     return (
       <Pressable
         onPress={() =>
-          navigation.navigate("OrderDetail", { order_id: item.order_id })
+          navigation.navigate("OrderDetail", {
+            order_id: item.order_id,
+            _id: item.id,
+          })
         }
         style={styles.listStyle}
       >
+        {console.log("id:", item.id)}
         <View style={{ maxWidth: "70%" }}>
           <Text numberOfLines={1} style={styles.listItemName}>
             {item?.order_title}

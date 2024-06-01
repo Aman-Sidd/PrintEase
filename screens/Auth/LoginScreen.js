@@ -136,7 +136,7 @@ const LoginScreen = () => {
                   actions={{ setEmail, setPassword }}
                 />
               </View>
-              <View style={styles.thirdPartyContainer}>
+              {/* <View style={styles.thirdPartyContainer}>
                 <Divider
                   style={{ width: "20%" }}
                   color="gray"
@@ -154,21 +154,22 @@ const LoginScreen = () => {
                   width={1}
                   orientation="horizontal"
                 />
-              </View>
+              </View> */}
 
-              <View style={styles.logoContainer}>
+              {/* <View style={styles.logoContainer}>
                 <AntDesign name="google" size={24} color="#959595" />
                 <FontAwesome5 name="facebook" size={24} color="#959595" />
                 <AntDesign name="apple1" size={24} color="#959595" />
-              </View>
+              </View> */}
             </View>
             <Pressable
               onPress={() => navigation.replace("Register")}
               style={{
                 marginLeft: 40,
-                marginTop: 30,
+                marginTop: 10,
                 display: "flex",
                 flexDirection: "row",
+                justifyContent: "center",
               }}
             >
               <Text style={{ color: "gray", fontSize: 15 }}>
