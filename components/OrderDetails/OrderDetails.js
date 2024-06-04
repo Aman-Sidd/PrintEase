@@ -68,6 +68,7 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
 
   const handleChangeOrderStatus = () => {
     navigation.navigate("UpdateOrder", {
+      user_id: orderDetails.user_id,
       order_id,
       curr_order_status: orderStatus,
     });

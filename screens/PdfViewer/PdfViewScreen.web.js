@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import { ScrollView } from "react-native-web";
 
@@ -7,53 +7,17 @@ import { useDispatch } from "react-redux";
 import { setNoOfPages, setPdfName, setPdfUri } from "../../redux/OrderSlice";
 import CancelSelectButtons from "../../components/utils/CancelSelectButton";
 import { useNavigation } from "@react-navigation/native";
-
-// export default function PdfViewScreen({ route }) {
-//   const { uri } = route.params;
-//   const [loading, setLoading] = useState(true);
-//   const handleDownload = () => {
-//     // For web, create an anchor tag and trigger download
-//     setLoading(true);
-//     const link = document.createElement("a");
-//     link.href = uri;
-//     link.download = "document.pdf"; // Name of the file to download
-//     document.body.appendChild(link);
-//     link.click();
-//     document.body.removeChild(link);
-//     setLoading(false);
-//   };
-//   useEffect(() => {
-//     handleDownload();
-//   }, []);
-//   return (
-//     <View
-//       style={{
-//         flex: 1,
-//         justifyContent: "center",
-//         alignItems: "center",
-//         backgroundColor: "black",
-//       }}
-//     >
-//       {loading ? (
-//         <LoadingScreen />
-//       ) : (
-//         <View>
-//           <Text style={{ alignSelf: "center", color: "white", fontSize: "25" }}>
-//             Pdf has been downloaded
-//           </Text>
-//         </View>
-//       )}
-//     </View>
-//   );
-// }
+import LoadingScreen from "../../components/utils/LoadingScreen";
 
 export default function PdfViewScreen({ route }) {
   const { uri, showButtons } = route.params;
-  const [numPages, setNumPages] = useState();
+  const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
+  const [loading, setLoading] = useState(true);
+
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  function onDocumentLoadSuccess({ numPages }) {
+  async function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
     dispatch(setNoOfPages({ noOfPages: numPages }));
   }
@@ -82,24 +46,19 @@ export default function PdfViewScreen({ route }) {
         renderTextLayer={false}
         renderAnnotationLayer={false}
       >
-        {/* {Array.apply(null, Array(numPages))
-            .map((data, index) => index + 1)
-            .map((page) => {
-              console.log(page);
-
-              return (
-                <Page
-                  key={page}
-                  pageNumber={page}
-                  renderAnnotationLayer={false}
-                  renderTextLayer={false}
-                />
-              );
-            })} */}
-        {numPages !== null && (
-          <Text style={{ fontSize: 20, color: "white" }}>
-            Total pages: {numPages}
-          </Text>
+        {numPages && (
+          <View style={{ alignItems: "center" }}>
+            <Text style={{ fontSize: 20, color: "white" }}>
+              Pdf Has Been{" "}
+              <Text style={{ color: "rgb(18 135 16)", fontWeight: "bold" }}>
+                Selected
+              </Text>
+            </Text>
+            <Text style={{ fontSize: 16, color: "grey" }}>with</Text>
+            <Text style={{ fontSize: 18, color: "white" }}>
+              Total Pages: {numPages}
+            </Text>
+          </View>
         )}
       </Document>
       {showButtons && (
@@ -107,6 +66,7 @@ export default function PdfViewScreen({ route }) {
           containerStyle={{ gap: 20 }}
           onCancelPress={onCancelPress}
           onSelectPress={onSelectPress}
+          selectButtonText={"Continue"}
         />
       )}
     </View>

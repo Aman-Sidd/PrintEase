@@ -12,6 +12,7 @@ const CancelSelectButtons = ({
   onCancelPress,
   onSelectPress,
   containerStyle,
+  selectButtonText = "Select",
 }) => {
   const navigation = useNavigation();
   return (
@@ -20,7 +21,7 @@ const CancelSelectButtons = ({
         <Text style={styles.cancelButtonText}>Cancel&nbsp;</Text>
       </Pressable>
       <Pressable onPress={onSelectPress} style={styles.selectButton}>
-        <Text style={styles.selectButtonText}>Select&nbsp;</Text>
+        <Text style={styles.selectButtonText}>{selectButtonText}&nbsp;</Text>
       </Pressable>
     </View>
   );

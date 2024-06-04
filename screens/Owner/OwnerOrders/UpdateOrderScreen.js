@@ -1,5 +1,5 @@
 import { Alert, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, RadioButton } from "react-native-paper";
 import {
@@ -10,9 +10,17 @@ import {
 import myApi from "../../../api/myApi";
 import LoadingScreen from "../../../components/utils/LoadingScreen";
 import { useMediaQuery } from "react-responsive";
+import {
+  getUserDetails,
+  getUserDetailsById,
+} from "../../../api/methods/getUserDetails";
+import axios from "axios";
+import { updateOrderStatus } from "../../../api/methods/updateOrderStatus";
+import { sendPushNotification } from "../../../api/methods/sendPushNotification";
 
 const UpdateOrderScreen = ({ navigation, route }) => {
-  const { order_id, curr_order_status } = route.params;
+  const { order_id, curr_order_status, user_id } = route.params;
+  console.log("user_id:", user_id);
   const [value, setValue] = useState(curr_order_status);
   const [loading, setLoading] = useState(false);
 
@@ -24,44 +32,24 @@ const UpdateOrderScreen = ({ navigation, route }) => {
     try {
       setLoading(true);
       if (value === ORDER_STATUS_PICKED) {
-        navigation.replace("Camera", { order_id, curr_order_status });
+        navigation.replace("Camera", { order_id, curr_order_status, user_id });
         return;
       } else if (value === ORDER_STATUS_READY) {
-        const formData = new URLSearchParams();
-        formData.append("order_id", order_id);
-        formData.append("order_status", 1);
-
-        const config = {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        };
-        const response = await myApi.post(
-          "/owner/update-order-status",
-          formData,
-          config
-        );
-        console.log("update-order-status Resp:", response.data);
+        const response = updateOrderStatus({ order_id, order_status: 1 });
+        console.log("update-order-status Resp:", response);
+        await sendPushNotification({
+          user_id,
+          message: "Your order has been printed. Collect it ASAP!",
+        });
         alert("Order status has been changed.");
       } else if (value === ORDER_STATUS_PENDING) {
-        const formData = new URLSearchParams();
-        formData.append("order_id", order_id);
-        formData.append("order_status", 0);
-        const config = {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        };
-        const response = await myApi.post(
-          "/owner/update-order-status",
-          formData,
-          config
-        );
-        console.log("update-order-status Resp:", response.data);
-        const alertObj = {
-          title: "Success",
-          message: "Order has been changed.",
-        };
+        const response = updateOrderStatus({ order_id, order_status: 0 });
+        await sendPushNotification({
+          user_id,
+          message: "Your order is in pending!",
+        });
+        console.log("update-order-status Resp:", response);
+
         alert("Order status has been changed.");
       }
     } catch (err) {

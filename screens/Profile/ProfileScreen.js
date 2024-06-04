@@ -1,23 +1,50 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import AsyncStorage from "@react-native-community/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { Button } from "react-native-paper";
+import { getUserDetails } from "../../api/methods/getUserDetails";
+import { updateUserDetails } from "../../api/methods/updateUserDetails";
+import LoadingScreen from "../../components/utils/LoadingScreen";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const user = useSelector((state) => state.user.data);
+  const expoPushToken = useSelector((state) => state.util.expoPushToken);
+  const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
-    const keys = await AsyncStorage.getAllKeys();
-    await AsyncStorage.multiRemove(keys);
-    navigation.replace("Login");
+    setLoading(true);
+    try {
+      console.log("Handling logout");
+
+      const userDetails = await getUserDetails();
+      console.log("userDetails:", userDetails);
+
+      const pushTokens = JSON.parse(userDetails.push_token).filter(
+        (token) => token !== expoPushToken
+      );
+      console.log("expoPushToken:", expoPushToken);
+      console.log("pushTokens:", pushTokens[0]);
+      await updateUserDetails({ userDetails, pushTokens });
+
+      const keys = await AsyncStorage.getAllKeys();
+      await AsyncStorage.multiRemove(keys);
+
+      navigation.replace("Login");
+    } catch (err) {
+      console.log("Error occurred while logging out.", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const userType = user.user_type === "0" ? "Owner" : "Customer";
+  const userType = user?.user_type === "0" ? "Owner" : "Customer";
 
-  return (
+  return loading ? (
+    <LoadingScreen />
+  ) : (
     <View style={styles.container}>
       <Text style={styles.label}>Name: </Text>
       <Text style={styles.value}>{user.username + " "}</Text>

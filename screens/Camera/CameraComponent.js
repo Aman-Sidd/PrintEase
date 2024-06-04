@@ -6,6 +6,8 @@ import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/utils/LoadingScreen";
 import { ORDER_STATUS_PICKED } from "../../constants/ORDER_STATUS";
 import { Button } from "react-native-paper";
+import { updateOrderStatus } from "../../api/methods/updateOrderStatus";
+import { sendPushNotification } from "../../api/methods/sendPushNotification";
 
 const CameraComponent = ({ navigation, route }) => {
   const [facing, setFacing] = useState("back");
@@ -13,7 +15,7 @@ const CameraComponent = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [enableTorch, setEnableTorch] = useState(false);
 
-  const { order_id, curr_order_status } = route.params;
+  const { order_id, curr_order_status, user_id } = route.params;
 
   if (!permission) {
     // Camera permissions are still loading
@@ -48,22 +50,12 @@ const CameraComponent = ({ navigation, route }) => {
       if (order_id === data) {
         // Hit the api to update the status to PICKED
 
-        const formData = new URLSearchParams();
-        formData.append("order_id", order_id);
-        formData.append("order_status", 2);
-
-        const config = {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        };
-
-        const response = await myApi.post(
-          "/owner/update-order-status",
-          formData,
-          config
-        );
-        console.log("update-order-status RESPONSE:", response.data);
+        const response = await updateOrderStatus({ order_id, order_status: 2 });
+        await sendPushNotification({
+          user_id,
+          message: "Your order has been delivered!",
+        });
+        console.log("update-order-status RESPONSE:", response);
         Alert.alert("Success", "Order status has been changed.");
         navigation.replace("UpdateOrder", {
           order_id,

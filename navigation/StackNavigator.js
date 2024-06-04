@@ -241,10 +241,9 @@ export const OwnerTabNavigator = () => {
   );
 };
 
-const StackNavigator = () => {
+const StackNavigator = ({ expoPushToken }) => {
   const Stack = createNativeStackNavigator();
   const linking = {
-    // prefixes: ["https://mychat.com", "mychat://"],
     config: {
       screens: {
         Welcome: "",

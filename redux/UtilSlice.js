@@ -5,6 +5,7 @@ const UtilSlice = createSlice({
   initialState: {
     loading: false,
     isDesktop: false,
+    expoPushToken: null,
   },
   reducers: {
     setLoading(state, action) {
@@ -14,9 +15,12 @@ const UtilSlice = createSlice({
     setIsDesktop(state, action) {
       state.isDesktop = action.payload;
     },
+    addExpoPushToken(state, action) {
+      state.expoPushToken = action.payload;
+    },
   },
 });
 
-export const { setLoading, setIsDesktop } = UtilSlice.actions;
+export const { setLoading, setIsDesktop, addExpoPushToken } = UtilSlice.actions;
 
 export default UtilSlice.reducer;
