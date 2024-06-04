@@ -13,23 +13,17 @@ export const sendPushNotification = async ({ user_id, message }) => {
       const reqObjForPushToken = pushTokens.map((pushToken) => ({
         to: pushToken,
         sound: "default",
+        title: "Order Update",
         body: message,
       }));
       console.log("reqObjforPushToken:", reqObjForPushToken);
-      const pushTokenConfig = {
-        headers: {
-          "Accept-encoding": "gzip, deflate",
-          "Content-Type": "application/json",
-        },
-      };
 
       const responseForPushToken = await axios.post(
-        "https://exp.host/--/api/v2/push/send",
-        JSON.stringify(reqObjForPushToken),
-        pushTokenConfig
+        "https://salesqueen-assignment-backend.onrender.com/api/push-notification",
+        { requestObject: reqObjForPushToken }
       );
 
-      console.log(responseForPushToken.data);
+      console.log(responseForPushToken.data.data.data);
     }
   } catch (err) {
     console.log("Error occurred while sending push notification");

@@ -34,6 +34,8 @@ import {
   RAZORPAY_PREFILL_EMAIL,
   RAZORPAY_PREFILL_NAME,
 } from "../../constants/RAZORPAY";
+import { sendPushNotification } from "../../api/methods/sendPushNotification";
+import { OWNER_USER_ID } from "../../constants/OwnerCredentials";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
@@ -156,8 +158,15 @@ const CheckoutScreen = ({ navigation }) => {
           .then((data) => {
             alert("Order Successful!");
           })
+          .then(async () => {
+            await sendPushNotification({
+              user_id: OWNER_USER_ID,
+              message: "New Order Has Been Received.",
+            });
+          })
           .catch((err) => {
-            alert("payment successfull but error in updating payment info!");
+            // alert("payment successfull but error in updating payment info!");
+            console.log(err);
           });
       },
       prefill: {

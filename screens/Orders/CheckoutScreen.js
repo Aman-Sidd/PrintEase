@@ -24,6 +24,8 @@ import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/utils/LoadingScreen";
 import { updatePaymentId } from "../../api/methods/updatePaymentId";
 import { getPerPagePrice } from "../../components/helpers/GetPerPagePrice";
+import { sendPushNotification } from "../../api/methods/sendPushNotification";
+import { OWNER_USER_ID } from "../../constants/OwnerCredentials";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
@@ -119,6 +121,11 @@ const CheckoutScreen = ({ navigation }) => {
         await updatePaymentInfo({
           orderid: order_id,
           paymentid: data.razorpay_payment_id,
+        });
+
+        await sendPushNotification({
+          user_id: OWNER_USER_ID,
+          message: "New Order Has Been Received.",
         });
       })
       .catch((error) => {

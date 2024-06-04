@@ -39,14 +39,14 @@ const UpdateOrderScreen = ({ navigation, route }) => {
         console.log("update-order-status Resp:", response);
         await sendPushNotification({
           user_id,
-          message: "Your order has been printed. Collect it ASAP!",
+          message: "Your Order Has Been Printed. Collect it ASAP!",
         });
         alert("Order status has been changed.");
       } else if (value === ORDER_STATUS_PENDING) {
         const response = updateOrderStatus({ order_id, order_status: 0 });
         await sendPushNotification({
           user_id,
-          message: "Your order is in pending!",
+          message: "Your Order Status is Pending!",
         });
         console.log("update-order-status Resp:", response);
 

@@ -53,7 +53,7 @@ const CameraComponent = ({ navigation, route }) => {
         const response = await updateOrderStatus({ order_id, order_status: 2 });
         await sendPushNotification({
           user_id,
-          message: "Your order has been delivered!",
+          message: "Your Order Has Been Delivered!",
         });
         console.log("update-order-status RESPONSE:", response);
         Alert.alert("Success", "Order status has been changed.");
