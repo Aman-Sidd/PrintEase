@@ -4,7 +4,7 @@ import { getUserDetailsById } from "./getUserDetails";
 export const sendPushNotification = async ({ user_id, message }) => {
   try {
     console.log("Entered");
-    const userDetailsResp = await getUserDetailsById(user_id);
+    const userDetailsResp = (await getUserDetailsById(user_id)).data;
     let pushTokens = [];
     if (userDetailsResp.success) {
       console.log("userDetails:", userDetailsResp.data);
