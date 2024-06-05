@@ -4,7 +4,10 @@ import AsyncStorage from "@react-native-community/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { Button } from "react-native-paper";
-import { getUserDetails } from "../../api/methods/getUserDetails";
+import {
+  getUserDetails,
+  getUserDetailsById,
+} from "../../api/methods/getUserDetails";
 import { updateUserDetails } from "../../api/methods/updateUserDetails";
 import LoadingScreen from "../../components/utils/LoadingScreen";
 
@@ -19,14 +22,15 @@ const ProfileScreen = () => {
     try {
       console.log("Handling logout");
 
-      const userDetails = await getUserDetails();
+      const response = (await getUserDetailsById(user?.user_id)).data;
+      const userDetails = response.data;
       console.log("userDetails:", userDetails);
 
       const pushTokens = JSON.parse(userDetails.push_token).filter(
         (token) => token !== expoPushToken
       );
       console.log("expoPushToken:", expoPushToken);
-      console.log("pushTokens:", pushTokens[0]);
+      console.log("pushTokens:", pushTokens);
       await updateUserDetails({ userDetails, pushTokens });
 
       const keys = await AsyncStorage.getAllKeys();

@@ -19,15 +19,9 @@ export const getUserDetailsById = async (userid) => {
     const response = await myApi.get(
       `/admin/get-user-details?userid=${userid}`
     );
-    const result = {
-      ...response.data,
-    };
-    return result;
+    return response;
   } catch (err) {
-    const result = {
-      success: false,
-      ...response.data,
-    };
-    return result;
+    console.log("error in getUserDetailsById", err);
+    throw err;
   }
 };
