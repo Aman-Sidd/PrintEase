@@ -131,7 +131,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
         <View
           style={{
-            width: isDesktopOrLaptop ? "50%" : "80%",
+            width: isDesktopOrLaptop ? "40%" : "80%",
             alignSelf: "center",
           }}
         >
@@ -148,7 +148,8 @@ const HomeScreen = ({ navigation }) => {
               style={{
                 ...styles.documentPicker,
                 alignSelf: "center",
-                width: isDesktopOrLaptop ? "48%" : "70%",
+                width: isDesktopOrLaptop ? "30%" : "70%",
+                height: isDesktopOrLaptop ? hp("14%") : "18%",
               }}
               onPress={pickDocument}
             >
@@ -165,8 +166,9 @@ const HomeScreen = ({ navigation }) => {
               style={[
                 styles.documentPicker,
                 {
-                  paddingVertical: "5%",
-                  width: isDesktopOrLaptop ? "48%" : "70%",
+                  paddingVertical: "4%",
+                  width: isDesktopOrLaptop ? "30%" : "70%",
+                  height: isDesktopOrLaptop ? hp("10%") : "18%",
                 },
               ]}
               onPress={pickDocument}
@@ -223,7 +225,7 @@ const styles = StyleSheet.create({
 
   selectDocumentContainer: {
     alignItems: "center",
-    marginTop: hp("2%"),
+    marginTop: hp("1%"),
   },
   selectDocumentText: {
     color: "white",
@@ -233,7 +235,7 @@ const styles = StyleSheet.create({
     // width: wp("70%"),
     width: "48%",
     height: hp("18%"),
-    marginTop: 30,
+    marginTop: 20,
     borderRadius: 9,
     borderStyle: "dashed",
     borderWidth: 1.5,
@@ -281,7 +283,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 30,
     paddingHorizontal: 20,
-    marginTop: "1%",
+    marginTop: "2%",
   },
   cancelButton: {
     width: 143,

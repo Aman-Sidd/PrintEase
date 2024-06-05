@@ -18,19 +18,28 @@ const PageSizeDropdown = () => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const dispatch = useDispatch();
+
+  const isPC = useMediaQuery({
+    query: "(min-width: 1224px)",
+  });
+
   const renderLabel = () => {
     if (value || isFocus) {
       return (
-        <Text style={[styles.label, isFocus && { color: "#6A84A0" }]}>
+        <Text
+          style={[
+            styles.label,
+            isPC && { top: 0 },
+            isFocus && { color: "#6A84A0" },
+          ]}
+        >
           Page Size
         </Text>
       );
     }
     return null;
   };
-  const isPC = useMediaQuery({
-    query: "(min-width: 1224px)",
-  });
+
   return (
     <View style={{ ...styles.container, padding: isPC ? 8 : 16 }}>
       {renderLabel()}

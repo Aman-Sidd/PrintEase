@@ -15,10 +15,19 @@ const PrintTypeDropdown = () => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
 
+  const isPC = useMediaQuery({
+    query: "(min-width: 1224px)",
+  });
   const renderLabel = () => {
     if (value || isFocus) {
       return (
-        <Text style={[styles.label, isFocus && { color: "#6A84A0" }]}>
+        <Text
+          style={[
+            styles.label,
+            isPC && { top: 0 },
+            isFocus && { color: "#6A84A0" },
+          ]}
+        >
           Print Type
         </Text>
       );
@@ -26,9 +35,6 @@ const PrintTypeDropdown = () => {
     return null;
   };
   const dispatch = useDispatch();
-  const isPC = useMediaQuery({
-    query: "(min-width: 1224px)",
-  });
   return (
     <View style={{ ...styles.container, padding: isPC ? 8 : 16 }}>
       {renderLabel()}
