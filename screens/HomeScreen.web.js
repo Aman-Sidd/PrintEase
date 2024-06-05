@@ -149,7 +149,7 @@ const HomeScreen = ({ navigation }) => {
                 ...styles.documentPicker,
                 alignSelf: "center",
                 width: isDesktopOrLaptop ? "30%" : "70%",
-                height: isDesktopOrLaptop ? hp("14%") : "18%",
+                height: isDesktopOrLaptop ? hp("14%") : hp("18%"),
               }}
               onPress={pickDocument}
             >
@@ -168,7 +168,7 @@ const HomeScreen = ({ navigation }) => {
                 {
                   paddingVertical: "4%",
                   width: isDesktopOrLaptop ? "30%" : "70%",
-                  height: isDesktopOrLaptop ? hp("10%") : "18%",
+                  height: isDesktopOrLaptop ? hp("10%") : hp("18%"),
                 },
               ]}
               onPress={pickDocument}
