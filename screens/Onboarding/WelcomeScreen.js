@@ -11,6 +11,7 @@ import { USER_TYPE } from "../../constants/USER_TYPE";
 import LoadingScreen from "../../components/utils/LoadingScreen";
 import { getUserDetails } from "../../api/methods/getUserDetails";
 import { Image } from "expo-image";
+import { ScrollView } from "react-native-gesture-handler";
 
 const WelcomeScreen = ({ navigation }) => {
   const user = useSelector((state) => state.user);
@@ -45,7 +46,7 @@ const WelcomeScreen = ({ navigation }) => {
   return loading ? (
     <LoadingScreen />
   ) : (
-    <SafeAreaView style={styles.mainContainer}>
+    <ScrollView contentContainerStyle={styles.mainContainer}>
       <View>
         <View style={{ alignItems: "center", marginTop: 50 }}>
           <GradientText style={{ fontSize: 45 }} text="PrintEase" />
@@ -59,7 +60,6 @@ const WelcomeScreen = ({ navigation }) => {
             source={require("../../assets/printer.png")}
             // placeholder={blurhash}
             contentFit="cover"
-            transition={1000}
           />
         </View>
       </View>
@@ -86,20 +86,17 @@ const WelcomeScreen = ({ navigation }) => {
           </LinearGradient>
         </Pressable>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
 export default WelcomeScreen;
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    backgroundColor: "#080A0C",
-  },
+  mainContainer: { flex: 1, backgroundColor: "#080A0C" },
   imageStyle: {
-    height: "52%",
-    width: "40%",
+    height: "60%",
+    width: "50%",
   },
   imageContainer: {
     justifyContent: "center",
