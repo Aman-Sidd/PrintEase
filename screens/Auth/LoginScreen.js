@@ -27,6 +27,7 @@ import { useMediaQuery } from "react-responsive";
 import { addExpoPushToken, setIsDesktop } from "../../redux/UtilSlice";
 
 import { updateUserDetails } from "../../api/methods/updateUserDetails";
+import { ScrollView } from "react-native-gesture-handler";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -133,7 +134,7 @@ const LoginScreen = () => {
       {loading ? (
         <LoadingScreen />
       ) : (
-        <SafeAreaView style={styles.mainContainer}>
+        <ScrollView contentContainerStyle={styles.mainContainer}>
           <View
             style={
               isDesktop
@@ -162,23 +163,23 @@ const LoginScreen = () => {
               </View>
               {/* <View style={styles.thirdPartyContainer}>
                 <Divider
-                  style={{ width: "20%" }}
-                  color="gray"
+                style={{ width: "20%" }}
+                color="gray"
                   width={1}
                   orientation="horizontal"
-                />
-
-                <Text style={{ color: "gray", marginHorizontal: 15 }}>
+                  />
+                  
+                  <Text style={{ color: "gray", marginHorizontal: 15 }}>
                   or sign in with
-                </Text>
-
-                <Divider
+                  </Text>
+                  
+                  <Divider
                   style={{ width: "20%" }}
                   color="gray"
                   width={1}
                   orientation="horizontal"
-                />
-              </View> */}
+                  />
+                </View> */}
 
               {/* <View style={styles.logoContainer}>
                 <AntDesign name="google" size={24} color="#959595" />
@@ -237,7 +238,7 @@ const LoginScreen = () => {
               )}
             </View>
           </View>
-        </SafeAreaView>
+        </ScrollView>
       )}
     </KeyboardAvoidingView>
   );

@@ -22,6 +22,7 @@ import InputText from "../../components/formUtils/InputText";
 import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/utils/LoadingScreen";
 import { useMediaQuery } from "react-responsive";
+import { ScrollView } from "react-native-gesture-handler";
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -80,7 +81,7 @@ const RegisterScreen = ({ navigation }) => {
       {loading ? (
         <LoadingScreen />
       ) : (
-        <SafeAreaView style={styles.mainContainer}>
+        <ScrollView contentContainerStyle={styles.mainContainer}>
           <View style={isDesktop ? styles.container : null}>
             <View>
               <View style={{ alignItems: "center" }}>
@@ -190,7 +191,7 @@ const RegisterScreen = ({ navigation }) => {
               )}
             </View>
           </View>
-        </SafeAreaView>
+        </ScrollView>
       )}
     </KeyboardAvoidingView>
   );

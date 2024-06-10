@@ -122,8 +122,11 @@ const HomeScreen = ({ navigation }) => {
 
   const { pdfName, pdfUri, noOfPages, pageSize, color, printType } =
     useSelector((state) => state.order);
-
   const user = useSelector((state) => state.user);
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(undefined);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   const pickDocument = async () => {
     console.log("clicked");
@@ -180,11 +183,6 @@ const HomeScreen = ({ navigation }) => {
       console.log("Error:", err);
     }
   };
-
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState(undefined);
-  const notificationListener = useRef();
-  const responseListener = useRef();
 
   useEffect(() => {
     registerForPushNotificationsAsync()

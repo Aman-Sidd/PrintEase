@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "PrintEase",
-    "slug": "PrintEase",
+    "slug": "printease",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "plugins": [
       [
@@ -21,7 +21,9 @@
         }
       ]
     ],
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -31,15 +33,20 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.aman_sidd.PrintEase",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon-32x32.png"
     },
     "extra": {
       "eas": {
-        "projectId": "527c2547-e6d0-4176-95ef-0b30e7063d12"
+        "projectId": "9f7503d8-e979-4b46-bb97-6ca654b835ae"
       }
-    }
+    },
+    "owner": "amansidd786"
   }
 }
