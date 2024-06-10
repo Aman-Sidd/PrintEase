@@ -117,6 +117,13 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
       >
         <View style={styles.checkoutInfo}>
           <View style={{ display: "flex", flexDirection: "row" }}>
+            <Text style={styles.textStyle}>Token ID: </Text>
+            <Text style={[styles.textStyle, { color: "white" }]}>
+              {" "}
+              {orderDetails?.id + " "}
+            </Text>
+          </View>
+          <View style={{ display: "flex", flexDirection: "row" }}>
             <Text style={styles.textStyle}>Payment ID: </Text>
             <Text style={[styles.textStyle, { color: "white" }]}>
               {" "}
@@ -162,7 +169,7 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
             <Text style={styles.textStyle}>Price per page: </Text>
             <Text style={[styles.textStyle, { color: "white" }]}>
               {" "}
-              Rs. {priceRatePerPage + " "}
+              Rs. {orderDetails?.OrderDetails[0].price_per_page + " "}
             </Text>
           </View>
           <View
@@ -176,7 +183,8 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
             <Text style={[styles.textStyle, { color: "white" }]}>
               {" "}
               {orderDetails?.OrderDetails[0].total_pages} * Rs.{" "}
-              {priceRatePerPage} = Rs. {orderDetails?.total_price + " "}
+              {orderDetails?.OrderDetails[0].price_per_page} = Rs.{" "}
+              {orderDetails?.total_price + " "}
             </Text>
           </View>
           <View
@@ -233,7 +241,7 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
             </View>
           )}
 
-          <View
+          {/* <View
             style={{
               display: "flex",
               flexDirection: "row",
@@ -254,7 +262,7 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
             >
               Paid &nbsp;
             </Text>
-          </View>
+          </View> */}
         </View>
         {isOwner && (
           <Button
@@ -274,7 +282,7 @@ export default OrderDetails;
 
 const styles = StyleSheet.create({
   checkoutInfo: {
-    gap: 15,
+    gap: 10,
     width: "90%",
     justifyContent: "center",
     borderRadius: 10,

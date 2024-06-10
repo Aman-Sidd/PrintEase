@@ -8,10 +8,10 @@ import { isDesktop } from "../../hooks/isDesktop";
 import { useMediaQuery } from "react-responsive";
 
 const data = [
-  { label: "A1", value: "1" },
-  { label: "A2", value: "2" },
-  { label: "A3", value: "3" },
-  { label: "A4", value: "4" },
+  { label: "A4", value: "1" },
+  // { label: "A2", value: "2" },
+  // { label: "A3", value: "3" },
+  // { label: "A4", value: "4" },
 ];
 
 const PageSizeDropdown = () => {
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   dropdown: {
-    height: 65,
+    height: 55,
     borderColor: "gray",
     borderWidth: 0.5,
     borderRadius: 8,

@@ -36,9 +36,11 @@ import {
 } from "../../constants/RAZORPAY";
 import { sendPushNotification } from "../../api/methods/sendPushNotification";
 import { OWNER_USER_ID } from "../../constants/OwnerCredentials";
+import { ScrollView } from "react-native-gesture-handler";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
+  const user = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
   const fileObj = orderDetails.file;
   const createFileObject = (uri, name, type) => {
@@ -148,7 +150,12 @@ const CheckoutScreen = ({ navigation }) => {
       name: RAZORPAY_ORG_NAME,
       description: RAZORPAY_DESCRIPTION,
       image: RAZORPAY_IMAGE_URL,
-      order_id: "", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      order_id: "",
+      prefill: {
+        email: user?.data.email,
+        contact: user?.data.phone,
+        name: user?.data.username,
+      }, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
       handler: async function (response) {
         // console.log("RESPONSE:", response);
         await updatePaymentInfo({
@@ -170,9 +177,9 @@ const CheckoutScreen = ({ navigation }) => {
           });
       },
       prefill: {
-        email: RAZORPAY_PREFILL_EMAIL,
-        contact: RAZORPAY_PREFILL_CONTACT,
-        name: RAZORPAY_PREFILL_NAME,
+        email: user?.data.email,
+        contact: user?.data.phone,
+        name: user?.data.username,
       },
       theme: {
         color: "#3399cc",
@@ -209,111 +216,148 @@ const CheckoutScreen = ({ navigation }) => {
   return loading ? (
     <LoadingScreen />
   ) : (
-    <SafeAreaView
-      style={{ backgroundColor: "black", flex: 1, alignItems: "center" }}
-    >
+    <ScrollView style={styles.container}>
       <View style={styles.checkoutInfo}>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Page Size: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {orderDetails.pageSize} &nbsp;
-          </Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Shop Info</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Shop Name:</Text>
+            <Text style={styles.value}>{user.shop?.name}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Shop ID:</Text>
+            <Text style={styles.value}>{user.shop?.id}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Shop Address:</Text>
+            <Text style={styles.value} numberOfLines={1}>
+              {user.shop?.address}
+            </Text>
+          </View>
         </View>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Color: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {orderDetails.color} &nbsp;
-          </Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Page Info</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Page Size:</Text>
+            <Text style={styles.value}>{orderDetails.pageSize}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Color:</Text>
+            <Text style={styles.value}>{orderDetails.color}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Chosen File:</Text>
+            <Text style={styles.value} numberOfLines={2}>
+              {orderDetails.pdfName}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Print Type:</Text>
+            <Text style={styles.value}>{orderDetails.printType}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Total Pages:</Text>
+            <Text style={styles.value}>{orderDetails.noOfPages}</Text>
+          </View>
         </View>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-          }}
-        >
-          <Text style={styles.textStyle}>Chosen File: </Text>
-          <Text
-            numberOfLines={2}
-            style={[styles.textStyle, { color: "white" }]}
-          >
-            {orderDetails.pdfName + " "}
-          </Text>
-        </View>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Print Type: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {orderDetails.printType} &nbsp;
-          </Text>
-        </View>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Total Pages: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {orderDetails.noOfPages} &nbsp;
-          </Text>
-        </View>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Price per page: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {" "}
-            Rs. {priceRatePerPage} &nbsp;
-          </Text>
-        </View>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Total Price: </Text>
-          <Text style={[styles.textStyle, { color: "white" }]}>
-            {orderDetails.noOfPages} X {priceRatePerPage} = Rs. {totalAmount}
-            &nbsp;
-          </Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Price</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Price per page:</Text>
+            <Text style={styles.value}>Rs. {priceRatePerPage}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Total Price:</Text>
+            <Text style={styles.value}>
+              {orderDetails.noOfPages} * {priceRatePerPage} = Rs. {totalAmount}
+            </Text>
+          </View>
         </View>
       </View>
 
       <View style={styles.buttonContainer}>
         <Pressable style={styles.cancelButton} onPress={handleBackButton}>
-          <Text style={styles.cancelButtonText}>Back &nbsp;</Text>
+          <Text style={styles.cancelButtonText}>Back</Text>
         </Pressable>
         <Pressable
           style={styles.nextButton}
           onPress={() => handleCheckout(totalAmount)}
         >
-          <Text style={styles.nextButtonText}>Proceed to Pay &nbsp;</Text>
+          <Text style={styles.nextButtonText}>Proceed to Pay</Text>
         </Pressable>
-        {/* <MailSender /> */}
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
 export default CheckoutScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "black",
+    flex: 1,
+    // alignItems: "center",
+    paddingTop: 20,
+    paddingHorizontal: 10,
+  },
   checkoutInfo: {
-    width: "80%",
-    gap: 15,
+    width: "35%",
+    alignSelf: "center",
+    gap: 10,
     justifyContent: "center",
     borderRadius: 10,
     paddingHorizontal: 20,
     paddingVertical: 20,
-    marginTop: 20,
     backgroundColor: "#1E1E1E",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
   },
-  textStyle: {
+  section: {
+    marginBottom: 15,
+  },
+  sectionTitle: {
+    color: "#FFA500",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#333",
+    paddingBottom: 5,
+  },
+  label: {
+    fontWeight: "500",
+    color: "#AAAAAA",
+    fontSize: 16,
+    flex: 1,
+  },
+  value: {
     fontWeight: "500",
     color: "white",
-    fontSize: 18,
-    color: "#AAAAAA",
+    fontSize: 16,
+    flex: 2,
+  },
+  row: {
+    flexDirection: "row",
+    marginBottom: 5,
   },
   buttonContainer: {
-    display: "flex",
-    gap: 20,
     flexDirection: "row",
-    marginTop: 50,
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    marginTop: "2%",
+    gap: 20,
   },
-  nextButtonText: {
-    color: "black",
-    fontWeight: "bold",
-    fontSize: 15,
-    alignSelf: "center",
+  cancelButton: {
+    width: 143,
+    borderWidth: 1,
+    borderColor: "white",
+    borderRadius: 8,
+    height: 44,
+    justifyContent: "center",
+    backgroundColor: "black",
   },
   cancelButtonText: {
     color: "white",
@@ -328,13 +372,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#B0B5C9",
     justifyContent: "center",
   },
-  cancelButton: {
-    width: 143,
-    borderWidth: 1,
-    borderColor: "white",
-    borderRadius: 8,
-    height: 44,
-    justifyContent: "center",
-    backgroundColor: "black",
+  nextButtonText: {
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 15,
+    alignSelf: "center",
   },
 });

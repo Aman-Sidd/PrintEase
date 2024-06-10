@@ -4,6 +4,7 @@ const initialState = {
   pageSize: null,
   color: null,
   printType: null,
+  spiralBinding: null,
   pdfUri: null,
   pdfName: null,
   noOfPages: null,
@@ -28,6 +29,9 @@ const OrderSlice = createSlice({
     setPrintType(state, action) {
       state.printType = action.payload.printType;
     },
+    setSpiralBinding(state, action) {
+      state.spiralBinding = action.payload.spiralBinding;
+    },
     setPdfUri(state, action) {
       state.pdfUri = action.payload.pdfUri;
     },
@@ -49,6 +53,7 @@ const OrderSlice = createSlice({
 export const {
   setPageSize,
   setColor,
+  setSpiralBinding,
   setNoOfPages,
   setPdfName,
   setPdfUri,

@@ -139,7 +139,7 @@ const OrderDetails = ({ order_id, isOwner }) => {
         <View style={{ ...styles.checkoutInfo, width: isPC ? "40%" : "90%" }}>
           <View style={{ display: "flex", flexDirection: "row" }}>
             <Text style={{ ...styles.textStyle, fontSize: isPC ? 18 : 15 }}>
-              Transaction ID:{" "}
+              Token ID:{" "}
             </Text>
             <Text
               style={[
@@ -148,7 +148,7 @@ const OrderDetails = ({ order_id, isOwner }) => {
               ]}
             >
               {" "}
-              2325158412 &nbsp;
+              {orderDetails?.id + " "}
             </Text>
           </View>
 
@@ -286,29 +286,6 @@ const OrderDetails = ({ order_id, isOwner }) => {
               <OrderQRCode orderId={order_id} />
             </View>
           )}
-
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-end",
-            }}
-          >
-            <MaterialIcons
-              name="paid"
-              size={13}
-              color="green"
-              style={{ margin: 2 }}
-            />
-            <Text
-              style={[
-                styles.textStyle,
-                { color: "green", fontSize: 13, fontWeight: "bold" },
-              ]}
-            >
-              Paid &nbsp;
-            </Text>
-          </View>
         </View>
         {isOwner && (
           <Button

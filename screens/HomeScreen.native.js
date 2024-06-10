@@ -31,6 +31,7 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import { addExpoPushToken } from "../redux/UtilSlice";
+import SpiralDropdown from "../components/dropdown/SpiralDropdown";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -120,8 +121,15 @@ async function registerForPushNotificationsAsync() {
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
-  const { pdfName, pdfUri, noOfPages, pageSize, color, printType } =
-    useSelector((state) => state.order);
+  const {
+    pdfName,
+    pdfUri,
+    noOfPages,
+    pageSize,
+    color,
+    printType,
+    spiralBinding,
+  } = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(undefined);
@@ -231,7 +239,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleNextButton = () => {
-    if (!pageSize || !color || !printType) {
+    if (!pageSize || !color || !printType || !spiralBinding) {
       Alert.alert(
         "Incomplete Selections",
         "Please make sure to select all the dropdown selections."
@@ -240,7 +248,7 @@ const HomeScreen = ({ navigation }) => {
       Alert.alert("File Not Selected", "Please select a file to proceed.");
     } else navigation.navigate("Checkout");
   };
-
+  console.log("USER from homescreen:", user);
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ScrollView>
@@ -249,10 +257,11 @@ const HomeScreen = ({ navigation }) => {
           <PageSizeDropdown />
           <ColorDropdown />
           <PrintTypeDropdown />
+          <SpiralDropdown />
         </View>
 
         <View style={styles.selectDocumentContainer}>
-          <Text style={styles.selectDocumentText}>Select Your Document</Text>
+          <Text style={styles.selectDocumentText}>Select Your Document </Text>
 
           {!pdfUri ? (
             <Pressable style={styles.documentPicker} onPress={pickDocument}>
@@ -304,6 +313,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#080A0C",
+    paddingBottom: 20,
   },
   gradientText: {
     alignSelf: "center",
@@ -314,6 +324,7 @@ const styles = StyleSheet.create({
     marginTop: hp("2%"),
   },
   selectDocumentText: {
+    fontWeight: "500",
     color: "white",
     fontSize: hp("2.5%"),
   },

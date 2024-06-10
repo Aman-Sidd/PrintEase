@@ -19,6 +19,7 @@ import OwnerOrdersScreen from "../screens/Owner/OwnerOrders/OwnerOrdersScreen";
 import OwnerOrderDetailScreen from "../screens/Owner/OwnerOrders/OwnerOrderDetailScreen";
 import UpdateOrderScreen from "../screens/Owner/OwnerOrders/UpdateOrderScreen";
 import CameraComponent from "../screens/Camera/CameraComponent";
+import ShopsScreen from "../screens/Shop/ShopsScreen";
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -266,6 +267,18 @@ const StackNavigator = ({ expoPushToken }) => {
           component={LoginScreen}
           options={{
             title: "Login",
+            headerStyle: {
+              backgroundColor: "#080A0C",
+            },
+            headerTintColor: "white",
+            headerTitleAlign: "center",
+          }}
+        />
+        <Stack.Screen
+          name="Shops"
+          component={ShopsScreen}
+          options={{
+            title: "Shops",
             headerStyle: {
               backgroundColor: "#080A0C",
             },

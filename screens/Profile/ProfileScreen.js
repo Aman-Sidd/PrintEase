@@ -1,15 +1,13 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import AsyncStorage from "@react-native-community/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { Button } from "react-native-paper";
-import {
-  getUserDetails,
-  getUserDetailsById,
-} from "../../api/methods/getUserDetails";
+import { getUserDetailsById } from "../../api/methods/getUserDetails";
 import { updateUserDetails } from "../../api/methods/updateUserDetails";
 import LoadingScreen from "../../components/utils/LoadingScreen";
+import { ScrollView } from "react-native-gesture-handler";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -49,23 +47,43 @@ const ProfileScreen = () => {
   return loading ? (
     <LoadingScreen />
   ) : (
-    <View style={styles.container}>
-      <Text style={styles.label}>Name: </Text>
-      <Text style={styles.value}>{user.username + " "}</Text>
+    <ScrollView style={{ flex: 1, backgroundColor: "black" }}>
+      <View style={styles.container}>
+        <View style={styles.detailsContainer}>
+          <Text style={styles.containerTitle}>Personal Details:</Text>
+          <Text style={styles.label}>Name: </Text>
+          <Text style={styles.value}>{user?.username + " "}</Text>
 
-      <Text style={styles.label}>Email: </Text>
-      <Text style={styles.value}>{user.email + " "}</Text>
+          <Text style={styles.label}>Email: </Text>
+          <Text style={styles.value}>{user?.email + " "}</Text>
 
-      <Text style={styles.label}>Phone Number: </Text>
-      <Text style={styles.value}>{user.phone + " "}</Text>
+          <Text style={styles.label}>Phone Number: </Text>
+          <Text style={styles.value}>{user?.phone + " "}</Text>
 
-      <Text style={styles.label}>User Type: </Text>
-      <Text style={styles.value}>{userType + " "}</Text>
+          <Text style={styles.label}>User Type: </Text>
+          <Text style={styles.value}>{userType + " "}</Text>
+        </View>
 
-      <Button style={styles.listStyle} mode="contained" onPress={handleLogout}>
-        <Text style={styles.listItemName}>Logout &nbsp;</Text>
-      </Button>
-    </View>
+        <View style={styles.detailsContainer}>
+          <Text style={styles.containerTitle}>Contact for any query:</Text>
+
+          <Text style={styles.contactLabel}>Email:</Text>
+          <Text style={styles.contactValue}>printease.official@gmail.com</Text>
+
+          <Text style={styles.contactLabel}>Phone Number:</Text>
+          <Text style={styles.contactValue}>+91 93697 76397</Text>
+          <Text style={styles.contactValue}>+91 87565 16427</Text>
+        </View>
+
+        <Button
+          style={styles.listStyle}
+          mode="contained"
+          onPress={handleLogout}
+        >
+          <Text style={styles.listItemName}>Logout &nbsp;</Text>
+        </Button>
+      </View>
+    </ScrollView>
   );
 };
 
@@ -79,15 +97,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   listStyle: {
-    // height: 75,
-    // width: "40%",
-    // borderRadius: 8,
-    // marginLeft: 8,
     alignSelf: "center",
-    // backgroundColor: "#202020",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 20,
   },
   listItemName: {
     color: "white",
@@ -96,13 +110,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   container: {
-    flex: 1,
     padding: 20,
     backgroundColor: "black",
     alignItems: "flex-start",
   },
   label: {
-    fontSize: 18,
+    fontSize: 15,
     color: "white",
     fontWeight: "bold",
     marginBottom: 5,
@@ -111,5 +124,31 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     marginBottom: 15,
+  },
+  detailsContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: "#1E1E1E",
+    borderRadius: 10,
+    width: "100%",
+  },
+  containerTitle: {
+    fontSize: 18,
+    color: "#FFA500",
+    fontWeight: "bold",
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#333",
+    paddingBottom: 5,
+  },
+  contactLabel: {
+    fontSize: 16,
+    color: "#AAAAAA",
+    fontWeight: "500",
+  },
+  contactValue: {
+    color: "white",
+    fontSize: 16,
+    marginBottom: 10,
   },
 });

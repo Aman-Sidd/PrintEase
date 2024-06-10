@@ -45,17 +45,46 @@ const ProfileScreen = () => {
   ) : (
     <View style={styles.container}>
       <View style={{ ...styles.innerContainer, width: isPC ? "30%" : "90%" }}>
-        <Text style={styles.label}>Name: {user?.username + " "}</Text>
-        {/* <Text style={styles.value}>{user.username + " "}</Text> */}
+        <View style={styles.detailsContainer}>
+          <Text style={styles.containerTitle}>Personal Details:</Text>
 
-        <Text style={styles.label}>Email: {user?.email + " "}</Text>
-        {/* <Text style={styles.value}>{user.email + " "}</Text> */}
+          <Text style={styles.label}>
+            Name: <Text style={styles.value}>{user?.username + " "}</Text>
+          </Text>
 
-        <Text style={styles.label}>Phone Number: {user?.phone + " "}</Text>
-        {/* <Text style={styles.value}>{user.phone + " "}</Text> */}
+          <Text style={styles.label}>
+            Email: <Text style={styles.value}>{user?.email + " "}</Text>
+          </Text>
 
-        <Text style={styles.label}>User Type: {userType + " "}</Text>
-        {/* <Text style={styles.value}>{userType + " "}</Text> */}
+          <Text style={styles.label}>
+            Phone Number: <Text style={styles.value}>{user?.phone + " "}</Text>
+          </Text>
+
+          <Text style={styles.label}>
+            User Type: <Text style={styles.value}>{userType + " "}</Text>
+          </Text>
+        </View>
+
+        <View style={styles.detailsContainer}>
+          <Text style={styles.containerTitle}>Contact for any query:</Text>
+
+          <Text style={styles.contactLabel}>
+            Email:{" "}
+            <Text style={styles.contactValue}>
+              printease.official@gmail.com
+            </Text>
+          </Text>
+
+          <Text style={styles.contactLabel}>
+            Phone Number:{" "}
+            <View>
+              <Text style={[styles.contactValue, { marginBottom: 2 }]}>
+                +91 93697 76397{" "}
+              </Text>
+              <Text style={styles.contactValue}>+91 87565 16427</Text>
+            </View>
+          </Text>
+        </View>
 
         <Button
           style={styles.listStyle}
@@ -82,12 +111,12 @@ const styles = StyleSheet.create({
     gap: 15,
     width: "30%",
     justifyContent: "center",
-    marginTop: "2%",
+    marginTop: 10,
     borderRadius: 10,
     alignSelf: "center",
-    marginHorizontal: 20,
+    marginHorizontal: 5,
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingVertical: 15,
     backgroundColor: "#1E1E1E",
   },
   listStyle: {
@@ -109,13 +138,12 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "black",
     alignItems: "flex-start",
   },
   label: {
     fontSize: 18,
-    color: "white",
+    color: "#AAAAAA",
     fontWeight: "500",
     marginBottom: 5,
   },
@@ -123,5 +151,31 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     marginBottom: 15,
+  },
+  detailsContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: "#1E1E1E",
+    borderRadius: 10,
+    width: "100%",
+  },
+  containerTitle: {
+    fontSize: 18,
+    color: "#FFA500",
+    fontWeight: "bold",
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#333",
+    paddingBottom: 5,
+  },
+  contactLabel: {
+    fontSize: 16,
+    color: "#AAAAAA",
+    fontWeight: "500",
+  },
+  contactValue: {
+    color: "white",
+    fontSize: 16,
+    marginBottom: 10,
   },
 });

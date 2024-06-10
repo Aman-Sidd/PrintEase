@@ -86,7 +86,7 @@ const LoginScreen = () => {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       };
-
+      console.log("inside fetchUser");
       const response = await myApi.post("/login", formData, config);
       const user = response.data;
       console.log("USER in login screen:", user);
@@ -102,20 +102,9 @@ const LoginScreen = () => {
       const userDetails = fetchUserDetails.data;
       console.log("USER:", userDetails);
 
-      // let existingPushTokens = JSON.parse(userDetails.push_token);
-      // console.log("typeof:", typeof existingPushTokens);
-      // if (!existingPushTokens) existingPushTokens = [];
-      // if (!checkForSamePushToken(expoPushToken, existingPushTokens)) {
-      //   existingPushTokens.push(expoPushToken ?? "");
-      //   await updateUserDetails({
-      //     userDetails,
-      //     pushTokens: existingPushTokens,
-      //   });
-      // } else console.log("Same push token already exists.");
-
       dispatch(add_user(fetchUserDetails.data));
       setLoading(false);
-      if (user.user_type == USER_TYPE.CUSTOMER) navigation.replace("Main");
+      if (user.user_type == USER_TYPE.CUSTOMER) navigation.navigate("Shops");
       else if (user.user_type == USER_TYPE.OWNER)
         navigation.replace("OwnerTab");
     } catch (err) {
@@ -161,36 +150,10 @@ const LoginScreen = () => {
                   actions={{ setEmail, setPassword }}
                 />
               </View>
-              {/* <View style={styles.thirdPartyContainer}>
-                <Divider
-                style={{ width: "20%" }}
-                color="gray"
-                  width={1}
-                  orientation="horizontal"
-                  />
-                  
-                  <Text style={{ color: "gray", marginHorizontal: 15 }}>
-                  or sign in with
-                  </Text>
-                  
-                  <Divider
-                  style={{ width: "20%" }}
-                  color="gray"
-                  width={1}
-                  orientation="horizontal"
-                  />
-                </View> */}
-
-              {/* <View style={styles.logoContainer}>
-                <AntDesign name="google" size={24} color="#959595" />
-                <FontAwesome5 name="facebook" size={24} color="#959595" />
-                <AntDesign name="apple1" size={24} color="#959595" />
-              </View> */}
             </View>
             <Pressable
               onPress={() => navigation.replace("Register")}
               style={{
-                marginLeft: 40,
                 marginTop: 10,
                 display: "flex",
                 flexDirection: "row",
