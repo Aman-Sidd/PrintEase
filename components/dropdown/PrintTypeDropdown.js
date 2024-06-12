@@ -42,7 +42,7 @@ const PrintTypeDropdown = () => {
         style={[
           styles.dropdown,
           isPC && Platform.OS === "web" && { height: 50 },
-          !isPC && Platform.OS === "web" && { height: 45 },
+          !isPC && Platform.OS === "web" && { height: 55 },
           isFocus && { borderColor: "white" },
         ]}
         placeholderStyle={styles.placeholderStyle}

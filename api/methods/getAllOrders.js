@@ -13,13 +13,13 @@ export const getAllOrders = async ({ limit = 10, offset = 0 }) => {
     };
 
     const response = await myApi.post(
-      "/common/get-all-orders",
+      "/common/get-all-orders?shop_id=1",
       formData,
       config
     );
     return response.data;
   } catch (err) {
-    console.log("error:", err);
+    console.log("error:", err.response.data);
     return null;
   }
 };

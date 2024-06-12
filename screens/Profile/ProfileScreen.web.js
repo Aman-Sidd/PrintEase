@@ -7,6 +7,7 @@ import { Button } from "react-native-paper";
 import LoadingScreen from "../../components/utils/LoadingScreen";
 import { getUserDetails } from "../../api/methods/getUserDetails";
 import { isDesktop } from "../../hooks/isDesktop";
+import { ScrollView } from "react-native-gesture-handler";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -43,58 +44,61 @@ const ProfileScreen = () => {
   return loading ? (
     <LoadingScreen />
   ) : (
-    <View style={styles.container}>
-      <View style={{ ...styles.innerContainer, width: isPC ? "30%" : "90%" }}>
-        <View style={styles.detailsContainer}>
-          <Text style={styles.containerTitle}>Personal Details:</Text>
+    <ScrollView style={{ flex: 1, backgroundColor: "black" }}>
+      <View style={styles.container}>
+        <View style={{ ...styles.innerContainer, width: isPC ? "30%" : "90%" }}>
+          <View style={styles.detailsContainer}>
+            <Text style={styles.containerTitle}>Personal Details:</Text>
 
-          <Text style={styles.label}>
-            Name: <Text style={styles.value}>{user?.username + " "}</Text>
-          </Text>
-
-          <Text style={styles.label}>
-            Email: <Text style={styles.value}>{user?.email + " "}</Text>
-          </Text>
-
-          <Text style={styles.label}>
-            Phone Number: <Text style={styles.value}>{user?.phone + " "}</Text>
-          </Text>
-
-          <Text style={styles.label}>
-            User Type: <Text style={styles.value}>{userType + " "}</Text>
-          </Text>
-        </View>
-
-        <View style={styles.detailsContainer}>
-          <Text style={styles.containerTitle}>Contact for any query:</Text>
-
-          <Text style={styles.contactLabel}>
-            Email:{" "}
-            <Text style={styles.contactValue}>
-              printease.official@gmail.com
+            <Text style={styles.label}>
+              Name: <Text style={styles.value}>{user?.username + " "}</Text>
             </Text>
-          </Text>
 
-          <Text style={styles.contactLabel}>
-            Phone Number:{" "}
-            <View>
-              <Text style={[styles.contactValue, { marginBottom: 2 }]}>
-                +91 93697 76397{" "}
+            <Text style={styles.label}>
+              Email: <Text style={styles.value}>{user?.email + " "}</Text>
+            </Text>
+
+            <Text style={styles.label}>
+              Phone Number:{" "}
+              <Text style={styles.value}>{user?.phone + " "}</Text>
+            </Text>
+
+            <Text style={styles.label}>
+              User Type: <Text style={styles.value}>{userType + " "}</Text>
+            </Text>
+          </View>
+
+          <View style={styles.detailsContainer}>
+            <Text style={styles.containerTitle}>Contact for any query:</Text>
+
+            <Text style={styles.contactLabel}>
+              Email:{" "}
+              <Text style={styles.contactValue}>
+                printease.official@gmail.com
               </Text>
-              <Text style={styles.contactValue}>+91 87565 16427</Text>
-            </View>
-          </Text>
-        </View>
+            </Text>
 
-        <Button
-          style={styles.listStyle}
-          mode="contained"
-          onPress={handleLogout}
-        >
-          <Text style={styles.listItemName}>Logout &nbsp;</Text>
-        </Button>
+            <Text style={styles.contactLabel}>
+              Phone Number:{" "}
+              <View>
+                <Text style={[styles.contactValue, { marginBottom: 2 }]}>
+                  +91 93697 76397{" "}
+                </Text>
+                <Text style={styles.contactValue}>+91 87565 16427</Text>
+              </View>
+            </Text>
+          </View>
+
+          <Button
+            style={styles.listStyle}
+            mode="contained"
+            onPress={handleLogout}
+          >
+            <Text style={styles.listItemName}>Logout &nbsp;</Text>
+          </Button>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

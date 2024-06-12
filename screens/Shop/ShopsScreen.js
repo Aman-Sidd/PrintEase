@@ -14,9 +14,10 @@ import { useDispatch } from "react-redux";
 import { add_shop, add_user } from "../../redux/UserSlice";
 import { useNavigation } from "@react-navigation/native";
 import { useMediaQuery } from "react-responsive";
+import { setShopId } from "../../redux/OrderSlice";
 
 const demoShops = [
-  { id: "3", name: "Kumar Photocopy", address: "Integral University" },
+  { id: 1, name: "Kumar Photocopy", address: "Integral University" },
 ];
 
 const ShopsScreen = () => {
@@ -45,7 +46,7 @@ const ShopsScreen = () => {
     return (
       <Pressable
         onPress={() => {
-          dispatch(add_shop(shop));
+          dispatch(setShopId({ shopId: shop?.id }));
           navigation.navigate("Main");
         }}
         style={styles.listStyle}

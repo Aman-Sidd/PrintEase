@@ -24,7 +24,7 @@ const ProfileScreen = () => {
       const userDetails = response.data;
       console.log("userDetails:", userDetails);
 
-      const pushTokens = JSON.parse(userDetails.push_token).filter(
+      const pushTokens = JSON.parse(userDetails.push_token)?.filter(
         (token) => token !== expoPushToken
       );
       console.log("expoPushToken:", expoPushToken);

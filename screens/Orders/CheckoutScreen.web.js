@@ -75,6 +75,11 @@ const CheckoutScreen = ({ navigation }) => {
     formData.append("totalpages", orderDetails.noOfPages);
     formData.append("priceperpage", priceRatePerPage);
     formData.append("paymentid", 12345);
+    formData.append(
+      "spiralbinding",
+      orderDetails.spiralBinding === "Yes" ? true : false
+    );
+    formData.append("shopid", orderDetails.shopId);
 
     try {
       const response = await myApi.post("/user/create-order", formData, {

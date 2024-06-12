@@ -21,7 +21,7 @@ export const getUserDetailsById = async (userid) => {
     );
     return response;
   } catch (err) {
-    console.log("error in getUserDetailsById", err);
+    console.log("error in getUserDetailsById", err.response.data);
     throw err;
   }
 };

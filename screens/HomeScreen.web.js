@@ -126,7 +126,7 @@ const HomeScreen = ({ navigation }) => {
           <Image
             style={[
               styles.imageStyle,
-              !isDesktopOrLaptop && { width: 170, height: 170 },
+              !isDesktopOrLaptop && { width: 140, height: 140 },
             ]}
             source={require("../assets/logo.png")}
             contentFit="contain"
@@ -139,7 +139,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
         <View
           style={{
-            width: isDesktopOrLaptop ? "40%" : "80%",
+            width: isDesktopOrLaptop ? "40%" : "90%",
             alignSelf: "center",
           }}
         >
@@ -232,6 +232,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#080A0C",
+    paddingBottom: 20,
   },
   imageStyle: {
     height: 150,

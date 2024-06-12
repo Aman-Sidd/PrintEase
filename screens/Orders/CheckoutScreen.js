@@ -18,67 +18,12 @@ import { sendPushNotification } from "../../api/methods/sendPushNotification";
 import { OWNER_USER_ID } from "../../constants/OwnerCredentials";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-community/async-storage";
-
-const savePendingUpdate = async (update) => {
-  let pendingUpdates = await AsyncStorage.getItem("pendingUpdates");
-  pendingUpdates = pendingUpdates ? JSON.parse(pendingUpdates) : [];
-  pendingUpdates.push(update);
-  await AsyncStorage.setItem("pendingUpdates", JSON.stringify(pendingUpdates));
-};
-
-const getPendingUpdates = async () => {
-  let pendingUpdates = await AsyncStorage.getItem("pendingUpdates");
-  return pendingUpdates ? JSON.parse(pendingUpdates) : [];
-};
-
-const removePendingUpdate = async (index) => {
-  let pendingUpdates = await AsyncStorage.getItem("pendingUpdates");
-  pendingUpdates = pendingUpdates ? JSON.parse(pendingUpdates) : [];
-  pendingUpdates.splice(index, 1);
-  await AsyncStorage.setItem("pendingUpdates", JSON.stringify(pendingUpdates));
-};
-
-const updatePaymentInfoWithRetry = async (updateInfo, retries = 3) => {
-  for (let attempt = 0; attempt < retries; attempt++) {
-    try {
-      await updatePaymentId(updateInfo);
-      return true; // Successful update
-    } catch (error) {
-      if (attempt === retries - 1) {
-        await savePendingUpdate(updateInfo);
-        return false; // Failed after all retries
-      }
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait before retrying
-    }
-  }
-};
+import { setLoading } from "../../redux/UtilSlice";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const processPendingUpdates = async () => {
-      const pendingUpdates = await getPendingUpdates();
-      for (let i = 0; i < pendingUpdates.length; i++) {
-        const updateInfo = pendingUpdates[i];
-        try {
-          await updatePaymentId(updateInfo);
-          await removePendingUpdate(i);
-        } catch (error) {
-          console.error(
-            "Failed to update payment info from pending updates",
-            error
-          );
-        }
-      }
-    };
-
-    // Periodically attempt to process pending updates
-    const intervalId = setInterval(processPendingUpdates, 60000); // Every 1 minute
-    return () => clearInterval(intervalId); // Cleanup on unmount
-  }, []);
 
   const placeOrder = async () => {
     setLoading(true);
@@ -86,8 +31,8 @@ const CheckoutScreen = ({ navigation }) => {
 
     formData.append("file", {
       uri: orderDetails.pdfUri,
-      name: orderDetails.pdfName,
-      type: "application/pdf",
+      name: orderDetails.pdfName, // Set the file name with appropriate extension
+      type: "application/pdf", // Set MIME type for PDF files
     });
     formData.append("title", orderDetails.pdfName);
     formData.append("totalprice", orderDetails.noOfPages * priceRatePerPage);
@@ -97,6 +42,11 @@ const CheckoutScreen = ({ navigation }) => {
     formData.append("totalpages", orderDetails.noOfPages);
     formData.append("priceperpage", priceRatePerPage);
     formData.append("paymentid", 12345);
+    formData.append(
+      "spiralbinding",
+      orderDetails.spiralBinding === "Yes" ? true : false
+    );
+    formData.append("shopid", orderDetails.shopId);
 
     try {
       const response = await myApi.post("/user/create-order", formData, {
@@ -113,8 +63,26 @@ const CheckoutScreen = ({ navigation }) => {
         return response.data.data.orderDetails.order_id;
       } else return null;
     } catch (err) {
-      console.log("Error while creating order:", err.response);
+      console.log("Error while creating order:", err.response.data);
       return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updatePaymentInfo = async ({ orderid, paymentid }) => {
+    try {
+      setLoading(true);
+      const response = await updatePaymentId({
+        orderid,
+        paymentid,
+      });
+      if (response.success === true)
+        Alert.alert("Success!", "Order placed successfully.");
+      else Alert.alert("Failed!", "Something went wrong");
+    } catch (err) {
+      console.log("Error in updating payment id:", err.response.data);
+      Alert.alert("Failed!", "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -125,10 +93,11 @@ const CheckoutScreen = ({ navigation }) => {
       description: RAZORPAY_DESCRIPTION,
       image: RAZORPAY_IMAGE_URL,
       currency: RAZORPAY_CURRENCY,
+      // upi_link: true,
       key: RAZORPAY_API_KEY,
       amount: amount * 100,
       name: RAZORPAY_ORG_NAME,
-      order_id: "",
+      order_id: "", //Replace this with an order_id created using Orders API.
       prefill: {
         email: user?.data.email,
         contact: user?.data.phone,
@@ -145,38 +114,37 @@ const CheckoutScreen = ({ navigation }) => {
     console.log("Order Id from CheckoutScreen:", order_id);
     RazorpayCheckout.open(options)
       .then(async (data) => {
+        // handle success
         console.log("DATA: ", data);
 
-        const updateInfo = {
+        await updatePaymentInfo({
           orderid: order_id,
-          paymentid: data?.razorpay_payment_id,
-        };
+          paymentid: data.razorpay_payment_id,
+        });
 
-        const success = await updatePaymentInfoWithRetry(updateInfo);
-        if (success) {
-          await sendPushNotification({
-            user_id: OWNER_USER_ID,
-            message: "New Order Has Been Received.",
-          });
-        } else {
-          Alert.alert("Warning", "Payment update failed. Will retry later.");
-        }
+        await sendPushNotification({
+          user_id: OWNER_USER_ID,
+          message: "New Order Has Been Received.",
+        });
       })
       .catch((error) => {
+        // handle failure
         console.log("Error:", error);
         const errorObject = JSON.parse(error.description);
+        // console.log(errorObject);
         Alert.alert("Error", `${errorObject.error.description}`);
+        // alert(`Error: ${errorObject.error.description}`);
       });
   };
 
   const priceRatePerPage = getPerPagePrice(orderDetails.noOfPages);
+
   const totalAmount = orderDetails.noOfPages * priceRatePerPage;
 
   const handleBackButton = () => {
     navigation.pop();
   };
-
-  console.log("user from checkoutscreen:", user);
+  // console.log("user from checkoutscreen:", user);
 
   return loading ? (
     <LoadingScreen />
@@ -242,13 +210,13 @@ const CheckoutScreen = ({ navigation }) => {
 
       <View style={styles.buttonContainer}>
         <Pressable style={styles.cancelButton} onPress={handleBackButton}>
-          <Text style={styles.cancelButtonText}>Back</Text>
+          <Text style={styles.cancelButtonText}>Back </Text>
         </Pressable>
         <Pressable
           style={styles.nextButton}
           onPress={() => handleCheckout(totalAmount)}
         >
-          <Text style={styles.nextButtonText}>Proceed to Pay</Text>
+          <Text style={styles.nextButtonText}>Proceed to Pay </Text>
         </Pressable>
       </View>
     </ScrollView>
