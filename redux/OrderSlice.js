@@ -11,7 +11,7 @@ const initialState = {
   pricePerPage: null,
   totalPrice: null,
   file: null,
-  shopId: null,
+  shop: null,
 };
 
 const OrderSlice = createSlice({
@@ -48,8 +48,8 @@ const OrderSlice = createSlice({
     setTotalPrice(state, action) {
       state.totalPrice = action.payload.totalPrice;
     },
-    setShopId(state, action) {
-      state.shopId = action.payload.shopId;
+    setShop(state, action) {
+      state.shop = action.payload.shop;
     },
   },
 });
@@ -65,7 +65,7 @@ export const {
   setPricePerPage,
   setTotalPrice,
   setFile,
-  setShopId,
+  setShop,
 } = OrderSlice.actions;
 
 export default OrderSlice.reducer;

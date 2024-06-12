@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -11,23 +11,38 @@ import {
   Platform,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import { add_shop, add_user } from "../../redux/UserSlice";
 import { useNavigation } from "@react-navigation/native";
 import { useMediaQuery } from "react-responsive";
-import { setShopId } from "../../redux/OrderSlice";
+import { getAllShops } from "../../api/methods/getAllShops";
+import { setShop } from "../../redux/OrderSlice";
 
 const demoShops = [
   { id: 1, name: "Kumar Photocopy", address: "Integral University" },
 ];
 
 const ShopsScreen = () => {
+  const [shops, setShops] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [filteredShops, setFilteredShops] = useState(demoShops);
+
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const isDesktopOrLaptop = useMediaQuery({
     query: "(min-width: 1224px)",
   });
+
+  useEffect(() => {
+    const fetchShops = async () => {
+      try {
+        const shops = await getAllShops();
+        setShops(shops);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchShops();
+  }, []);
+
   const handleSearch = (text) => {
     setSearchText(text);
     if (text) {
@@ -46,14 +61,25 @@ const ShopsScreen = () => {
     return (
       <Pressable
         onPress={() => {
-          dispatch(setShopId({ shopId: shop?.id }));
+          dispatch(setShop({ shop }));
           navigation.navigate("Main");
         }}
         style={styles.listStyle}
       >
-        <View style={{ maxWidth: "70%" }}>
+        <View style={{ width: "100%" }}>
           <Text numberOfLines={1} style={styles.listItemName}>
-            {shop?.name}
+            {shop?.shop_name}
+          </Text>
+
+          <Text
+            style={{
+              ...styles.listItemName,
+              fontSize: 12,
+              marginTop: 7,
+              color: "#CCCCCC",
+            }}
+          >
+            {shop?.shop_address}
           </Text>
           <Text
             style={{
@@ -63,7 +89,7 @@ const ShopsScreen = () => {
               color: "#CCCCCC",
             }}
           >
-            {shop?.address}
+            Phone: {shop?.shop_phone}
           </Text>
         </View>
         {/* <View style={{ paddingRight: 20 }}>
@@ -101,14 +127,14 @@ const ShopsScreen = () => {
           value={searchText}
           onChangeText={handleSearch}
         />
-        {filteredShops.length === 0 ? (
+        {shops.length === 0 ? (
           <View style={{ justifyContent: "center", alignItems: "center" }}>
             <Text style={{ color: "white" }}>No Shops Found</Text>
           </View>
         ) : (
           <FlatList
-            data={filteredShops}
-            keyExtractor={(item) => item.id}
+            data={shops}
+            keyExtractor={(item) => item.shop_id}
             renderItem={({ item }) => renderListItem({ shop: item })}
           />
         )}

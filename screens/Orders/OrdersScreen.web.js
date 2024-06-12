@@ -41,6 +41,7 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { isDesktop, isDesktopOrLaptop } from "../../hooks/isDesktop";
+import { useSelector } from "react-redux";
 
 let isPC;
 
@@ -52,6 +53,8 @@ const OrdersScreen = ({ navigation }) => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const shop = useSelector((state) => state.order.shop);
+
   isPC = isDesktop();
   console.log("isDesk:", isPC);
   const fetchOrderList = async (status = activeStatus, page = 0) => {
@@ -65,18 +68,34 @@ const OrdersScreen = ({ navigation }) => {
 
       switch (status) {
         case "All":
-          response = await getAllOrders({ limit, offset });
+          response = await getAllOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_PENDING:
-          response = await getPendingOrders({ limit, offset });
+          response = await getPendingOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_READY:
-          response = await getPrintedOrders({ limit, offset });
+          response = await getPrintedOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
         case ORDER_STATUS_PICKED:
-          response = await getPickedOrders({ limit, offset });
+          response = await getPickedOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
         default:
           response = null;

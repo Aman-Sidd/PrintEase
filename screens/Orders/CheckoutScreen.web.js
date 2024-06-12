@@ -79,7 +79,7 @@ const CheckoutScreen = ({ navigation }) => {
       "spiralbinding",
       orderDetails.spiralBinding === "Yes" ? true : false
     );
-    formData.append("shopid", orderDetails.shopId);
+    formData.append("shopid", orderDetails.shop.shop_id);
 
     try {
       const response = await myApi.post("/user/create-order", formData, {

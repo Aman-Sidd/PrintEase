@@ -1,6 +1,6 @@
 import myApi from "../myApi";
 
-export const getPickedOrders = async ({ limit = 10, offset = 0 }) => {
+export const getPickedOrders = async ({ shop_id, limit = 10, offset = 0 }) => {
   try {
     const formData = new URLSearchParams();
     formData.append("limit", limit);
@@ -13,7 +13,7 @@ export const getPickedOrders = async ({ limit = 10, offset = 0 }) => {
     };
 
     const response = await myApi.post(
-      "/common/get-picked-orders",
+      `/common/get-picked-orders?shop_id=${shop_id}`,
       formData,
       config
     );

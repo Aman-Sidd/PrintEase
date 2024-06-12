@@ -25,7 +25,7 @@ const CheckoutScreen = ({ navigation }) => {
   const user = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
 
-  const placeOrder = async () => {
+  const placeOrder = async ({ shopId }) => {
     setLoading(true);
     const formData = new FormData();
 
@@ -46,7 +46,7 @@ const CheckoutScreen = ({ navigation }) => {
       "spiralbinding",
       orderDetails.spiralBinding === "Yes" ? true : false
     );
-    formData.append("shopid", orderDetails.shopId);
+    formData.append("shopid", orderDetails.shop.shop_id);
 
     try {
       const response = await myApi.post("/user/create-order", formData, {
