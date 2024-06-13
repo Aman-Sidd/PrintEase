@@ -36,11 +36,11 @@ const CheckoutScreen = ({ navigation }) => {
       type: "application/pdf", // Set MIME type for PDF files
     });
     formData.append("title", orderDetails.pdfName);
-    formData.append("totalprice", orderDetails.noOfPages * priceRatePerPage);
+    formData.append("totalprice", totalPagesRequired * priceRatePerPage);
     formData.append("pagesize", orderDetails.pageSize);
     formData.append("color", orderDetails.color);
     formData.append("printtype", orderDetails.printType);
-    formData.append("totalpages", orderDetails.noOfPages);
+    formData.append("totalpages", totalPagesRequired);
     formData.append("priceperpage", priceRatePerPage);
     formData.append("paymentid", 12345);
     formData.append(
@@ -124,7 +124,7 @@ const CheckoutScreen = ({ navigation }) => {
         });
 
         await sendPushNotification({
-          user_id: OWNER_USER_ID,
+          user_id: shop.User.user_id,
           message: "New Order Has Been Received.",
         });
       })
@@ -139,8 +139,11 @@ const CheckoutScreen = ({ navigation }) => {
   };
 
   const priceRatePerPage = getPerPagePrice(orderDetails.noOfPages);
-
-  const totalAmount = orderDetails.noOfPages * priceRatePerPage;
+  const totalPagesRequired =
+    orderDetails.printType === "Single Sided"
+      ? orderDetails.noOfPages
+      : Math.ceil(orderDetails.noOfPages / 2);
+  const totalAmount = totalPagesRequired * priceRatePerPage;
 
   const handleBackButton = () => {
     navigation.pop();
@@ -190,8 +193,8 @@ const CheckoutScreen = ({ navigation }) => {
             <Text style={styles.value}>{orderDetails.printType}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Total Pages:</Text>
-            <Text style={styles.value}>{orderDetails.noOfPages}</Text>
+            <Text style={styles.label}>Total Pages Required:</Text>
+            <Text style={styles.value}>{totalPagesRequired}</Text>
           </View>
         </View>
         <View style={styles.section}>
@@ -203,7 +206,7 @@ const CheckoutScreen = ({ navigation }) => {
           <View style={styles.row}>
             <Text style={styles.label}>Total Price:</Text>
             <Text style={styles.value}>
-              {orderDetails.noOfPages} * {priceRatePerPage} = Rs. {totalAmount}
+              {totalPagesRequired} * Rs. {priceRatePerPage} = Rs. {totalAmount}
             </Text>
           </View>
         </View>

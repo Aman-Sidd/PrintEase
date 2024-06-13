@@ -34,6 +34,7 @@ import {
 import { useMediaQuery } from "react-responsive";
 import { isDesktop } from "../../../hooks/isDesktop";
 import { widthPercentageToDP } from "react-native-responsive-screen";
+import { useSelector } from "react-redux";
 
 const OwnerOrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -43,6 +44,8 @@ const OwnerOrdersScreen = ({ navigation }) => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const user = useSelector((state) => state.user.data);
+  const shop_id = user.Shops[0].shop_id;
 
   let isPC = isDesktop();
 
@@ -57,18 +60,34 @@ const OwnerOrdersScreen = ({ navigation }) => {
 
       switch (status) {
         case "All":
-          response = await getAllOrders({ limit, offset });
+          response = await getAllOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_PENDING:
-          response = await getPendingOrders({ limit, offset });
+          response = await getPendingOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_READY:
-          response = await getPrintedOrders({ limit, offset });
+          response = await getPrintedOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
         case ORDER_STATUS_PICKED:
-          response = await getPickedOrders({ limit, offset });
+          response = await getPickedOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
         default:
           response = null;

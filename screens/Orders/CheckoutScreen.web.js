@@ -37,11 +37,17 @@ import {
 import { sendPushNotification } from "../../api/methods/sendPushNotification";
 import { OWNER_USER_ID } from "../../constants/OwnerCredentials";
 import { ScrollView } from "react-native-gesture-handler";
+import { useMediaQuery } from "react-responsive";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
+  const shop = useSelector((state) => state.order.shop);
+  console.log("SHOP:", shop);
   const [loading, setLoading] = useState(false);
+  const isDesktopOrLaptop = useMediaQuery({
+    query: "(min-width: 1224px)",
+  });
   const fileObj = orderDetails.file;
   const createFileObject = (uri, name, type) => {
     if (Platform.OS === "web") {
@@ -68,11 +74,11 @@ const CheckoutScreen = ({ navigation }) => {
     );
     formData.append("file", file);
     formData.append("title", orderDetails.pdfName);
-    formData.append("totalprice", orderDetails.noOfPages * priceRatePerPage);
+    formData.append("totalprice", totalPagesRequired * priceRatePerPage);
     formData.append("pagesize", orderDetails.pageSize);
     formData.append("color", orderDetails.color);
     formData.append("printtype", orderDetails.printType);
-    formData.append("totalpages", orderDetails.noOfPages);
+    formData.append("totalpages", totalPagesRequired);
     formData.append("priceperpage", priceRatePerPage);
     formData.append("paymentid", 12345);
     formData.append(
@@ -172,7 +178,7 @@ const CheckoutScreen = ({ navigation }) => {
           })
           .then(async () => {
             await sendPushNotification({
-              user_id: OWNER_USER_ID,
+              user_id: shop.User.user_id,
               message: "New Order Has Been Received.",
             });
           })
@@ -201,18 +207,17 @@ const CheckoutScreen = ({ navigation }) => {
       alert(
         `Error occured while making payment: ${response.error.description}`
       );
-      // alert(response.error.source);
-      // alert(response.error.step);
-      // alert(response.error.reason);
-      // alert(response.error.metadata.order_id);
-      // alert(response.error.metadata.payment_id);
     });
     paymentObject.open();
   }
 
   const priceRatePerPage = getPerPagePrice(orderDetails.noOfPages);
 
-  const totalAmount = orderDetails.noOfPages * priceRatePerPage;
+  const totalPagesRequired =
+    orderDetails.printType === "Single Sided"
+      ? orderDetails.noOfPages
+      : Math.ceil(orderDetails.noOfPages / 2);
+  const totalAmount = totalPagesRequired * priceRatePerPage;
 
   const handleBackButton = () => {
     navigation.pop();
@@ -222,7 +227,9 @@ const CheckoutScreen = ({ navigation }) => {
     <LoadingScreen />
   ) : (
     <ScrollView style={styles.container}>
-      <View style={styles.checkoutInfo}>
+      <View
+        style={[styles.checkoutInfo, isDesktopOrLaptop && { width: "35%" }]}
+      >
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Shop Info</Text>
           <View style={styles.row}>
@@ -261,8 +268,8 @@ const CheckoutScreen = ({ navigation }) => {
             <Text style={styles.value}>{orderDetails.printType}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Total Pages:</Text>
-            <Text style={styles.value}>{orderDetails.noOfPages}</Text>
+            <Text style={styles.label}>Total Pages Required:</Text>
+            <Text style={styles.value}>{totalPagesRequired}</Text>
           </View>
         </View>
         <View style={styles.section}>
@@ -274,7 +281,7 @@ const CheckoutScreen = ({ navigation }) => {
           <View style={styles.row}>
             <Text style={styles.label}>Total Price:</Text>
             <Text style={styles.value}>
-              {orderDetails.noOfPages} * {priceRatePerPage} = Rs. {totalAmount}
+              {totalPagesRequired} * Rs. {priceRatePerPage} = Rs. {totalAmount}
             </Text>
           </View>
         </View>
@@ -302,11 +309,12 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     flex: 1,
     // alignItems: "center",
-    paddingTop: 20,
+    paddingVertical: 20,
+
     paddingHorizontal: 10,
   },
   checkoutInfo: {
-    width: "35%",
+    width: "100%",
     alignSelf: "center",
     gap: 10,
     justifyContent: "center",
