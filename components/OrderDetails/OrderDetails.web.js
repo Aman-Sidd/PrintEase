@@ -139,6 +139,7 @@ const OrderDetails = ({ order_id, isOwner }) => {
       style={{
         flex: 1,
         backgroundColor: "black",
+        paddingBottom: 20,
       }}
     >
       <ScrollView
