@@ -21,11 +21,13 @@ import { getPerPagePrice } from "../helpers/GetPerPagePrice";
 import LoadingScreen from "../utils/LoadingScreen";
 import UnderlinedText from "../formUtils/UnderlinedText";
 import { convertTimeToAMPM, formatDate } from "../utils/formatDateTime";
+import { getShopDetails } from "../../api/methods/getShopDetails";
 
 const OrderDetails = ({ order_id, isOwner, _id }) => {
   console.log("orderDetails_id:", _id);
   const navigation = useNavigation();
   const [orderDetails, setOrderDetails] = useState(null);
+  const [shopDetails, setShopDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [priceRatePerPage, setPriceRatePerPage] = useState(null);
   const [pdfUri, setPdfUri] = useState(null);
@@ -42,6 +44,10 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
         );
         console.log("OrderDetailsResp:", orderDetailsResponse.data);
         setOrderDetails(orderDetailsResponse?.data);
+        const shopDetails = await getShopDetails({
+          shop_id: orderDetailsResponse?.data.shop_id,
+        });
+        setShopDetails(shopDetails);
         setPdfUri(
           JSON.parse(orderDetailsResponse?.data.OrderDetails[0].file_details)[0]
         );
@@ -95,6 +101,8 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
     }
   };
 
+  console.log("ShopDetails:", shopDetails);
+
   return loading ? (
     <LoadingScreen />
   ) : (
@@ -108,14 +116,15 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        contentContainerStyle={
-          {
-            //   justifyContent: "center",
-            //   alignItems: "center",
-          }
-        }
       >
         <View style={styles.checkoutInfo}>
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            <Text style={styles.textStyle}>Shop ID: </Text>
+            <Text style={[styles.textStyle, { color: "white" }]}>
+              {" "}
+              {shopDetails?.shop_id + " "}
+            </Text>
+          </View>
           <View style={{ display: "flex", flexDirection: "row" }}>
             <Text style={styles.textStyle}>Token ID: </Text>
             <Text style={[styles.textStyle, { color: "white" }]}>
@@ -143,6 +152,15 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
             <Text style={[styles.textStyle, { color: "white" }]}>
               {" "}
               {orderDetails?.OrderDetails[0].print_color + " "}
+            </Text>
+          </View>
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            <Text style={styles.textStyle}>Sprial Binding: </Text>
+            <Text style={[styles.textStyle, { color: "white" }]}>
+              {" "}
+              {orderDetails?.OrderDetails[0].spiral_binding
+                ? "Yes"
+                : "No" + " "}
             </Text>
           </View>
           <View

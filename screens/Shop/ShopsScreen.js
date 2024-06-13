@@ -15,16 +15,17 @@ import { useNavigation } from "@react-navigation/native";
 import { useMediaQuery } from "react-responsive";
 import { getAllShops } from "../../api/methods/getAllShops";
 import { setShop } from "../../redux/OrderSlice";
+import LoadingScreen from "../../components/utils/LoadingScreen";
 
 const demoShops = [
   { id: 1, name: "Kumar Photocopy", address: "Integral University" },
 ];
 
 const ShopsScreen = () => {
-  const [shops, setShops] = useState([]);
   const [searchText, setSearchText] = useState("");
-  const [filteredShops, setFilteredShops] = useState(demoShops);
-
+  const [filteredShops, setFilteredShops] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [shops, setShops] = useState([]);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const isDesktopOrLaptop = useMediaQuery({
@@ -33,11 +34,15 @@ const ShopsScreen = () => {
 
   useEffect(() => {
     const fetchShops = async () => {
+      setLoading(true);
       try {
-        const shops = await getAllShops();
-        setShops(shops);
+        const fetchedShops = await getAllShops();
+        setShops(fetchedShops);
+        setFilteredShops(fetchedShops);
       } catch (err) {
         console.log(err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchShops();
@@ -46,14 +51,14 @@ const ShopsScreen = () => {
   const handleSearch = (text) => {
     setSearchText(text);
     if (text) {
-      let filtered = demoShops.filter(
+      let filtered = shops.filter(
         (shop) =>
-          shop.name.toLowerCase().includes(text.toLowerCase()) ||
-          shop.address.toLowerCase().includes(text.toLowerCase())
+          shop.shop_name.toLowerCase().includes(text.toLowerCase()) ||
+          shop.shop_address.toLowerCase().includes(text.toLowerCase())
       );
       setFilteredShops(filtered);
     } else {
-      setFilteredShops(demoShops);
+      setFilteredShops(shops);
     }
   };
 
@@ -109,7 +114,9 @@ const ShopsScreen = () => {
     );
   };
 
-  return (
+  return loading ? (
+    <LoadingScreen />
+  ) : (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -127,13 +134,13 @@ const ShopsScreen = () => {
           value={searchText}
           onChangeText={handleSearch}
         />
-        {shops.length === 0 ? (
+        {filteredShops.length === 0 ? (
           <View style={{ justifyContent: "center", alignItems: "center" }}>
             <Text style={{ color: "white" }}>No Shops Found</Text>
           </View>
         ) : (
           <FlatList
-            data={shops}
+            data={filteredShops}
             keyExtractor={(item) => item.shop_id}
             renderItem={({ item }) => renderListItem({ shop: item })}
           />

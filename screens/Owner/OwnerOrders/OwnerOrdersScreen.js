@@ -120,6 +120,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
   const responseListener = useRef();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.data);
+  const shop_id = user?.Shops[0].shop_id;
 
   const fetchOrderList = async (status = activeStatus, page = 0) => {
     try {
@@ -132,18 +133,34 @@ const OwnerOrdersScreen = ({ navigation }) => {
 
       switch (status) {
         case "All":
-          response = await getAllOrders({ limit, offset });
+          response = await getAllOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_PENDING:
-          response = await getPendingOrders({ limit, offset });
+          response = await getPendingOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_READY:
-          response = await getPrintedOrders({ limit, offset });
+          response = await getPrintedOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
         case ORDER_STATUS_PICKED:
-          response = await getPickedOrders({ limit, offset });
+          response = await getPickedOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
         default:
           response = null;

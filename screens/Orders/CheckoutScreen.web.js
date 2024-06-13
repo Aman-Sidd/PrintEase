@@ -227,16 +227,16 @@ const CheckoutScreen = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Shop Info</Text>
           <View style={styles.row}>
             <Text style={styles.label}>Shop Name:</Text>
-            <Text style={styles.value}>{user.shop?.name}</Text>
+            <Text style={styles.value}>{shop?.shop_name}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Shop ID:</Text>
-            <Text style={styles.value}>{user.shop?.id}</Text>
+            <Text style={styles.value}>{shop?.shop_id}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Shop Address:</Text>
             <Text style={styles.value} numberOfLines={1}>
-              {user.shop?.address}
+              {shop?.shop_address}
             </Text>
           </View>
         </View>

@@ -22,10 +22,11 @@ import { setLoading } from "../../redux/UtilSlice";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
-  const user = useSelector((state) => state.user);
+  const shop = useSelector((state) => state.order.shop);
   const [loading, setLoading] = useState(false);
+  const user = useSelector((state) => state.user);
 
-  const placeOrder = async ({ shopId }) => {
+  const placeOrder = async () => {
     setLoading(true);
     const formData = new FormData();
 
@@ -155,16 +156,16 @@ const CheckoutScreen = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Shop Info</Text>
           <View style={styles.row}>
             <Text style={styles.label}>Shop Name:</Text>
-            <Text style={styles.value}>{user.shop?.name}</Text>
+            <Text style={styles.value}>{shop?.shop_name}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Shop ID:</Text>
-            <Text style={styles.value}>{user.shop?.id}</Text>
+            <Text style={styles.value}>{shop?.shop_id}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Shop Address:</Text>
             <Text style={styles.value} numberOfLines={1}>
-              {user.shop?.address}
+              {shop?.shop_address}
             </Text>
           </View>
         </View>
