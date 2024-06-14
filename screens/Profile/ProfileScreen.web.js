@@ -5,20 +5,45 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { Button } from "react-native-paper";
 import LoadingScreen from "../../components/utils/LoadingScreen";
-import { getUserDetails } from "../../api/methods/getUserDetails";
+import {
+  getUserDetails,
+  getUserDetailsById,
+} from "../../api/methods/getUserDetails";
 import { isDesktop } from "../../hooks/isDesktop";
 import { ScrollView } from "react-native-gesture-handler";
+import { updateUserDetails } from "../../api/methods/updateUserDetails";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const [user, setUser] = useState(null);
+  const user = useSelector((state) => state.user.data);
+  const expoPushToken = useSelector((state) => state.util.expoPushToken);
   const [loading, setLoading] = useState(true);
 
   const handleLogout = async () => {
-    const keys = await AsyncStorage.getAllKeys();
-    console.log("KEYS:", keys);
-    await AsyncStorage.multiRemove(keys);
-    navigation.replace("Login");
+    setLoading(true);
+    try {
+      console.log("Handling logout");
+
+      const response = (await getUserDetailsById(user?.user_id)).data;
+      const userDetails = response.data;
+      console.log("userDetails:", userDetails);
+
+      const pushTokens = JSON.parse(userDetails.push_token)?.filter(
+        (token) => token !== expoPushToken
+      );
+      console.log("expoPushToken:", expoPushToken);
+      console.log("pushTokens:", pushTokens);
+      await updateUserDetails({ userDetails, pushTokens });
+
+      const keys = await AsyncStorage.getAllKeys();
+      await AsyncStorage.multiRemove(keys);
+
+      navigation.replace("Login");
+    } catch (err) {
+      console.log("Error occurred while logging out.", err);
+    } finally {
+      setLoading(false);
+    }
   };
   console.log("USER", user);
 
@@ -29,9 +54,10 @@ const ProfileScreen = () => {
         const response = await getUserDetails();
         console.log("RESPONSE:", response);
         setUser(response);
-        setLoading(false);
       } catch (err) {
         console.log(err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchUser();

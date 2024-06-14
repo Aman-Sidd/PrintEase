@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // import RazorpayCheckout from "react-native-razorpay";
 // import {
 //   RAZORPAY_API_KEY,
@@ -38,11 +38,24 @@ import { sendPushNotification } from "../../api/methods/sendPushNotification";
 import { OWNER_USER_ID } from "../../constants/OwnerCredentials";
 import { ScrollView } from "react-native-gesture-handler";
 import { useMediaQuery } from "react-responsive";
+import {
+  setColor,
+  setFile,
+  setNoOfPages,
+  setPageSize,
+  setPdfName,
+  setPdfUri,
+  setPrintType,
+  setSpiralBinding,
+  setTotalPrice,
+} from "../../redux/OrderSlice";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
   const shop = useSelector((state) => state.order.shop);
+  const dispatch = useDispatch();
+
   console.log("SHOP:", shop);
   const [loading, setLoading] = useState(false);
   const isDesktopOrLaptop = useMediaQuery({
@@ -175,6 +188,8 @@ const CheckoutScreen = ({ navigation }) => {
         })
           .then((data) => {
             alert("Order Successful!");
+            navigation.pop();
+            navigation.navigate("Orders");
           })
           .then(async () => {
             await sendPushNotification({
@@ -239,6 +254,10 @@ const CheckoutScreen = ({ navigation }) => {
           <View style={styles.row}>
             <Text style={styles.label}>Shop ID:</Text>
             <Text style={styles.value}>{shop?.shop_id}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Contact No:</Text>
+            <Text style={styles.value}>{shop?.shop_phone}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Shop Address:</Text>

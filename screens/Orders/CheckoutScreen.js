@@ -127,6 +127,9 @@ const CheckoutScreen = ({ navigation }) => {
           user_id: shop.User.user_id,
           message: "New Order Has Been Received.",
         });
+
+        navigation.pop();
+        navigation.navigate("Orders");
       })
       .catch((error) => {
         // handle failure
@@ -164,6 +167,10 @@ const CheckoutScreen = ({ navigation }) => {
           <View style={styles.row}>
             <Text style={styles.label}>Shop ID:</Text>
             <Text style={styles.value}>{shop?.shop_id}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Contact No:</Text>
+            <Text style={styles.value}>{shop?.shop_phone}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Shop Address:</Text>

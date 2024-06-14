@@ -6,7 +6,7 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import myApi from "../../api/myApi";
@@ -22,6 +22,7 @@ import LoadingScreen from "../utils/LoadingScreen";
 import UnderlinedText from "../formUtils/UnderlinedText";
 import { convertTimeToAMPM, formatDate } from "../utils/formatDateTime";
 import { getShopDetails } from "../../api/methods/getShopDetails";
+import { useFocusEffect } from "@react-navigation/native";
 
 const OrderDetails = ({ order_id, isOwner, _id }) => {
   console.log("orderDetails_id:", _id);
@@ -38,39 +39,38 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
   const [orderDetailsExpanded, setOrderDetailsExpanded] = useState(true);
   const [pricingExpanded, setPricingExpanded] = useState(false);
 
-  useEffect(() => {
-    const fetchOrderDetails = async () => {
-      try {
-        setLoading(true);
-        console.log("Order ID:", order_id);
-        const orderDetailsResponse = await myApi.get(
-          `/get-order-details?order_id=${order_id}`
-        );
-        console.log("OrderDetailsResp:", orderDetailsResponse.data);
-        setOrderDetails(orderDetailsResponse?.data);
-        const shopDetailsResponse = await getShopDetails({
-          shop_id: orderDetailsResponse?.data.shop_id,
-        });
-        setShopDetails(shopDetailsResponse);
-        setPdfUri(
-          JSON.parse(orderDetailsResponse?.data.OrderDetails[0].file_details)[0]
-        );
-        setPriceRatePerPage(
-          getPerPagePrice(
-            orderDetailsResponse?.data.OrderDetails[0].total_pages
-          )
-        );
-        console.log("status:", orderDetailsResponse?.data.status);
-        setOrderStatus(
-          ValueToStatusConvertor(orderDetailsResponse?.data.status)
-        );
-        setLoading(false);
-      } catch (err) {
-        console.log("Err:", err);
-      }
-    };
-    fetchOrderDetails();
-  }, []);
+  const fetchOrderDetails = async () => {
+    try {
+      setLoading(true);
+      console.log("Order ID:", order_id);
+      const orderDetailsResponse = await myApi.get(
+        `/get-order-details?order_id=${order_id}`
+      );
+      console.log("OrderDetailsResp:", orderDetailsResponse.data);
+      setOrderDetails(orderDetailsResponse?.data);
+      const shopDetailsResponse = await getShopDetails({
+        shop_id: orderDetailsResponse?.data.shop_id,
+      });
+      setShopDetails(shopDetailsResponse);
+      setPdfUri(
+        JSON.parse(orderDetailsResponse?.data.OrderDetails[0].file_details)[0]
+      );
+      setPriceRatePerPage(
+        getPerPagePrice(orderDetailsResponse?.data.OrderDetails[0].total_pages)
+      );
+      console.log("status:", orderDetailsResponse?.data.status);
+      setOrderStatus(ValueToStatusConvertor(orderDetailsResponse?.data.status));
+      setLoading(false);
+    } catch (err) {
+      console.log("Err:", err);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrderDetails();
+    }, [])
+  );
 
   const openPdf = () => {
     navigation.navigate("PdfView", { uri: pdfUri, showButtons: false });
@@ -141,6 +141,10 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
               <View style={styles.row}>
                 <Text style={styles.label}>Shop ID: </Text>
                 <Text style={styles.value}>{shopDetails?.shop_id} </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Contact No: </Text>
+                <Text style={styles.value}>{shopDetails?.shop_phone} </Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.label}>Shop Address: </Text>

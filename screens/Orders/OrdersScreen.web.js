@@ -187,7 +187,7 @@ const OrdersScreen = ({ navigation }) => {
         }
         style={{
           ...styles.listStyle,
-          width: isPC ? "50%" : "80%",
+          width: isPC ? "50%" : "90%",
         }}
       >
         <View style={{ maxWidth: "70%" }}>
@@ -239,7 +239,7 @@ const OrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("2%"),
+                : widthPercentageToDP("3%"),
             },
             activeStatus == "All"
               ? styles.statusButtonActive
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   },
   listStyle: {
     // height: 75,
-    paddingVertical: "1%",
+    paddingVertical: "4%",
     width: "50%",
     marginTop: 15,
     borderRadius: 8,

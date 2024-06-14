@@ -139,7 +139,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
         <View
           style={{
-            width: isDesktopOrLaptop ? "40%" : "90%",
+            width: isDesktopOrLaptop ? "40%" : "100%",
             alignSelf: "center",
           }}
         >
@@ -182,6 +182,7 @@ const HomeScreen = ({ navigation }) => {
                   {
                     alignSelf: "center",
                     paddingVertical: "4%",
+                    paddingHorizontal: "1%",
                     width: isDesktopOrLaptop ? "50%" : "70%",
                     height: isDesktopOrLaptop ? hp("14%") : hp("18%"),
                   },

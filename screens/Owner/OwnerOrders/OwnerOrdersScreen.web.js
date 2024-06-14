@@ -132,7 +132,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
         }
         style={{
           ...styles.listStyle,
-          width: isPC ? "50%" : "80%",
+          width: isPC ? "50%" : "90%",
         }}
       >
         <View style={{ maxWidth: "70%" }}>
@@ -231,7 +231,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("3%"),
             },
             activeStatus == "All"
               ? styles.statusButtonActive
@@ -246,7 +246,8 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
-            All &nbsp;
+            {" "}
+            All{" "}
           </Text>
         </Pressable>
         <Pressable
@@ -256,7 +257,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("3%"),
             },
             activeStatus == ORDER_STATUS_PENDING
               ? styles.statusButtonActive
@@ -271,6 +272,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
+            {" "}
             {ORDER_STATUS_PENDING + " "}
           </Text>
         </Pressable>
@@ -281,7 +283,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("3%"),
             },
             activeStatus == ORDER_STATUS_READY
               ? styles.statusButtonActive
@@ -296,6 +298,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
+            {" "}
             {ORDER_STATUS_READY + " "}
           </Text>
         </Pressable>
@@ -306,7 +309,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("3%"),
             },
             activeStatus == ORDER_STATUS_PICKED
               ? styles.statusButtonActive
@@ -321,6 +324,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
+            {" "}
             {ORDER_STATUS_PICKED + " "}
           </Text>
         </Pressable>
@@ -385,7 +389,7 @@ const styles = StyleSheet.create({
   },
   listStyle: {
     // height: 75,
-    paddingVertical: "1%",
+    paddingVertical: "4%",
     width: "50%",
     marginTop: 15,
     borderRadius: 8,

@@ -256,7 +256,10 @@ const HomeScreen = ({ navigation }) => {
             </Pressable>
           ) : (
             <Pressable
-              style={[styles.documentPicker, { paddingVertical: "10%" }]}
+              style={[
+                styles.documentPicker,
+                { paddingVertical: "10%", paddingHorizontal: "4%" },
+              ]}
               onPress={pickDocument}
             >
               <Pressable onPress={openPDF} style={styles.pdfPreview}>

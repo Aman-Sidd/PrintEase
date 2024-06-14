@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   listStyle: {
-    // height: 75,
+    height: 75,
     paddingVertical: "4%",
     width: "90%",
     marginTop: 15,
