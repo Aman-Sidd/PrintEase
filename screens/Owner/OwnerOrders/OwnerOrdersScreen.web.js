@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -35,6 +35,7 @@ import { useMediaQuery } from "react-responsive";
 import { isDesktop } from "../../../hooks/isDesktop";
 import { widthPercentageToDP } from "react-native-responsive-screen";
 import { useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
 
 const OwnerOrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -118,9 +119,11 @@ const OwnerOrdersScreen = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    fetchOrderList();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrderList();
+    }, [])
+  );
 
   const renderListItem = ({ item }) => {
     const order_status = ValueToStatusConvertor(item?.status);

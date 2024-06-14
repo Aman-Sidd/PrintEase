@@ -69,7 +69,10 @@ const ShopsScreen = () => {
           dispatch(setShop({ shop }));
           navigation.navigate("Main");
         }}
-        style={styles.listStyle}
+        style={[
+          styles.listStyle,
+          Platform.OS === "web" && { paddingVertical: "2%" },
+        ]}
       >
         <View style={{ width: "100%" }}>
           <Text numberOfLines={1} style={styles.listItemName}>

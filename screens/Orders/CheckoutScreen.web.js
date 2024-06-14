@@ -49,6 +49,7 @@ import {
   setSpiralBinding,
   setTotalPrice,
 } from "../../redux/OrderSlice";
+import { RATE_Spiral_Binding } from "../../constants/PRICING";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
@@ -87,7 +88,7 @@ const CheckoutScreen = ({ navigation }) => {
     );
     formData.append("file", file);
     formData.append("title", orderDetails.pdfName);
-    formData.append("totalprice", totalPagesRequired * priceRatePerPage);
+    formData.append("totalprice", totalAmount);
     formData.append("pagesize", orderDetails.pageSize);
     formData.append("color", orderDetails.color);
     formData.append("printtype", orderDetails.printType);
@@ -226,13 +227,19 @@ const CheckoutScreen = ({ navigation }) => {
     paymentObject.open();
   }
 
-  const priceRatePerPage = getPerPagePrice(orderDetails.noOfPages);
-
   const totalPagesRequired =
     orderDetails.printType === "Single Sided"
       ? orderDetails.noOfPages
       : Math.ceil(orderDetails.noOfPages / 2);
-  const totalAmount = totalPagesRequired * priceRatePerPage;
+
+  const priceRatePerPage = getPerPagePrice(
+    totalPagesRequired,
+    orderDetails.color
+  );
+
+  const totalAmount =
+    totalPagesRequired * priceRatePerPage +
+    (orderDetails.spiralBinding === "Yes" ? RATE_Spiral_Binding : 0);
 
   const handleBackButton = () => {
     navigation.pop();
@@ -297,10 +304,20 @@ const CheckoutScreen = ({ navigation }) => {
             <Text style={styles.label}>Price per page:</Text>
             <Text style={styles.value}>Rs. {priceRatePerPage}</Text>
           </View>
+          {orderDetails.spiralBinding && (
+            <View style={styles.row}>
+              <Text style={styles.label}>Spiral Binding:</Text>
+              <Text style={styles.value}>Rs. {RATE_Spiral_Binding}</Text>
+            </View>
+          )}
           <View style={styles.row}>
             <Text style={styles.label}>Total Price:</Text>
             <Text style={styles.value}>
-              {totalPagesRequired} * Rs. {priceRatePerPage} = Rs. {totalAmount}
+              {"(" + totalPagesRequired} pages * {priceRatePerPage + ")"}
+              {orderDetails.spiralBinding === "Yes"
+                ? ` + ${RATE_Spiral_Binding}`
+                : null}{" "}
+              = Rs. {totalAmount}
             </Text>
           </View>
         </View>

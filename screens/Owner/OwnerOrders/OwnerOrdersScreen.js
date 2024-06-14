@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -43,6 +43,7 @@ import Constants from "expo-constants";
 import { addExpoPushToken } from "../../../redux/UtilSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePushToken } from "../../../api/methods/updatePushToken";
+import { useFocusEffect } from "@react-navigation/native";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -225,9 +226,11 @@ const OwnerOrdersScreen = ({ navigation }) => {
     };
   }, []);
 
-  useEffect(() => {
-    fetchOrderList();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrderList();
+    }, [])
+  );
 
   const renderListItem = ({ item }) => {
     const order_status = ValueToStatusConvertor(item?.status);

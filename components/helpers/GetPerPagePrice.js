@@ -1,9 +1,13 @@
-import { RATE16_25, RATE1_15, RATE26Above } from "../../constants/PRICING";
+import {
+  RATE11Above,
+  RATE16_25,
+  RATE1_10,
+  RATE1_15,
+  RATE26Above,
+  RATE_Color_Page,
+} from "../../constants/PRICING";
 
-export function getPerPagePrice(totalPages) {
-  return totalPages <= 15
-    ? RATE1_15
-    : totalPages <= 25
-    ? RATE16_25
-    : RATE26Above;
+export function getPerPagePrice(totalPages, color = "Black & White") {
+  if (color === "Coloured") return RATE_Color_Page;
+  return totalPages <= 10 ? RATE1_10 : RATE11Above;
 }

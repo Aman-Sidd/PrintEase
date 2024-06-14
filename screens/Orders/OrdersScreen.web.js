@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/utils/LoadingScreen";
@@ -42,6 +42,7 @@ import {
 } from "react-native-responsive-screen";
 import { isDesktop, isDesktopOrLaptop } from "../../hooks/isDesktop";
 import { useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
 
 let isPC;
 
@@ -148,9 +149,11 @@ const OrdersScreen = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    fetchOrderList();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrderList();
+    }, [])
+  );
 
   const handleStatusButton = async (status) => {
     await fetchOrderList(status);

@@ -23,6 +23,7 @@ import UnderlinedText from "../formUtils/UnderlinedText";
 import { convertTimeToAMPM, formatDate } from "../utils/formatDateTime";
 import { getShopDetails } from "../../api/methods/getShopDetails";
 import { useFocusEffect } from "@react-navigation/native";
+import { RATE_Spiral_Binding } from "../../constants/PRICING";
 
 const OrderDetails = ({ order_id, isOwner, _id }) => {
   console.log("orderDetails_id:", _id);
@@ -195,7 +196,7 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
                 </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.label}>Sprial Binding: </Text>
+                <Text style={styles.label}>Spiral Binding: </Text>
                 <Text style={styles.value}>
                   {orderDetails?.OrderDetails[0].spiral_binding ? "Yes" : "No"}{" "}
                 </Text>
@@ -269,14 +270,31 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
                   Rs. {orderDetails?.OrderDetails[0].price_per_page}{" "}
                 </Text>
               </View>
+              {orderDetails?.OrderDetails[0].spiral_binding && (
+                <View style={styles.row}>
+                  <Text style={styles.label}>Spiral Binding: </Text>
+                  <Text style={styles.value}>Rs. {RATE_Spiral_Binding}</Text>
+                </View>
+              )}
               <View style={styles.row}>
+                <Text style={styles.label}>Total Price: </Text>
+                <Text style={styles.value}>
+                  {"(" + orderDetails?.OrderDetails[0].total_pages} pages *{" "}
+                  {orderDetails?.OrderDetails[0].price_per_page + ")"}
+                  {orderDetails?.OrderDetails[0].spiral_binding
+                    ? ` + ${RATE_Spiral_Binding}`
+                    : null}{" "}
+                  = Rs. {orderDetails?.total_price}{" "}
+                </Text>
+              </View>
+              {/* <View style={styles.row}>
                 <Text style={styles.label}>Total Price: </Text>
                 <Text style={styles.value}>
                   {orderDetails?.OrderDetails[0].total_pages} X Rs.{" "}
                   {orderDetails?.OrderDetails[0].price_per_page} = Rs.{" "}
                   {orderDetails?.total_price}{" "}
                 </Text>
-              </View>
+              </View> */}
             </View>
           )}
         </View>

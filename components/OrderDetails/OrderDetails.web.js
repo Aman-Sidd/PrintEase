@@ -12,7 +12,12 @@ import { MaterialIcons } from "@expo/vector-icons";
 import LoadingScreen from "../utils/LoadingScreen";
 import UnderlinedText from "../formUtils/UnderlinedText";
 import myApi from "../../api/myApi";
-import { RATE16_25, RATE1_15, RATE26Above } from "../../constants/PRICING";
+import {
+  RATE16_25,
+  RATE1_15,
+  RATE26Above,
+  RATE_Spiral_Binding,
+} from "../../constants/PRICING";
 import {
   COLOR_ORDER_STATUS_PENDING,
   COLOR_ORDER_STATUS_PICKED,
@@ -309,11 +314,21 @@ const OrderDetails = ({ order_id, isOwner }) => {
                 <Text style={styles.label}>Price per page: </Text>
                 <Text style={styles.value}>Rs. {priceRatePerPage} </Text>
               </View>
+              {orderDetails?.OrderDetails[0].spiral_binding && (
+                <View style={styles.row}>
+                  <Text style={styles.label}>Spiral Binding:</Text>
+                  <Text style={styles.value}>Rs. {RATE_Spiral_Binding}</Text>
+                </View>
+              )}
               <View style={styles.row}>
-                <Text style={styles.label}>Total Price: </Text>
+                <Text style={styles.label}>Total Price:</Text>
                 <Text style={styles.value}>
-                  {orderDetails?.OrderDetails[0].total_pages} X Rs.{" "}
-                  {priceRatePerPage} = Rs. {orderDetails?.total_price}{" "}
+                  {"(" + orderDetails?.OrderDetails[0].total_pages} pages *{" "}
+                  {orderDetails?.OrderDetails[0].price_per_page + ")"}
+                  {orderDetails?.OrderDetails[0].spiral_binding
+                    ? ` + ${RATE_Spiral_Binding}`
+                    : null}{" "}
+                  = Rs. {orderDetails?.total_price}
                 </Text>
               </View>
             </View>

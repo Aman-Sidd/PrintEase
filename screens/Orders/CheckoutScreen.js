@@ -19,6 +19,7 @@ import { OWNER_USER_ID } from "../../constants/OwnerCredentials";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-community/async-storage";
 import { setLoading } from "../../redux/UtilSlice";
+import { RATE_Spiral_Binding } from "../../constants/PRICING";
 
 const CheckoutScreen = ({ navigation }) => {
   const orderDetails = useSelector((state) => state.order);
@@ -36,7 +37,7 @@ const CheckoutScreen = ({ navigation }) => {
       type: "application/pdf", // Set MIME type for PDF files
     });
     formData.append("title", orderDetails.pdfName);
-    formData.append("totalprice", totalPagesRequired * priceRatePerPage);
+    formData.append("totalprice", totalAmount);
     formData.append("pagesize", orderDetails.pageSize);
     formData.append("color", orderDetails.color);
     formData.append("printtype", orderDetails.printType);
@@ -141,17 +142,24 @@ const CheckoutScreen = ({ navigation }) => {
       });
   };
 
-  const priceRatePerPage = getPerPagePrice(orderDetails.noOfPages);
   const totalPagesRequired =
     orderDetails.printType === "Single Sided"
       ? orderDetails.noOfPages
       : Math.ceil(orderDetails.noOfPages / 2);
-  const totalAmount = totalPagesRequired * priceRatePerPage;
+
+  const priceRatePerPage = getPerPagePrice(
+    totalPagesRequired,
+    orderDetails.color
+  );
+
+  const totalAmount =
+    totalPagesRequired * priceRatePerPage +
+    (orderDetails.spiralBinding === "Yes" ? RATE_Spiral_Binding : 0);
 
   const handleBackButton = () => {
     navigation.pop();
   };
-  // console.log("user from checkoutscreen:", user);
+  console.log("orderDetails from checkoutscreen:", orderDetails);
 
   return loading ? (
     <LoadingScreen />
@@ -159,61 +167,71 @@ const CheckoutScreen = ({ navigation }) => {
     <ScrollView style={styles.container}>
       <View style={styles.checkoutInfo}>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Shop Info</Text>
+          <Text style={styles.sectionTitle}>Shop Info </Text>
           <View style={styles.row}>
-            <Text style={styles.label}>Shop Name:</Text>
-            <Text style={styles.value}>{shop?.shop_name}</Text>
+            <Text style={styles.label}>Shop Name: </Text>
+            <Text style={styles.value}>{shop?.shop_name} </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Shop ID:</Text>
-            <Text style={styles.value}>{shop?.shop_id}</Text>
+            <Text style={styles.label}>Shop ID: </Text>
+            <Text style={styles.value}>{shop?.shop_id} </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Contact No:</Text>
-            <Text style={styles.value}>{shop?.shop_phone}</Text>
+            <Text style={styles.label}>Contact No: </Text>
+            <Text style={styles.value}>{shop?.shop_phone} </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Shop Address:</Text>
+            <Text style={styles.label}>Shop Address: </Text>
             <Text style={styles.value} numberOfLines={1}>
-              {shop?.shop_address}
+              {shop?.shop_address + " "}
             </Text>
           </View>
         </View>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Page Info</Text>
+          <Text style={styles.sectionTitle}>Page Info </Text>
           <View style={styles.row}>
-            <Text style={styles.label}>Page Size:</Text>
-            <Text style={styles.value}>{orderDetails.pageSize}</Text>
+            <Text style={styles.label}>Page Size: </Text>
+            <Text style={styles.value}>{orderDetails.pageSize} </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Color:</Text>
-            <Text style={styles.value}>{orderDetails.color}</Text>
+            <Text style={styles.label}>Color: </Text>
+            <Text style={styles.value}>{orderDetails.color} </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Chosen File:</Text>
+            <Text style={styles.label}>Chosen File: </Text>
             <Text style={styles.value} numberOfLines={2}>
               {orderDetails.pdfName}
             </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Print Type:</Text>
-            <Text style={styles.value}>{orderDetails.printType}</Text>
+            <Text style={styles.label}>Print Type: </Text>
+            <Text style={styles.value}>{orderDetails.printType} </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Total Pages Required:</Text>
-            <Text style={styles.value}>{totalPagesRequired}</Text>
+            <Text style={styles.label}>Total Pages Required: </Text>
+            <Text style={styles.value}>{totalPagesRequired} </Text>
           </View>
         </View>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Price</Text>
+          <Text style={styles.sectionTitle}>Price </Text>
           <View style={styles.row}>
-            <Text style={styles.label}>Price per page:</Text>
-            <Text style={styles.value}>Rs. {priceRatePerPage}</Text>
+            <Text style={styles.label}>Price per page: </Text>
+            <Text style={styles.value}>Rs. {priceRatePerPage} </Text>
           </View>
+          {orderDetails.spiralBinding && (
+            <View style={styles.row}>
+              <Text style={styles.label}>Spiral Binding: </Text>
+              <Text style={styles.value}>Rs. {RATE_Spiral_Binding} </Text>
+            </View>
+          )}
           <View style={styles.row}>
-            <Text style={styles.label}>Total Price:</Text>
+            <Text style={styles.label}>Total Price: </Text>
             <Text style={styles.value}>
-              {totalPagesRequired} * Rs. {priceRatePerPage} = Rs. {totalAmount}
+              {"(" + totalPagesRequired} pages * {priceRatePerPage + ")"}
+              {orderDetails.spiralBinding === "Yes"
+                ? ` + ${RATE_Spiral_Binding}`
+                : null}{" "}
+              = Rs. {totalAmount}{" "}
             </Text>
           </View>
         </View>
