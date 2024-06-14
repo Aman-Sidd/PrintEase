@@ -133,6 +133,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
         style={{
           ...styles.listStyle,
           width: isPC ? "50%" : "90%",
+          paddingVertical: isPC ? "1%" : "4%",
         }}
       >
         <View style={{ maxWidth: "70%" }}>
@@ -389,7 +390,7 @@ const styles = StyleSheet.create({
   },
   listStyle: {
     // height: 75,
-    paddingVertical: "4%",
+    paddingVertical: "1%",
     width: "50%",
     marginTop: 15,
     borderRadius: 8,

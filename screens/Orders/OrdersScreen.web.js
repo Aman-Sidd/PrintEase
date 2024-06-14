@@ -188,6 +188,7 @@ const OrdersScreen = ({ navigation }) => {
         style={{
           ...styles.listStyle,
           width: isPC ? "50%" : "90%",
+          paddingVertical: isPC ? "1%" : "4%",
         }}
       >
         <View style={{ maxWidth: "70%" }}>
