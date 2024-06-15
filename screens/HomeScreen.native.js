@@ -31,6 +31,8 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import { addExpoPushToken } from "../redux/UtilSlice";
+import SpiralDropdown from "../components/dropdown/SpiralDropdown";
+import { updatePushToken } from "../api/methods/updatePushToken";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -42,26 +44,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-
-async function sendPushNotification(expoPushToken) {
-  const message = {
-    to: expoPushToken,
-    sound: "default",
-    title: "Original Title",
-    body: "And here is the body!",
-    data: { someData: "goes here" },
-  };
-
-  await fetch("https://exp.host/--/api/v2/push/send", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Accept-encoding": "gzip, deflate",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(message),
-  });
-}
 
 function handleRegistrationError(errorMessage) {
   alert(errorMessage);
@@ -120,9 +102,16 @@ async function registerForPushNotificationsAsync() {
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
-  const { pdfName, pdfUri, noOfPages, pageSize, color, printType } =
-    useSelector((state) => state.order);
-  const user = useSelector((state) => state.user);
+  const {
+    pdfName,
+    pdfUri,
+    noOfPages,
+    pageSize,
+    color,
+    printType,
+    spiralBinding,
+  } = useSelector((state) => state.order);
+  const user = useSelector((state) => state.user.data);
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(undefined);
   const notificationListener = useRef();
@@ -163,33 +152,33 @@ const HomeScreen = ({ navigation }) => {
       navigation.navigate("PdfView", { uri: pdfUri, showButtons: true });
     }
   };
-  const updatePushToken = async (token) => {
-    try {
-      const response = (await getUserDetailsById(user.data.user_id)).data;
-      const userDetails = response.data;
-      console.log("UserDetails:", userDetails);
-      console.log("expoPushToken:", token);
-      let existingPushTokens = JSON.parse(userDetails.push_token);
-      console.log("typeof:", typeof existingPushTokens);
-      if (!existingPushTokens) existingPushTokens = [];
-      if (!checkForSamePushToken(token, existingPushTokens)) {
-        if (token !== null && token !== "") existingPushTokens.push(token);
-        await updateUserDetails({
-          userDetails,
-          pushTokens: existingPushTokens,
-        });
-      } else console.log("Same push token already exists.");
-    } catch (err) {
-      console.log("Error:", err);
-    }
-  };
+  // const updatePushToken = async ({token,user}) => {
+  //   try {
+  //     const response = (await getUserDetailsById(user.data.user_id)).data;
+  //     const userDetails = response.data;
+  //     console.log("UserDetails:", userDetails);
+  //     console.log("expoPushToken:", token);
+  //     let existingPushTokens = JSON.parse(userDetails?.push_token);
+  //     console.log("typeof:", typeof existingPushTokens);
+  //     if (!existingPushTokens) existingPushTokens = [];
+  //     if (!checkForSamePushToken(token, existingPushTokens)) {
+  //       if (token !== null && token !== "") existingPushTokens.push(token);
+  //       await updateUserDetails({
+  //         userDetails,
+  //         pushTokens: existingPushTokens,
+  //       });
+  //     } else console.log("Same push token already exists.");
+  //   } catch (err) {
+  //     console.log("Error:", err);
+  //   }
+  // };
 
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => {
         if (token) {
           setExpoPushToken(token ?? "");
-          updatePushToken(token);
+          updatePushToken({ token, user });
           dispatch(addExpoPushToken(token));
         }
       })
@@ -231,7 +220,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleNextButton = () => {
-    if (!pageSize || !color || !printType) {
+    if (!pageSize || !color || !printType || !spiralBinding) {
       Alert.alert(
         "Incomplete Selections",
         "Please make sure to select all the dropdown selections."
@@ -240,7 +229,7 @@ const HomeScreen = ({ navigation }) => {
       Alert.alert("File Not Selected", "Please select a file to proceed.");
     } else navigation.navigate("Checkout");
   };
-
+  console.log("USER from homescreen:", user);
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ScrollView>
@@ -249,10 +238,11 @@ const HomeScreen = ({ navigation }) => {
           <PageSizeDropdown />
           <ColorDropdown />
           <PrintTypeDropdown />
+          <SpiralDropdown />
         </View>
 
         <View style={styles.selectDocumentContainer}>
-          <Text style={styles.selectDocumentText}>Select Your Document</Text>
+          <Text style={styles.selectDocumentText}>Select Your Document </Text>
 
           {!pdfUri ? (
             <Pressable style={styles.documentPicker} onPress={pickDocument}>
@@ -266,7 +256,10 @@ const HomeScreen = ({ navigation }) => {
             </Pressable>
           ) : (
             <Pressable
-              style={[styles.documentPicker, { paddingVertical: "10%" }]}
+              style={[
+                styles.documentPicker,
+                { paddingVertical: "10%", paddingHorizontal: "4%" },
+              ]}
               onPress={pickDocument}
             >
               <Pressable onPress={openPDF} style={styles.pdfPreview}>
@@ -289,10 +282,10 @@ const HomeScreen = ({ navigation }) => {
 
         <View style={styles.buttonContainer}>
           <Pressable onPress={onResetFile} style={styles.cancelButton}>
-            <Text style={styles.cancelButtonText}>Reset File&nbsp;</Text>
+            <Text style={styles.cancelButtonText}>Reset File &nbsp;</Text>
           </Pressable>
           <Pressable onPress={handleNextButton} style={styles.nextButton}>
-            <Text style={styles.nextButtonText}>Next&nbsp;</Text>
+            <Text style={styles.nextButtonText}>Next &nbsp;</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -304,6 +297,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#080A0C",
+    paddingBottom: 20,
   },
   gradientText: {
     alignSelf: "center",
@@ -314,6 +308,7 @@ const styles = StyleSheet.create({
     marginTop: hp("2%"),
   },
   selectDocumentText: {
+    fontWeight: "500",
     color: "white",
     fontSize: hp("2.5%"),
   },

@@ -62,10 +62,7 @@ const RegisterScreen = ({ navigation }) => {
       setPhone("");
       setPassword("");
     } catch (err) {
-      console.log(
-        "Something went wrong while creating user! ",
-        err.response.data
-      );
+      console.log("Something went wrong while creating user! ", err);
       if (Platform.OS !== "web")
         Alert.alert("Email already exist!", "Please! Choose another email.");
       else alert("Email already exist. Try another email.");
@@ -78,121 +75,100 @@ const RegisterScreen = ({ navigation }) => {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      {loading ? (
-        <LoadingScreen />
-      ) : (
-        <ScrollView contentContainerStyle={styles.mainContainer}>
-          <View style={isDesktop ? styles.container : null}>
-            <View>
-              <View style={{ alignItems: "center" }}>
-                <GradientText style={{ fontSize: 45 }} text="PrintEase" />
-                <Text style={{ color: "white" }}>
-                  From click to print, Seamlessly
-                </Text>
+      <ScrollView style={styles.mainContainer}>
+        {loading ? (
+          <LoadingScreen />
+        ) : (
+          <View>
+            <View style={isDesktop ? styles.container : null}>
+              <View>
+                <View style={{ alignItems: "center" }}>
+                  <GradientText style={{ fontSize: 45 }} text="PrintEase" />
+                  <Text style={{ color: "white" }}>
+                    From click to print, Seamlessly
+                  </Text>
+                </View>
+                <View style={styles.inputContainer}>
+                  <InputText
+                    keyboardType="name"
+                    state={{ email, password, name, phone }}
+                    actions={{ setName, setEmail, setPassword, setPhone }}
+                  />
+                  <InputText
+                    keyboardType="email"
+                    state={{ email, password, name, phone }}
+                    actions={{ setName, setEmail, setPassword, setPhone }}
+                  />
+                  <InputText
+                    keyboardType="password"
+                    state={{ email, password, name, phone }}
+                    actions={{ setName, setEmail, setPassword, setPhone }}
+                  />
+                  <InputText
+                    keyboardType="phone"
+                    state={{ email, password, name, phone }}
+                    actions={{ setName, setEmail, setPassword, setPhone }}
+                  />
+                </View>
               </View>
-              <View style={styles.inputContainer}>
-                <InputText
-                  keyboardType="name"
-                  state={{ email, password, name, phone }}
-                  actions={{ setName, setEmail, setPassword, setPhone }}
-                />
-                <InputText
-                  keyboardType="email"
-                  state={{ email, password, name, phone }}
-                  actions={{ setName, setEmail, setPassword, setPhone }}
-                />
-                <InputText
-                  keyboardType="password"
-                  state={{ email, password, name, phone }}
-                  actions={{ setName, setEmail, setPassword, setPhone }}
-                />
-                <InputText
-                  keyboardType="phone"
-                  state={{ email, password, name, phone }}
-                  actions={{ setName, setEmail, setPassword, setPhone }}
-                />
-              </View>
-              {/* <View style={styles.thirdPartyContainer}>
-                <Divider
-                  style={{ width: "20%" }}
-                  color="gray"
-                  width={1}
-                  orientation="horizontal"
-                />
-
-                <Text style={{ color: "gray", marginHorizontal: 15 }}>
-                  or sign up with
-                </Text>
-
-                <Divider
-                  style={{ width: "20%" }}
-                  color="gray"
-                  width={1}
-                  orientation="horizontal"
-                />
-              </View>
-
-              <View style={styles.logoContainer}>
-                <AntDesign name="google" size={24} color="#959595" />
-                <FontAwesome5 name="facebook" size={24} color="#959595" />
-                <AntDesign name="apple1" size={24} color="#959595" />
-              </View> */}
-            </View>
-            <Pressable
-              onPress={() => navigation.replace("Login")}
-              style={{
-                // marginLeft: 40,
-                marginTop: 10,
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: "gray", fontSize: 15 }}>
-                Already have an Account?
-              </Text>
-              <Text
-                style={{ color: "#BEBEBE", fontWeight: "500", fontSize: 15 }}
+              <Pressable
+                onPress={() => navigation.replace("Login")}
+                style={{
+                  // marginLeft: 40,
+                  marginTop: 10,
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
               >
-                &nbsp;Log In Instead!
-              </Text>
-            </Pressable>
-
-            <View
-              style={[styles.footerContainer, isDesktop && { marginTop: 40 }]}
-            >
-              {email && password && phone && name ? (
-                <Pressable
-                  onPress={() => registerUser({ email, password, phone, name })}
+                <Text style={{ color: "gray", fontSize: 15 }}>
+                  Already have an Account?
+                </Text>
+                <Text
+                  style={{ color: "#BEBEBE", fontWeight: "500", fontSize: 15 }}
                 >
-                  {Platform.OS !== "web" ? (
-                    <LinearGradient
-                      colors={[
-                        "rgba(138, 212, 236, 0.8)",
-                        "rgba(239, 150, 255, 0.8)",
-                        "rgba(255, 86, 169, 0.8)",
-                        "rgba(255, 170, 108, 0.8)",
-                      ]}
-                      style={styles.linearGradButton}
-                      start={{ x: 0, y: 0 }}
-                    >
-                      <Text style={styles.linearGradButtonText}>Sign up</Text>
-                    </LinearGradient>
-                  ) : (
-                    <View style={styles.fadedButtonStyle}>
-                      <Text style={styles.linearGradButtonText}>Sign up</Text>
-                    </View>
-                  )}
-                </Pressable>
-              ) : (
-                <Pressable style={styles.fadedButtonStyle}>
-                  <Text style={styles.fadedButtonText}>Sign up</Text>
-                </Pressable>
-              )}
+                  &nbsp;Log In Instead!
+                </Text>
+              </Pressable>
+
+              <View
+                style={[styles.footerContainer, isDesktop && { marginTop: 40 }]}
+              >
+                {email && password && phone && name ? (
+                  <Pressable
+                    onPress={() =>
+                      registerUser({ email, password, phone, name })
+                    }
+                  >
+                    {Platform.OS !== "web" ? (
+                      <LinearGradient
+                        colors={[
+                          "rgba(138, 212, 236, 0.8)",
+                          "rgba(239, 150, 255, 0.8)",
+                          "rgba(255, 86, 169, 0.8)",
+                          "rgba(255, 170, 108, 0.8)",
+                        ]}
+                        style={styles.linearGradButton}
+                        start={{ x: 0, y: 0 }}
+                      >
+                        <Text style={styles.linearGradButtonText}>Sign up</Text>
+                      </LinearGradient>
+                    ) : (
+                      <View style={styles.fadedButtonStyle}>
+                        <Text style={styles.linearGradButtonText}>Sign up</Text>
+                      </View>
+                    )}
+                  </Pressable>
+                ) : (
+                  <Pressable style={styles.fadedButtonStyle}>
+                    <Text style={styles.fadedButtonText}>Sign up</Text>
+                  </Pressable>
+                )}
+              </View>
             </View>
           </View>
-        </ScrollView>
-      )}
+        )}
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };

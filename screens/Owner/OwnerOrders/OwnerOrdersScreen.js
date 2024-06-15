@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Platform,
   Pressable,
   RefreshControl,
   StyleSheet,
@@ -36,6 +37,75 @@ import {
   convertTimeToAMPM,
   formatDate,
 } from "../../../components/utils/formatDateTime";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
+import { addExpoPushToken } from "../../../redux/UtilSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { updatePushToken } from "../../../api/methods/updatePushToken";
+import { useFocusEffect } from "@react-navigation/native";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+function handleRegistrationError(errorMessage) {
+  alert(errorMessage);
+  throw new Error(errorMessage);
+}
+
+async function registerForPushNotificationsAsync() {
+  if (Platform.OS === "android") {
+    Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      handleRegistrationError(
+        "Permission not granted to get push token for push notification!"
+      );
+      return;
+    }
+    const projectId =
+      Constants?.expoConfig?.extra?.eas?.projectId ??
+      Constants?.easConfig?.projectId;
+
+    console.log("project-id", projectId);
+
+    if (!projectId) {
+      handleRegistrationError("Project ID not found");
+    }
+    try {
+      const pushTokenString = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId,
+        })
+      ).data;
+      console.log(pushTokenString);
+      return pushTokenString;
+    } catch (e) {
+      handleRegistrationError(`${e}`);
+    }
+  } else {
+    handleRegistrationError("Must use physical device for push notifications");
+  }
+}
 
 const OwnerOrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -45,6 +115,13 @@ const OwnerOrdersScreen = ({ navigation }) => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(undefined);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.data);
+  const shop_id = user?.Shops[0].shop_id;
 
   const fetchOrderList = async (status = activeStatus, page = 0) => {
     try {
@@ -57,18 +134,34 @@ const OwnerOrdersScreen = ({ navigation }) => {
 
       switch (status) {
         case "All":
-          response = await getAllOrders({ limit, offset });
+          response = await getAllOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_PENDING:
-          response = await getPendingOrders({ limit, offset });
+          response = await getPendingOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_READY:
-          response = await getPrintedOrders({ limit, offset });
+          response = await getPrintedOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
         case ORDER_STATUS_PICKED:
-          response = await getPickedOrders({ limit, offset });
+          response = await getPickedOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
         default:
           response = null;
@@ -101,10 +194,43 @@ const OwnerOrdersScreen = ({ navigation }) => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
-    fetchOrderList();
+    console.log("user from ownerOrderScreen:", user);
+    registerForPushNotificationsAsync()
+      .then((token) => {
+        if (token) {
+          setExpoPushToken(token ?? "");
+          updatePushToken({ token, user });
+          dispatch(addExpoPushToken(token));
+        }
+      })
+      .catch((error) => setExpoPushToken(`${error}`));
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
+
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(
+          notificationListener.current
+        );
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+    };
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrderList();
+    }, [])
+  );
 
   const renderListItem = ({ item }) => {
     const order_status = ValueToStatusConvertor(item?.status);

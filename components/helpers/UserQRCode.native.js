@@ -5,7 +5,7 @@ import QRCode from "react-native-qrcode-svg";
 const OrderQRCode = ({ orderId }) => {
   return (
     <View>
-      <QRCode value={orderId} size={120} />
+      <QRCode value={orderId} size={100} />
     </View>
   );
 };

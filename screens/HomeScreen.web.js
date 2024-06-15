@@ -27,6 +27,7 @@ import UnderlinedText from "../components/formUtils/UnderlinedText";
 import { useMediaQuery } from "react-responsive";
 import { pdfjs } from "react-pdf";
 import { Image } from "expo-image";
+import SpiralDropdown from "../components/dropdown/SpiralDropdown";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
@@ -35,8 +36,15 @@ const windowHeight = Dimensions.get("window").height;
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { pdfName, pdfUri, noOfPages, pageSize, color, printType } =
-    useSelector((state) => state.order);
+  const {
+    pdfName,
+    pdfUri,
+    noOfPages,
+    pageSize,
+    color,
+    printType,
+    spiralBinding,
+  } = useSelector((state) => state.order);
   const isDesktopOrLaptop = useMediaQuery({
     query: "(min-width: 1224px)",
   });
@@ -95,7 +103,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleNextButton = () => {
-    if (!pageSize || !color || !printType) {
+    if (!pageSize || !color || !printType || !spiralBinding) {
       alert(
         "Incomplete Selections! Please make sure to select all the dropdown selections."
       );
@@ -118,7 +126,7 @@ const HomeScreen = ({ navigation }) => {
           <Image
             style={[
               styles.imageStyle,
-              !isDesktopOrLaptop && { width: 170, height: 170 },
+              !isDesktopOrLaptop && { width: 140, height: 140 },
             ]}
             source={require("../assets/logo.png")}
             contentFit="contain"
@@ -131,78 +139,90 @@ const HomeScreen = ({ navigation }) => {
         </View>
         <View
           style={{
-            width: isDesktopOrLaptop ? "40%" : "80%",
+            width: isDesktopOrLaptop ? "40%" : "100%",
             alignSelf: "center",
           }}
         >
           <PageSizeDropdown />
           <ColorDropdown />
           <PrintTypeDropdown />
+          <SpiralDropdown />
         </View>
 
         <View style={styles.selectDocumentContainer}>
           <Text style={styles.selectDocumentText}>Select Your Document</Text>
-
-          {!pdfUri ? (
-            <Pressable
-              style={{
-                ...styles.documentPicker,
-                alignSelf: "center",
-                width: isDesktopOrLaptop ? "30%" : "70%",
-                height: isDesktopOrLaptop ? hp("14%") : hp("18%"),
-              }}
-              onPress={pickDocument}
-            >
-              <View style={styles.documentPickerContent}>
-                <Text style={styles.chooseText}>Choose</Text>
-                <Text style={styles.uploadText}>file to upload</Text>
-              </View>
-              <Text style={styles.pdfFormatText}>
-                (Only PDF format is allowed)
-              </Text>
-            </Pressable>
-          ) : (
-            <Pressable
-              style={[
-                styles.documentPicker,
-                {
-                  paddingVertical: "4%",
-                  width: isDesktopOrLaptop ? "30%" : "70%",
-                  height: isDesktopOrLaptop ? hp("10%") : hp("18%"),
-                },
-              ]}
-              onPress={pickDocument}
-            >
-              <Pressable onPress={openPDF} style={styles.pdfPreview}>
-                <AntDesign
-                  name="pdffile1"
-                  size={25}
-                  color="white"
-                  style={styles.pdfIcon}
-                />
-                <View style={styles.pdfInfoContainer}>
-                  <UnderlinedText numberOfLines={1} style={styles.pdfNameText}>
-                    {pdfName}
-                  </UnderlinedText>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: isDesktopOrLaptop ? "row" : "column",
+            }}
+          >
+            {!pdfUri ? (
+              <Pressable
+                style={{
+                  ...styles.documentPicker,
+                  alignSelf: "center",
+                  width: isDesktopOrLaptop ? "50%" : "70%",
+                  height: isDesktopOrLaptop ? hp("14%") : hp("18%"),
+                }}
+                onPress={pickDocument}
+              >
+                <View style={styles.documentPickerContent}>
+                  <Text style={styles.chooseText}>Choose</Text>
+                  <Text style={styles.uploadText}>file to upload</Text>
                 </View>
-                <Text style={styles.pdfPagesText}>({noOfPages} Pages)</Text>
+                <Text style={styles.pdfFormatText}>
+                  (Only PDF format is allowed)
+                </Text>
               </Pressable>
-            </Pressable>
-          )}
-        </View>
-
-        <View
-          style={[
-            styles.buttonContainer,
-            !isDesktopOrLaptop && { marginTop: "10%" },
-          ]}
-        >
-          <Pressable onPress={onResetFile} style={styles.cancelButton}>
-            <Text style={styles.cancelButtonText}>Reset File&nbsp;</Text>
-          </Pressable>
-          <Pressable onPress={handleNextButton} style={styles.nextButton}>
-            <Text style={styles.nextButtonText}>Next&nbsp;</Text>
-          </Pressable>
+            ) : (
+              <Pressable
+                style={[
+                  styles.documentPicker,
+                  {
+                    alignSelf: "center",
+                    paddingVertical: "4%",
+                    paddingHorizontal: "1%",
+                    width: isDesktopOrLaptop ? "50%" : "70%",
+                    height: isDesktopOrLaptop ? hp("14%") : hp("18%"),
+                  },
+                ]}
+                onPress={pickDocument}
+              >
+                <Pressable onPress={openPDF} style={styles.pdfPreview}>
+                  <AntDesign
+                    name="pdffile1"
+                    size={25}
+                    color="white"
+                    style={styles.pdfIcon}
+                  />
+                  <View style={styles.pdfInfoContainer}>
+                    <UnderlinedText
+                      numberOfLines={1}
+                      style={styles.pdfNameText}
+                    >
+                      {pdfName}
+                    </UnderlinedText>
+                  </View>
+                  <Text style={styles.pdfPagesText}>({noOfPages} Pages)</Text>
+                </Pressable>
+              </Pressable>
+            )}
+            <View
+              style={[
+                styles.buttonContainer,
+                !isDesktopOrLaptop && { marginTop: "10%" },
+                isDesktopOrLaptop && { flexDirection: "column" },
+              ]}
+            >
+              <Pressable onPress={onResetFile} style={styles.cancelButton}>
+                <Text style={styles.cancelButtonText}>Reset File&nbsp;</Text>
+              </Pressable>
+              <Pressable onPress={handleNextButton} style={styles.nextButton}>
+                <Text style={styles.nextButtonText}>Next&nbsp;</Text>
+              </Pressable>
+            </View>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -213,6 +233,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#080A0C",
+    paddingBottom: 20,
   },
   imageStyle: {
     height: 150,
@@ -267,6 +288,9 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   pdfInfoContainer: {
+    maxWidth: "85%",
+    display: "flex",
+    flexWrap: "wrap",
     flexDirection: "row",
   },
   pdfNameText: {
@@ -281,8 +305,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    gap: 30,
+    alignItems: "center",
+    gap: 15,
     paddingHorizontal: 20,
+    paddingTop: 11,
     marginTop: "2%",
   },
   cancelButton: {

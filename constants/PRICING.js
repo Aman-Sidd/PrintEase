@@ -1,3 +1,4 @@
-export const RATE1_15 = 2.5;
-export const RATE16_25 = 2.0;
-export const RATE26Above = 1.5;
+export const RATE1_10 = 2.0;
+export const RATE11Above = 1.5;
+export const RATE_Spiral_Binding = 20;
+export const RATE_Color_Page = 5;

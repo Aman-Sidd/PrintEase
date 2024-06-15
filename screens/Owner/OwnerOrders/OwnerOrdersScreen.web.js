@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -34,6 +34,8 @@ import {
 import { useMediaQuery } from "react-responsive";
 import { isDesktop } from "../../../hooks/isDesktop";
 import { widthPercentageToDP } from "react-native-responsive-screen";
+import { useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
 
 const OwnerOrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -43,6 +45,8 @@ const OwnerOrdersScreen = ({ navigation }) => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const user = useSelector((state) => state.user.data);
+  const shop_id = user.Shops[0].shop_id;
 
   let isPC = isDesktop();
 
@@ -57,18 +61,34 @@ const OwnerOrdersScreen = ({ navigation }) => {
 
       switch (status) {
         case "All":
-          response = await getAllOrders({ limit, offset });
+          response = await getAllOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_PENDING:
-          response = await getPendingOrders({ limit, offset });
+          response = await getPendingOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_READY:
-          response = await getPrintedOrders({ limit, offset });
+          response = await getPrintedOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
         case ORDER_STATUS_PICKED:
-          response = await getPickedOrders({ limit, offset });
+          response = await getPickedOrders({
+            shop_id,
+            limit,
+            offset,
+          });
           break;
         default:
           response = null;
@@ -99,9 +119,11 @@ const OwnerOrdersScreen = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    fetchOrderList();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrderList();
+    }, [])
+  );
 
   const renderListItem = ({ item }) => {
     const order_status = ValueToStatusConvertor(item?.status);
@@ -113,7 +135,8 @@ const OwnerOrdersScreen = ({ navigation }) => {
         }
         style={{
           ...styles.listStyle,
-          width: isPC ? "50%" : "80%",
+          width: isPC ? "50%" : "90%",
+          paddingVertical: isPC ? "1%" : "4%",
         }}
       >
         <View style={{ maxWidth: "70%" }}>
@@ -212,7 +235,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("3%"),
             },
             activeStatus == "All"
               ? styles.statusButtonActive
@@ -227,7 +250,8 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
-            All &nbsp;
+            {" "}
+            All{" "}
           </Text>
         </Pressable>
         <Pressable
@@ -237,7 +261,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("3%"),
             },
             activeStatus == ORDER_STATUS_PENDING
               ? styles.statusButtonActive
@@ -252,6 +276,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
+            {" "}
             {ORDER_STATUS_PENDING + " "}
           </Text>
         </Pressable>
@@ -262,7 +287,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("3%"),
             },
             activeStatus == ORDER_STATUS_READY
               ? styles.statusButtonActive
@@ -277,6 +302,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
+            {" "}
             {ORDER_STATUS_READY + " "}
           </Text>
         </Pressable>
@@ -287,7 +313,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("1%"),
+                : widthPercentageToDP("3%"),
             },
             activeStatus == ORDER_STATUS_PICKED
               ? styles.statusButtonActive
@@ -302,6 +328,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
                 : styles.statusTextInactive,
             ]}
           >
+            {" "}
             {ORDER_STATUS_PICKED + " "}
           </Text>
         </Pressable>

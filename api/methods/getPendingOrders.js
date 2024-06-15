@@ -1,7 +1,7 @@
 import { PAGE_LIMIT } from "../../constants/PAGE_LIMIT";
 import myApi from "../myApi";
 
-export const getPendingOrders = async ({ limit = 10, offset = 0 }) => {
+export const getPendingOrders = async ({ shop_id, limit = 10, offset = 0 }) => {
   try {
     const formData = new URLSearchParams();
     formData.append("limit", limit);
@@ -14,7 +14,7 @@ export const getPendingOrders = async ({ limit = 10, offset = 0 }) => {
     };
 
     const response = await myApi.post(
-      "/common/get-pending-orders",
+      `/common/get-pending-orders?shop_id=${shop_id}`,
       formData,
       config
     );

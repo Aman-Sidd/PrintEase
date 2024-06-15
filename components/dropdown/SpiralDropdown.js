@@ -2,19 +2,19 @@ import React, { useState } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { setColor, setSpiralBinding } from "../../redux/OrderSlice";
 import { useDispatch } from "react-redux";
-import { setPageSize, setPrintType } from "../../redux/OrderSlice";
 import { useMediaQuery } from "react-responsive";
 
 const data = [
-  { label: "Single Sided", value: "1" },
-  { label: "Both Sided", value: "2" },
+  { label: "Yes", value: "1" },
+  { label: "No", value: "2" },
 ];
 
-const PrintTypeDropdown = () => {
+const SpiralDropdown = () => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
-
+  const dispatch = useDispatch();
   const isPC = useMediaQuery({
     query: "(min-width: 1224px)",
   });
@@ -28,13 +28,13 @@ const PrintTypeDropdown = () => {
             isFocus && { color: "#6A84A0" },
           ]}
         >
-          Print Type
+          Spiral Binding
         </Text>
       );
     }
     return null;
   };
-  const dispatch = useDispatch();
+
   return (
     <View style={{ ...styles.container, padding: isPC ? 8 : 16 }}>
       {renderLabel()}
@@ -54,9 +54,9 @@ const PrintTypeDropdown = () => {
         containerStyle={styles.containerStyle}
         itemTextStyle={styles.itemTextStyle}
         labelField="label"
-        activeColor="grey"
         valueField="value"
-        placeholder={!isFocus ? "Select Print Type" : "..."}
+        activeColor="grey"
+        placeholder={!isFocus ? "Spiral Binding?" : "..."}
         searchPlaceholder="Search..."
         value={value}
         onFocus={() => setIsFocus(true)}
@@ -64,7 +64,7 @@ const PrintTypeDropdown = () => {
         onChange={(item) => {
           setValue(item.value);
           setIsFocus(false);
-          dispatch(setPrintType({ printType: item.label }));
+          dispatch(setSpiralBinding({ spiralBinding: item.label }));
         }}
         renderLeftIcon={() => (
           <AntDesign
@@ -79,12 +79,18 @@ const PrintTypeDropdown = () => {
   );
 };
 
-export default PrintTypeDropdown;
+export default SpiralDropdown;
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "black",
     padding: 16,
+  },
+  containerStyle: {
+    backgroundColor: "black",
+  },
+  itemTextStyle: {
+    color: "white",
   },
   dropdown: {
     height: 55,
@@ -92,12 +98,6 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
-  },
-  containerStyle: {
-    backgroundColor: "black",
-  },
-  itemTextStyle: {
-    color: "white",
   },
   icon: {
     marginRight: 5,
@@ -118,8 +118,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   selectedTextStyle: {
-    color: "white",
     fontSize: 16,
+    color: "white",
   },
   iconStyle: {
     width: 20,

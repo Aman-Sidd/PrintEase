@@ -4,7 +4,7 @@ import React from "react";
 const LoadingScreen = () => {
   return (
     <View style={[styles.container, styles.horizontal]}>
-      <ActivityIndicator size="large" color="#0000ff" />
+      <ActivityIndicator size="large" color="#FFA500" />
     </View>
   );
 };

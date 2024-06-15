@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, Platform, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, RadioButton } from "react-native-paper";
@@ -41,7 +41,10 @@ const UpdateOrderScreen = ({ navigation, route }) => {
           user_id,
           message: "Your Order Has Been Printed. Collect it ASAP!",
         });
-        alert("Order status has been changed.");
+
+        navigation.pop();
+        if (Platform.OS !== "web")
+          Alert.alert("Success", "Order status has been changed.");
       } else if (value === ORDER_STATUS_PENDING) {
         const response = updateOrderStatus({ order_id, order_status: 0 });
         await sendPushNotification({
@@ -50,7 +53,10 @@ const UpdateOrderScreen = ({ navigation, route }) => {
         });
         console.log("update-order-status Resp:", response);
 
-        alert("Order status has been changed.");
+        navigation.pop();
+
+        if (Platform.OS !== "web")
+          Alert.alert("Success", "Order status has been changed.");
       }
     } catch (err) {
       console.log(err);

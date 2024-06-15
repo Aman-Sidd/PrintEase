@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/utils/LoadingScreen";
@@ -41,6 +41,8 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { isDesktop, isDesktopOrLaptop } from "../../hooks/isDesktop";
+import { useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
 
 let isPC;
 
@@ -52,6 +54,8 @@ const OrdersScreen = ({ navigation }) => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const shop = useSelector((state) => state.order.shop);
+
   isPC = isDesktop();
   console.log("isDesk:", isPC);
   const fetchOrderList = async (status = activeStatus, page = 0) => {
@@ -65,18 +69,34 @@ const OrdersScreen = ({ navigation }) => {
 
       switch (status) {
         case "All":
-          response = await getAllOrders({ limit, offset });
+          response = await getAllOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_PENDING:
-          response = await getPendingOrders({ limit, offset });
+          response = await getPendingOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_READY:
-          response = await getPrintedOrders({ limit, offset });
+          response = await getPrintedOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
         case ORDER_STATUS_PICKED:
-          response = await getPickedOrders({ limit, offset });
+          response = await getPickedOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
         default:
           response = null;
@@ -129,9 +149,11 @@ const OrdersScreen = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    fetchOrderList();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrderList();
+    }, [])
+  );
 
   const handleStatusButton = async (status) => {
     await fetchOrderList(status);
@@ -168,7 +190,8 @@ const OrdersScreen = ({ navigation }) => {
         }
         style={{
           ...styles.listStyle,
-          width: isPC ? "50%" : "80%",
+          width: isPC ? "50%" : "90%",
+          paddingVertical: isPC ? "1%" : "4%",
         }}
       >
         <View style={{ maxWidth: "70%" }}>
@@ -220,7 +243,7 @@ const OrdersScreen = ({ navigation }) => {
             {
               paddingHorizontal: isPC
                 ? widthPercentageToDP("3%")
-                : widthPercentageToDP("2%"),
+                : widthPercentageToDP("3%"),
             },
             activeStatus == "All"
               ? styles.statusButtonActive
@@ -343,7 +366,7 @@ const styles = StyleSheet.create({
   },
   listStyle: {
     // height: 75,
-    paddingVertical: "1%",
+    paddingVertical: "4%",
     width: "50%",
     marginTop: 15,
     borderRadius: 8,

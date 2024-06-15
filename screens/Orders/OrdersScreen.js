@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/utils/LoadingScreen";
@@ -34,6 +34,8 @@ import {
   convertTimeToAMPM,
   formatDate,
 } from "../../components/utils/formatDateTime";
+import { useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
 
 const OrdersScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -43,7 +45,9 @@ const OrdersScreen = ({ navigation }) => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const shop = useSelector((state) => state.order.shop);
 
+  console.log("SHOP:", shop);
   const fetchOrderList = async (status = activeStatus, page = 0) => {
     try {
       if (page === 0) setLoading(true);
@@ -55,18 +59,34 @@ const OrdersScreen = ({ navigation }) => {
 
       switch (status) {
         case "All":
-          response = await getAllOrders({ limit, offset });
+          response = await getAllOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_PENDING:
-          response = await getPendingOrders({ limit, offset });
+          response = await getPendingOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
 
         case ORDER_STATUS_READY:
-          response = await getPrintedOrders({ limit, offset });
+          response = await getPrintedOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
         case ORDER_STATUS_PICKED:
-          response = await getPickedOrders({ limit, offset });
+          response = await getPickedOrders({
+            shop_id: shop.shop_id,
+            limit,
+            offset,
+          });
           break;
         default:
           response = null;
@@ -119,9 +139,11 @@ const OrdersScreen = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    fetchOrderList();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrderList();
+    }, [])
+  );
 
   const handleStatusButton = async (status) => {
     await fetchOrderList(status);

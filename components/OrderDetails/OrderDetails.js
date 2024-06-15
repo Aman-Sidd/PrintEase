@@ -6,7 +6,7 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import myApi from "../../api/myApi";
@@ -21,46 +21,57 @@ import { getPerPagePrice } from "../helpers/GetPerPagePrice";
 import LoadingScreen from "../utils/LoadingScreen";
 import UnderlinedText from "../formUtils/UnderlinedText";
 import { convertTimeToAMPM, formatDate } from "../utils/formatDateTime";
+import { getShopDetails } from "../../api/methods/getShopDetails";
+import { useFocusEffect } from "@react-navigation/native";
+import { RATE_Spiral_Binding } from "../../constants/PRICING";
 
 const OrderDetails = ({ order_id, isOwner, _id }) => {
   console.log("orderDetails_id:", _id);
   const navigation = useNavigation();
   const [orderDetails, setOrderDetails] = useState(null);
+  const [shopDetails, setShopDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [priceRatePerPage, setPriceRatePerPage] = useState(null);
   const [pdfUri, setPdfUri] = useState(null);
   const [orderStatus, setOrderStatus] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchOrderDetails = async () => {
-      try {
-        setLoading(true);
-        console.log("Order ID:", order_id);
-        const orderDetailsResponse = await myApi.get(
-          `/get-order-details?order_id=${order_id}`
-        );
-        console.log("OrderDetailsResp:", orderDetailsResponse.data);
-        setOrderDetails(orderDetailsResponse?.data);
-        setPdfUri(
-          JSON.parse(orderDetailsResponse?.data.OrderDetails[0].file_details)[0]
-        );
-        setPriceRatePerPage(
-          getPerPagePrice(
-            orderDetailsResponse?.data.OrderDetails[0].total_pages
-          )
-        );
-        console.log("status:", orderDetailsResponse?.data.status);
-        setOrderStatus(
-          ValueToStatusConvertor(orderDetailsResponse?.data.status)
-        );
-        setLoading(false);
-      } catch (err) {
-        console.log("Err:", err);
-      }
-    };
-    fetchOrderDetails();
-  }, []);
+  const [shopInfoExpanded, setShopInfoExpanded] = useState(false);
+  const [orderDetailsExpanded, setOrderDetailsExpanded] = useState(true);
+  const [pricingExpanded, setPricingExpanded] = useState(false);
+
+  const fetchOrderDetails = async () => {
+    try {
+      setLoading(true);
+      console.log("Order ID:", order_id);
+      const orderDetailsResponse = await myApi.get(
+        `/get-order-details?order_id=${order_id}`
+      );
+      console.log("OrderDetailsResp:", orderDetailsResponse.data);
+      setOrderDetails(orderDetailsResponse?.data);
+      const shopDetailsResponse = await getShopDetails({
+        shop_id: orderDetailsResponse?.data.shop_id,
+      });
+      setShopDetails(shopDetailsResponse);
+      setPdfUri(
+        JSON.parse(orderDetailsResponse?.data.OrderDetails[0].file_details)[0]
+      );
+      setPriceRatePerPage(
+        getPerPagePrice(orderDetailsResponse?.data.OrderDetails[0].total_pages)
+      );
+      console.log("status:", orderDetailsResponse?.data.status);
+      setOrderStatus(ValueToStatusConvertor(orderDetailsResponse?.data.status));
+      setLoading(false);
+    } catch (err) {
+      console.log("Err:", err);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrderDetails();
+    }, [])
+  );
 
   const openPdf = () => {
     navigation.navigate("PdfView", { uri: pdfUri, showButtons: false });
@@ -81,6 +92,10 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
         `/get-order-details?order_id=${order_id}`
       );
       setOrderDetails(orderDetailsResponse?.data);
+      const shopDetailsResponse = await getShopDetails({
+        shop_id: orderDetailsResponse?.data.shop_id,
+      });
+      setShopDetails(shopDetailsResponse);
       setPdfUri(
         JSON.parse(orderDetailsResponse.data.OrderDetails[0].file_details)[0]
       );
@@ -95,174 +110,202 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
     }
   };
 
+  console.log("ShopDetails:", shopDetails);
+
   return loading ? (
     <LoadingScreen />
   ) : (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: "black",
-      }}
-    >
+    <SafeAreaView style={styles.container}>
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        contentContainerStyle={
-          {
-            //   justifyContent: "center",
-            //   alignItems: "center",
-          }
-        }
       >
         <View style={styles.checkoutInfo}>
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            <Text style={styles.textStyle}>Payment ID: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
-              {" "}
-              {orderDetails?.payment_id + " "}
-            </Text>
-          </View>
-
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            <Text style={styles.textStyle}>Page Size: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
-              {" "}
-              {orderDetails?.OrderDetails[0].page_size + " "}
-            </Text>
-          </View>
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            <Text style={styles.textStyle}>Color: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
-              {" "}
-              {orderDetails?.OrderDetails[0].print_color + " "}
-            </Text>
-          </View>
-          <View
-            style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
+          <Pressable
+            style={styles.sectionHeader}
+            onPress={() => setShopInfoExpanded(!shopInfoExpanded)}
           >
-            <Text style={styles.textStyle}>Chosen File: </Text>
-            <Pressable onPress={openPdf}>
-              <UnderlinedText
-                numberOfLines={1}
-                style={[styles.textStyle, { color: "white" }]}
-              >
-                {orderDetails?.order_title}
-              </UnderlinedText>
-            </Pressable>
-          </View>
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            <Text style={styles.textStyle}>Total Pages: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
-              {" "}
-              {orderDetails?.OrderDetails[0].total_pages + " "}
-            </Text>
-          </View>
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            <Text style={styles.textStyle}>Price per page: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
-              {" "}
-              Rs. {priceRatePerPage + " "}
-            </Text>
-          </View>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Text style={styles.textStyle}>Total Price: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
-              {" "}
-              {orderDetails?.OrderDetails[0].total_pages} * Rs.{" "}
-              {priceRatePerPage} = Rs. {orderDetails?.total_price + " "}
-            </Text>
-          </View>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Text style={styles.textStyle}>Time and Date: </Text>
-            <Text style={[styles.textStyle, { color: "white" }]}>
-              {" "}
-              {convertTimeToAMPM(orderDetails?.createdAt) +
-                " (" +
-                formatDate(orderDetails?.createdAt) +
-                ")"}
-            </Text>
-          </View>
-
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Text style={styles.textStyle}>Order Status: </Text>
-            <Text
-              style={[
-                styles.textStyle,
-                {
-                  color: StatusToColorConvertor(orderStatus),
-                },
-              ]}
-            >
-              {" "}
-              {orderStatus + " "}
-            </Text>
-          </View>
-
-          {!isOwner && (
-            <View
-              style={{
-                alignSelf: "center",
-                borderRadius: 5,
-                borderColor: "white",
-                backgroundColor: "white",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 8,
-              }}
-            >
-              <OrderQRCode orderId={order_id} />
+            <Text style={styles.sectionTitle}>Shop Info </Text>
+            <MaterialIcons
+              name={shopInfoExpanded ? "expand-less" : "expand-more"}
+              size={24}
+              color="white"
+            />
+          </Pressable>
+          {shopInfoExpanded && (
+            <View style={styles.section}>
+              <View style={styles.row}>
+                <Text style={styles.label}>Shop Name: </Text>
+                <Text style={styles.value}>{shopDetails?.shop_name} </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Shop ID: </Text>
+                <Text style={styles.value}>{shopDetails?.shop_id} </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Contact No: </Text>
+                <Text style={styles.value}>{shopDetails?.shop_phone} </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Shop Address: </Text>
+                <Text style={styles.value} numberOfLines={1}>
+                  {shopDetails?.shop_address}{" "}
+                </Text>
+              </View>
             </View>
           )}
 
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-end",
-            }}
+          <Pressable
+            style={styles.sectionHeader}
+            onPress={() => setOrderDetailsExpanded(!orderDetailsExpanded)}
           >
+            <Text style={styles.sectionTitle}>Order Details &nbsp;</Text>
             <MaterialIcons
-              name="paid"
-              size={13}
-              color="green"
-              style={{ margin: 2 }}
+              name={orderDetailsExpanded ? "expand-less" : "expand-more"}
+              size={24}
+              color="white"
             />
-            <Text
-              style={[
-                styles.textStyle,
-                { color: "green", fontSize: 13, fontWeight: "bold" },
-              ]}
-            >
-              Paid &nbsp;
-            </Text>
-          </View>
+          </Pressable>
+          {orderDetailsExpanded && (
+            <View style={styles.section}>
+              <View style={styles.row}>
+                <Text style={styles.label}>Token ID: </Text>
+                <Text style={styles.value}>{orderDetails?.id} </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Payment ID: </Text>
+                <Text style={styles.value}>{orderDetails?.payment_id} </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Page Size: </Text>
+                <Text style={styles.value}>
+                  {orderDetails?.OrderDetails[0].page_size}{" "}
+                </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Color: </Text>
+                <Text style={styles.value}>
+                  {orderDetails?.OrderDetails[0].print_color}{" "}
+                </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Print Type: </Text>
+                <Text style={styles.value}>
+                  {orderDetails?.OrderDetails[0].print_type}{" "}
+                </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Spiral Binding: </Text>
+                <Text style={styles.value}>
+                  {orderDetails?.OrderDetails[0].spiral_binding ? "Yes" : "No"}{" "}
+                </Text>
+              </View>
+              <View style={[styles.row, { display: "flex", flexWrap: "wrap" }]}>
+                <Text style={styles.label}>Chosen File: </Text>
+                <Pressable onPress={openPdf}>
+                  <UnderlinedText numberOfLines={1} style={styles.value}>
+                    {orderDetails?.order_title}{" "}
+                  </UnderlinedText>
+                </Pressable>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Total Pages: </Text>
+                <Text style={styles.value}>
+                  {orderDetails?.OrderDetails[0].total_pages}{" "}
+                </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Time and Date: </Text>
+                <Text style={styles.value}>
+                  {" "}
+                  {convertTimeToAMPM(orderDetails?.createdAt) +
+                    " (" +
+                    formatDate(orderDetails?.createdAt) +
+                    ")"}{" "}
+                </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Order Status: </Text>
+                <Text
+                  style={[
+                    styles.value,
+                    {
+                      color: StatusToColorConvertor(orderStatus),
+                    },
+                  ]}
+                >
+                  {orderStatus + " "}
+                </Text>
+              </View>
+              {!isOwner && (
+                <>
+                  <View style={styles.QRcode}>
+                    <OrderQRCode orderId={order_id} />
+                  </View>
+                  <Text style={styles.QRLabel}>
+                    Scan QR code while collecting the documents.
+                  </Text>
+                </>
+              )}
+            </View>
+          )}
+
+          <Pressable
+            style={styles.sectionHeader}
+            onPress={() => setPricingExpanded(!pricingExpanded)}
+          >
+            <Text style={styles.sectionTitle}>Pricing </Text>
+            <MaterialIcons
+              name={pricingExpanded ? "expand-less" : "expand-more"}
+              size={24}
+              color="white"
+            />
+          </Pressable>
+          {pricingExpanded && (
+            <View style={styles.section}>
+              <View style={styles.row}>
+                <Text style={styles.label}>Price per page: </Text>
+                <Text style={styles.value}>
+                  Rs. {orderDetails?.OrderDetails[0].price_per_page}{" "}
+                </Text>
+              </View>
+              {orderDetails?.OrderDetails[0].spiral_binding && (
+                <View style={styles.row}>
+                  <Text style={styles.label}>Spiral Binding: </Text>
+                  <Text style={styles.value}>Rs. {RATE_Spiral_Binding}</Text>
+                </View>
+              )}
+              <View style={styles.row}>
+                <Text style={styles.label}>Total Price: </Text>
+                <Text style={styles.value}>
+                  {"(" + orderDetails?.OrderDetails[0].total_pages} pages *{" "}
+                  {orderDetails?.OrderDetails[0].price_per_page + ")"}
+                  {orderDetails?.OrderDetails[0].spiral_binding
+                    ? ` + ${RATE_Spiral_Binding}`
+                    : null}{" "}
+                  = Rs. {orderDetails?.total_price}{" "}
+                </Text>
+              </View>
+              {/* <View style={styles.row}>
+                <Text style={styles.label}>Total Price: </Text>
+                <Text style={styles.value}>
+                  {orderDetails?.OrderDetails[0].total_pages} X Rs.{" "}
+                  {orderDetails?.OrderDetails[0].price_per_page} = Rs.{" "}
+                  {orderDetails?.total_price}{" "}
+                </Text>
+              </View> */}
+            </View>
+          )}
         </View>
+
         {isOwner && (
           <Button
             style={{ marginTop: 20, width: "50%", alignSelf: "center" }}
             mode="contained"
             onPress={handleChangeOrderStatus}
           >
-            Change Order Status
+            Change Order Status{" "}
           </Button>
         )}
       </ScrollView>
@@ -273,8 +316,13 @@ const OrderDetails = ({ order_id, isOwner, _id }) => {
 export default OrderDetails;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "black",
+    paddingBottom: 20,
+  },
   checkoutInfo: {
-    gap: 15,
+    gap: 10,
     width: "90%",
     justifyContent: "center",
     borderRadius: 10,
@@ -282,12 +330,53 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 20,
     backgroundColor: "#1E1E1E",
-    // backgroundColor: "red",
   },
-  textStyle: {
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  sectionTitle: {
+    color: "#FFA500",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#333",
+    paddingBottom: 5,
+  },
+  label: {
+    fontWeight: "500",
+    color: "#AAAAAA",
+    fontSize: 16,
+  },
+  value: {
     fontWeight: "500",
     color: "white",
     fontSize: 16,
-    color: "#AAAAAA",
+  },
+  row: {
+    flexDirection: "row",
+    marginBottom: 5,
+  },
+  section: {
+    marginBottom: 20,
+  },
+  QRcode: {
+    alignSelf: "center",
+    borderRadius: 5,
+    borderColor: "white",
+    backgroundColor: "white",
+    justifyContent: "center",
+    marginTop: 3,
+    alignItems: "center",
+    padding: 8,
+  },
+  QRLabel: {
+    color: "white",
+    fontSize: 12,
+    color: "gray",
+    marginTop: 6,
+    textAlign: "center",
   },
 });

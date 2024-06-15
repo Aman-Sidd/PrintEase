@@ -7,12 +7,7 @@ import { setPageSize } from "../../redux/OrderSlice";
 import { isDesktop } from "../../hooks/isDesktop";
 import { useMediaQuery } from "react-responsive";
 
-const data = [
-  { label: "A1", value: "1" },
-  { label: "A2", value: "2" },
-  { label: "A3", value: "3" },
-  { label: "A4", value: "4" },
-];
+const data = [{ label: "A4", value: "1" }];
 
 const PageSizeDropdown = () => {
   const [value, setValue] = useState(null);
@@ -47,7 +42,7 @@ const PageSizeDropdown = () => {
         style={[
           styles.dropdown,
           isPC && Platform.OS === "web" && { height: 50 },
-          !isPC && Platform.OS === "web" && { height: 45 },
+          !isPC && Platform.OS === "web" && { height: 55 },
           isFocus && { borderColor: "white" },
         ]}
         placeholderStyle={styles.placeholderStyle}
@@ -98,7 +93,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   dropdown: {
-    height: 65,
+    height: 55,
     borderColor: "gray",
     borderWidth: 0.5,
     borderRadius: 8,

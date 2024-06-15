@@ -36,7 +36,7 @@ const WelcomeScreen = ({ navigation }) => {
             navigation.replace("OwnerTab");
           }
           if (user.user_type === USER_TYPE.CUSTOMER) {
-            navigation.replace("Main");
+            navigation.replace("Shops");
           }
         }
       }

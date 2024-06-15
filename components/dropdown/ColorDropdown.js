@@ -42,7 +42,7 @@ const ColorDropdown = () => {
         style={[
           styles.dropdown,
           isPC && Platform.OS === "web" && { height: 50 },
-          !isPC && Platform.OS === "web" && { height: 45 },
+          !isPC && Platform.OS === "web" && { height: 55 },
           isFocus && { borderColor: "white" },
         ]}
         placeholderStyle={styles.placeholderStyle}
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   dropdown: {
-    height: 65,
+    height: 55,
     borderColor: "gray",
     borderWidth: 0.5,
     borderRadius: 8,
