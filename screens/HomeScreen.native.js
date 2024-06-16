@@ -33,7 +33,6 @@ import Constants from "expo-constants";
 import { addExpoPushToken } from "../redux/UtilSlice";
 import SpiralDropdown from "../components/dropdown/SpiralDropdown";
 import { updatePushToken } from "../api/methods/updatePushToken";
-import * as Updates from "expo-updates";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -132,7 +131,10 @@ const HomeScreen = ({ navigation }) => {
       console.log(result);
       if (!result.canceled) {
         console.log("Document picked:", result.assets[0]);
-
+        if (result.assets[0].mimeType === "application/pdf") {
+          alert("Only PDF format allowed!");
+          return;
+        }
         dispatch(setPdfName({ pdfName: result.assets[0].name }));
         dispatch(setPdfUri({ pdfUri: result.assets[0].uri }));
 
@@ -154,24 +156,6 @@ const HomeScreen = ({ navigation }) => {
       navigation.navigate("PdfView", { uri: pdfUri, showButtons: true });
     }
   };
-
-  useEffect(() => {
-    async function onFetchUpdateAsync() {
-      try {
-        const update = await Updates.checkForUpdateAsync();
-
-        if (update.isAvailable) {
-          await Updates.fetchUpdateAsync();
-          await Updates.reloadAsync();
-        }
-      } catch (error) {
-        // You can also add an alert() to see the error message in case of an error when fetching updates.
-        alert(`Error fetching latest Expo update: ${error}`);
-      }
-    }
-
-    onFetchUpdateAsync();
-  }, []);
 
   useEffect(() => {
     registerForPushNotificationsAsync()
@@ -242,7 +226,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.selectDocumentContainer}>
-          <Text style={styles.selectDocumentText}>Select Your Document </Text>
+          <Text style={styles.selectDocumentText}>Select Your PDF </Text>
 
           {!pdfUri ? (
             <Pressable style={styles.documentPicker} onPress={pickDocument}>

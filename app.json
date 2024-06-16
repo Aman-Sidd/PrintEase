@@ -21,9 +21,7 @@
         }
       ]
     ],
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "runtimeVersion": {
@@ -55,8 +53,10 @@
     },
     "owner": "amansidd786",
     "updates": {
-      "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/9f7503d8-e979-4b46-bb97-6ca654b835ae"
+      "url": "https://u.expo.dev/9f7503d8-e979-4b46-bb97-6ca654b835ae",
+      "requestHeaders": {
+        "expo-channel-name": "main"
+      }
     }
   }
 }
