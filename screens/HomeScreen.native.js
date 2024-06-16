@@ -33,6 +33,7 @@ import Constants from "expo-constants";
 import { addExpoPushToken } from "../redux/UtilSlice";
 import SpiralDropdown from "../components/dropdown/SpiralDropdown";
 import { updatePushToken } from "../api/methods/updatePushToken";
+import * as Updates from "expo-updates";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -116,6 +117,7 @@ const HomeScreen = ({ navigation }) => {
   const [notification, setNotification] = useState(undefined);
   const notificationListener = useRef();
   const responseListener = useRef();
+  const [loading, setLoading] = useState(true);
 
   const pickDocument = async () => {
     console.log("clicked");
@@ -152,26 +154,24 @@ const HomeScreen = ({ navigation }) => {
       navigation.navigate("PdfView", { uri: pdfUri, showButtons: true });
     }
   };
-  // const updatePushToken = async ({token,user}) => {
-  //   try {
-  //     const response = (await getUserDetailsById(user.data.user_id)).data;
-  //     const userDetails = response.data;
-  //     console.log("UserDetails:", userDetails);
-  //     console.log("expoPushToken:", token);
-  //     let existingPushTokens = JSON.parse(userDetails?.push_token);
-  //     console.log("typeof:", typeof existingPushTokens);
-  //     if (!existingPushTokens) existingPushTokens = [];
-  //     if (!checkForSamePushToken(token, existingPushTokens)) {
-  //       if (token !== null && token !== "") existingPushTokens.push(token);
-  //       await updateUserDetails({
-  //         userDetails,
-  //         pushTokens: existingPushTokens,
-  //       });
-  //     } else console.log("Same push token already exists.");
-  //   } catch (err) {
-  //     console.log("Error:", err);
-  //   }
-  // };
+
+  useEffect(() => {
+    async function onFetchUpdateAsync() {
+      try {
+        const update = await Updates.checkForUpdateAsync();
+
+        if (update.isAvailable) {
+          await Updates.fetchUpdateAsync();
+          await Updates.reloadAsync();
+        }
+      } catch (error) {
+        // You can also add an alert() to see the error message in case of an error when fetching updates.
+        alert(`Error fetching latest Expo update: ${error}`);
+      }
+    }
+
+    onFetchUpdateAsync();
+  }, []);
 
   useEffect(() => {
     registerForPushNotificationsAsync()
