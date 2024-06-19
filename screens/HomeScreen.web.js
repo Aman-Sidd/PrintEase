@@ -136,7 +136,14 @@ const HomeScreen = ({ navigation }) => {
             contentFit="contain"
             transition={1000}
           />
-          <Text style={{ color: "white", textAlign: "center", fontSize: 20 }}>
+          <Text
+            style={{
+              color: "white",
+              textAlign: "center",
+              fontSize: 20,
+              fontFamily: "bold",
+            }}
+          >
             Create Your Order
           </Text>
           {/* <GradientText style={styles.gradientText} text="PrintEase" /> */}
