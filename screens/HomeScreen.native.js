@@ -1,6 +1,5 @@
 import {
   Alert,
-  Dimensions,
   Platform,
   Pressable,
   ScrollView,
@@ -24,18 +23,12 @@ import PageSizeDropdown from "../components/dropdown/PageSizeDropdown";
 import ColorDropdown from "../components/dropdown/ColorDropdown";
 import PrintTypeDropdown from "../components/dropdown/PrintTypeDropdown";
 import UnderlinedText from "../components/formUtils/UnderlinedText";
-import { getUserDetailsById } from "../api/methods/getUserDetails";
-import { checkForSamePushToken } from "../components/utils/checkForSamePushToken";
-import { updateUserDetails } from "../api/methods/updateUserDetails";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import { addExpoPushToken } from "../redux/UtilSlice";
 import SpiralDropdown from "../components/dropdown/SpiralDropdown";
 import { updatePushToken } from "../api/methods/updatePushToken";
-
-const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

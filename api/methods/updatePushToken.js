@@ -1,4 +1,5 @@
 import { checkForSamePushToken } from "../../components/utils/checkForSamePushToken";
+import { addExpoPushToken } from "../../redux/UtilSlice";
 import { getUserDetailsById } from "./getUserDetails";
 import { updateUserDetails } from "./updateUserDetails";
 
@@ -15,7 +16,12 @@ export const updatePushToken = async ({ token, user }) => {
       userDetails.push_token !== null
     )
       existingPushTokens = JSON.parse(userDetails.push_token);
-    console.log("typeof:", typeof existingPushTokens);
+    console.log(
+      "typeof:",
+      typeof existingPushTokens,
+      "expoPushTokens:",
+      existingPushTokens
+    );
     if (!checkForSamePushToken(token, existingPushTokens)) {
       if (token !== null && token !== "") existingPushTokens.push(token);
       await updateUserDetails({
