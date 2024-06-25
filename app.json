@@ -23,7 +23,11 @@
     ],
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      },
+      "bundleIdentifier": "com.amansidd786.printease"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,7 +40,8 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "android.permission.ACCESS_NETWORK_STATE"
-      ]
+      ],
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon-32x32.png"
@@ -46,6 +51,12 @@
         "projectId": "9f7503d8-e979-4b46-bb97-6ca654b835ae"
       }
     },
-    "owner": "amansidd786"
+    "owner": "amansidd786",
+    "updates": {
+      "url": "https://u.expo.dev/9f7503d8-e979-4b46-bb97-6ca654b835ae",
+      "requestHeaders": {
+        "expo-channel-name": "main"
+      }
+    }
   }
 }

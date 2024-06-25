@@ -1,6 +1,5 @@
 import {
   Alert,
-  Dimensions,
   Platform,
   Pressable,
   ScrollView,
@@ -24,18 +23,12 @@ import PageSizeDropdown from "../components/dropdown/PageSizeDropdown";
 import ColorDropdown from "../components/dropdown/ColorDropdown";
 import PrintTypeDropdown from "../components/dropdown/PrintTypeDropdown";
 import UnderlinedText from "../components/formUtils/UnderlinedText";
-import { getUserDetailsById } from "../api/methods/getUserDetails";
-import { checkForSamePushToken } from "../components/utils/checkForSamePushToken";
-import { updateUserDetails } from "../api/methods/updateUserDetails";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import { addExpoPushToken } from "../redux/UtilSlice";
 import SpiralDropdown from "../components/dropdown/SpiralDropdown";
 import { updatePushToken } from "../api/methods/updatePushToken";
-
-const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -116,6 +109,7 @@ const HomeScreen = ({ navigation }) => {
   const [notification, setNotification] = useState(undefined);
   const notificationListener = useRef();
   const responseListener = useRef();
+  const [loading, setLoading] = useState(true);
 
   const pickDocument = async () => {
     console.log("clicked");
@@ -130,7 +124,10 @@ const HomeScreen = ({ navigation }) => {
       console.log(result);
       if (!result.canceled) {
         console.log("Document picked:", result.assets[0]);
-
+        if (result.assets[0].mimeType === "application/pdf") {
+          alert("Only PDF format allowed!");
+          return;
+        }
         dispatch(setPdfName({ pdfName: result.assets[0].name }));
         dispatch(setPdfUri({ pdfUri: result.assets[0].uri }));
 
@@ -152,26 +149,6 @@ const HomeScreen = ({ navigation }) => {
       navigation.navigate("PdfView", { uri: pdfUri, showButtons: true });
     }
   };
-  // const updatePushToken = async ({token,user}) => {
-  //   try {
-  //     const response = (await getUserDetailsById(user.data.user_id)).data;
-  //     const userDetails = response.data;
-  //     console.log("UserDetails:", userDetails);
-  //     console.log("expoPushToken:", token);
-  //     let existingPushTokens = JSON.parse(userDetails?.push_token);
-  //     console.log("typeof:", typeof existingPushTokens);
-  //     if (!existingPushTokens) existingPushTokens = [];
-  //     if (!checkForSamePushToken(token, existingPushTokens)) {
-  //       if (token !== null && token !== "") existingPushTokens.push(token);
-  //       await updateUserDetails({
-  //         userDetails,
-  //         pushTokens: existingPushTokens,
-  //       });
-  //     } else console.log("Same push token already exists.");
-  //   } catch (err) {
-  //     console.log("Error:", err);
-  //   }
-  // };
 
   useEffect(() => {
     registerForPushNotificationsAsync()
@@ -242,7 +219,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.selectDocumentContainer}>
-          <Text style={styles.selectDocumentText}>Select Your Document </Text>
+          <Text style={styles.selectDocumentText}>Select Your PDF </Text>
 
           {!pdfUri ? (
             <Pressable style={styles.documentPicker} onPress={pickDocument}>

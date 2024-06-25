@@ -66,14 +66,6 @@ const LoginScreen = () => {
     checkForAuthToken();
   }, []);
 
-  const checkForSamePushToken = (pushToken, arr) => {
-    const tokens = arr?.filter((data) => data === pushToken) || [];
-    if (tokens.length == 0) {
-      return false;
-    }
-    return true;
-  };
-
   const fetchUser = async (payload) => {
     try {
       setLoading(true);
@@ -123,7 +115,16 @@ const LoginScreen = () => {
       {loading ? (
         <LoadingScreen />
       ) : (
-        <ScrollView contentContainerStyle={styles.mainContainer}>
+        <ScrollView
+          contentContainerStyle={[
+            styles.mainContainer,
+            Platform.OS == "web" && {
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            },
+          ]}
+        >
           <View
             style={
               isDesktop

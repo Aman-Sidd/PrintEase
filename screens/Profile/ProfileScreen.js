@@ -30,14 +30,13 @@ const ProfileScreen = () => {
       console.log("expoPushToken:", expoPushToken);
       console.log("pushTokens:", pushTokens);
       await updateUserDetails({ userDetails, pushTokens });
-
+    } catch (err) {
+      console.log("Error occurred while deleting pushToken.", err);
+    } finally {
       const keys = await AsyncStorage.getAllKeys();
       await AsyncStorage.multiRemove(keys);
 
       navigation.replace("Login");
-    } catch (err) {
-      console.log("Error occurred while logging out.", err);
-    } finally {
       setLoading(false);
     }
   };
