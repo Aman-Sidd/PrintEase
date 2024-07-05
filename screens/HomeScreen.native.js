@@ -124,7 +124,7 @@ const HomeScreen = ({ navigation }) => {
       console.log(result);
       if (!result.canceled) {
         console.log("Document picked:", result.assets[0]);
-        if (result.assets[0].mimeType === "application/pdf") {
+        if (result.assets[0].mimeType !== "application/pdf") {
           alert("Only PDF format allowed!");
           return;
         }

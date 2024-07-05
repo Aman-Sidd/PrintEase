@@ -8,25 +8,21 @@ import {
   TextInput,
   View,
 } from "react-native";
-import React, { useDebugValue, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GradientText from "../../components/formUtils/GradientText";
 import { Divider } from "@rneui/base";
-import { useNavigation, useTheme } from "@react-navigation/native";
-import { AntDesign } from "@expo/vector-icons";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import InputText from "../../components/formUtils/InputText";
 import { useDispatch, useSelector } from "react-redux";
-import { add_user, fetchUser, login_user } from "../../redux/UserSlice";
+import { add_user } from "../../redux/UserSlice";
 import myApi from "../../api/myApi";
 import LoadingScreen from "../../components/utils/LoadingScreen";
 import AsyncStorage from "@react-native-community/async-storage";
 import { USER_TYPE } from "../../constants/USER_TYPE";
 import { useMediaQuery } from "react-responsive";
 import { addExpoPushToken, setIsDesktop } from "../../redux/UtilSlice";
-
-import { updateUserDetails } from "../../api/methods/updateUserDetails";
 import { ScrollView } from "react-native-gesture-handler";
 
 const LoginScreen = () => {
@@ -36,9 +32,6 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
-  console.log(user);
-  console.log(email);
-  console.log(password);
   const isDesktop = useSelector((state) => state.util.isDesktop);
   const isDesktopOrLaptop = useMediaQuery({
     query: "(min-width: 1224px)",
@@ -201,6 +194,35 @@ const LoginScreen = () => {
                 </Pressable>
               )}
             </View>
+            <View
+              style={[
+                styles.testButtonContainer,
+                { flexDirection: isDesktopOrLaptop ? "row" : "column" },
+              ]}
+            >
+              <Pressable
+                style={styles.testButton}
+                onPress={() => {
+                  setEmail("customer3@test.com");
+                  setPassword("test");
+                }}
+              >
+                <Text style={styles.testButtonText}>
+                  Fill Test Credentials (Customer)
+                </Text>
+              </Pressable>
+              <Pressable
+                style={styles.testButton}
+                onPress={() => {
+                  setEmail("shop1@test.com");
+                  setPassword("test");
+                }}
+              >
+                <Text style={styles.testButtonText}>
+                  Fill Test Credentials (Owner)
+                </Text>
+              </Pressable>
+            </View>
           </View>
         </ScrollView>
       )}
@@ -261,7 +283,6 @@ const styles = StyleSheet.create({
   footerContainer: {
     marginBottom: 50,
     marginHorizontal: 40,
-    // justifyContent: "flex-end",
     marginTop: 100,
     flex: 1,
   },
@@ -283,5 +304,23 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 20,
+  },
+  testButtonContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+  testButton: {
+    backgroundColor: "#405064",
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 10,
+  },
+  testButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
