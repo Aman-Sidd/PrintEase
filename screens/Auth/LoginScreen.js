@@ -194,7 +194,7 @@ const LoginScreen = () => {
                 </Pressable>
               )}
             </View>
-            <View
+            {/* <View
               style={[
                 styles.testButtonContainer,
                 { flexDirection: isDesktopOrLaptop ? "row" : "column" },
@@ -222,7 +222,7 @@ const LoginScreen = () => {
                   Fill Test Credentials (Owner)
                 </Text>
               </Pressable>
-            </View>
+            </View> */}
           </View>
         </ScrollView>
       )}
