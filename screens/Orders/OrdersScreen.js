@@ -141,13 +141,14 @@ const OrdersScreen = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchOrderList();
-    }, [])
+      console.log("ActiveStatus:", activeStatus);
+      fetchOrderList(activeStatus);
+    }, [activeStatus])
   );
 
   const handleStatusButton = async (status) => {
-    await fetchOrderList(status);
     setActiveStatus(status);
+    await fetchOrderList(status);
   };
 
   const renderFooter = () => {

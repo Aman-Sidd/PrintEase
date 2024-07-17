@@ -44,6 +44,9 @@ const HomeNavigator = () => {
           headerStyle: {
             backgroundColor: "#080A0C",
           },
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
           headerTintColor: "white",
           headerTitleAlign: "center",
         }}
@@ -73,6 +76,9 @@ const OrderNavigation = () => {
           title: "Order Details",
           headerStyle: {
             backgroundColor: "#080A0C",
+          },
+          headerTitleStyle: {
+            fontWeight: "bold",
           },
           headerTintColor: "white",
           headerTitleAlign: "center",
@@ -134,6 +140,9 @@ export const TabNavigator = () => {
           headerStyle: {
             backgroundColor: "black", // Background color of the header
           },
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
           headerTintColor: "white", // Text color of the header
           headerTitleAlign: "center", // Alignment of the header title
         }}
@@ -166,6 +175,9 @@ export const OwnerOrderStackNavigator = () => {
           headerStyle: {
             backgroundColor: "#080A0C",
           },
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
           headerTintColor: "white",
           headerTitleAlign: "center",
         }}
@@ -182,6 +194,9 @@ export const OwnerOrderStackNavigator = () => {
           title: "Order Details",
           headerStyle: {
             backgroundColor: "#080A0C",
+          },
+          headerTitleStyle: {
+            fontWeight: "bold",
           },
           headerTintColor: "white",
           headerTitleAlign: "center",
@@ -233,6 +248,9 @@ export const OwnerTabNavigator = () => {
           headerStyle: {
             backgroundColor: "black", // Background color of the header
           },
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
           headerTintColor: "white", // Text color of the header
           headerTitleAlign: "center", // Alignment of the header title
         }}
@@ -270,6 +288,9 @@ const StackNavigator = ({ expoPushToken }) => {
             headerStyle: {
               backgroundColor: "#080A0C",
             },
+            headerTitleStyle: {
+              fontWeight: "bold",
+            },
             headerTintColor: "white",
             headerTitleAlign: "center",
           }}
@@ -281,6 +302,9 @@ const StackNavigator = ({ expoPushToken }) => {
             title: "Shops",
             headerStyle: {
               backgroundColor: "#080A0C",
+            },
+            headerTitleStyle: {
+              fontWeight: "bold",
             },
             headerTintColor: "white",
             headerTitleAlign: "center",
@@ -306,6 +330,9 @@ const StackNavigator = ({ expoPushToken }) => {
             title: "Register",
             headerStyle: {
               backgroundColor: "#080A0C",
+            },
+            headerTitleStyle: {
+              fontWeight: "bold",
             },
             headerTintColor: "white",
             headerTitleAlign: "center",

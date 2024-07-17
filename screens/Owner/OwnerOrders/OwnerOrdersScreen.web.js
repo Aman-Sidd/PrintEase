@@ -122,7 +122,7 @@ const OwnerOrdersScreen = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       fetchOrderList();
-    }, [])
+    }, [activeStatus])
   );
 
   const renderListItem = ({ item }) => {

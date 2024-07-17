@@ -64,6 +64,10 @@ const HomeScreen = ({ navigation }) => {
       console.log(result);
       if (!result.canceled) {
         console.log("Document picked:", result.assets[0]);
+        if (result.assets[0].mimeType !== "application/pdf") {
+          alert("Only PDF format allowed!");
+          return;
+        }
         dispatch(setFile({ file: result.assets[0].file }));
         dispatch(setPdfName({ pdfName: result.assets[0].name }));
         dispatch(setPdfUri({ pdfUri: result.assets[0].uri }));
@@ -132,7 +136,14 @@ const HomeScreen = ({ navigation }) => {
             contentFit="contain"
             transition={1000}
           />
-          <Text style={{ color: "white", textAlign: "center", fontSize: 20 }}>
+          <Text
+            style={{
+              color: "white",
+              textAlign: "center",
+              fontSize: 20,
+              fontFamily: "bold",
+            }}
+          >
             Create Your Order
           </Text>
           {/* <GradientText style={styles.gradientText} text="PrintEase" /> */}
@@ -162,7 +173,7 @@ const HomeScreen = ({ navigation }) => {
                 style={{
                   ...styles.documentPicker,
                   alignSelf: "center",
-                  width: isDesktopOrLaptop ? "50%" : "70%",
+                  width: isDesktopOrLaptop ? "50%" : "95%",
                   height: isDesktopOrLaptop ? hp("14%") : hp("18%"),
                 }}
                 onPress={pickDocument}
@@ -182,8 +193,8 @@ const HomeScreen = ({ navigation }) => {
                   {
                     alignSelf: "center",
                     paddingVertical: "4%",
-                    paddingHorizontal: "1%",
-                    width: isDesktopOrLaptop ? "50%" : "70%",
+                    paddingHorizontal: "3%",
+                    width: isDesktopOrLaptop ? "50%" : "95%",
                     height: isDesktopOrLaptop ? hp("14%") : hp("18%"),
                   },
                 ]}

@@ -20,7 +20,7 @@ export const updateUserDetails = async ({ userDetails, pushTokens }) => {
     else if (responsePushTokenUpdate.data.error)
       console.log("some error occurred while updating push token!");
   } catch (err) {
-    console.log("Error while updating user details!!!", err);
+    console.log("Error while updating user details!!!", err.response.data);
     // throw err.response.data;
   }
 };

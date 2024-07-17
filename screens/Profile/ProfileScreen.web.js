@@ -40,6 +40,7 @@ const ProfileScreen = () => {
 
       navigation.replace("Login");
     } catch (err) {
+      alert("Something went wrong. Try Again!");
       console.log("Error occurred while logging out.", err);
     } finally {
       setLoading(false);
@@ -70,7 +71,7 @@ const ProfileScreen = () => {
   return loading ? (
     <LoadingScreen />
   ) : (
-    <ScrollView style={{ flex: 1, backgroundColor: "black" }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "black", paddingTop: 50 }}>
       <View style={styles.container}>
         <View style={{ ...styles.innerContainer, width: isPC ? "30%" : "90%" }}>
           <View style={styles.detailsContainer}>
@@ -166,11 +167,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     textAlign: "center",
   },
-  container: {
-    flex: 1,
-    backgroundColor: "black",
-    alignItems: "flex-start",
-  },
+  container: {},
   label: {
     fontSize: 18,
     color: "#AAAAAA",

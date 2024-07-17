@@ -304,7 +304,7 @@ const CheckoutScreen = ({ navigation }) => {
             <Text style={styles.label}>Price per page:</Text>
             <Text style={styles.value}>Rs. {priceRatePerPage}</Text>
           </View>
-          {orderDetails.spiralBinding && (
+          {orderDetails.spiralBinding == "Yes" && (
             <View style={styles.row}>
               <Text style={styles.label}>Spiral Binding:</Text>
               <Text style={styles.value}>Rs. {RATE_Spiral_Binding}</Text>

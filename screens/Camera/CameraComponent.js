@@ -57,10 +57,12 @@ const CameraComponent = ({ navigation, route }) => {
         });
         console.log("update-order-status RESPONSE:", response);
         Alert.alert("Success", "Order status has been changed.");
-        navigation.replace("UpdateOrder", {
-          order_id,
-          curr_order_status: ORDER_STATUS_PICKED,
-        });
+        navigation.pop();
+        // navigation.replace("UpdateOrder", {
+        //   user_id,
+        //   order_id,
+        //   curr_order_status: ORDER_STATUS_PICKED,
+        // });
       } else {
         Alert.alert("Failed", "QR didn't match.");
         navigation.replace("UpdateOrder", { order_id, curr_order_status });
